@@ -343,8 +343,10 @@
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
                 <div class="flex flex-col justify-between h-full w-full max-w-md text-center">
-                    <div>
-                        <h1 class="font-title text-4xl sm:text-6xl mb-12 text-yellow-300">Brawl Stars: Batalla Infinita</h1>
+                    <!-- Parte superior: Logo y Botones -->
+                    <div class="flex-grow flex flex-col justify-center">
+                        <img src="imagenes/logo.png" alt="Logo del Juego" class="w-full max-w-xs mx-auto mb-12" onerror="this.style.display='none'; document.getElementById('fallback-title').classList.remove('hidden')">
+                        <h1 id="fallback-title" class="hidden font-title text-4xl sm:text-6xl mb-12 text-yellow-300">Brawl Stars: Batalla Infinita</h1>
                         <div class="space-y-4">
                             <button onclick="showNameInputScreen()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Nueva Partida</button>
                             <button onclick="showInstructionsScreen()" class="menu-button w-full bg-purple-600 border-purple-800 hover:bg-purple-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Instrucciones</button>
@@ -352,8 +354,9 @@
                         </div>
                     </div>
                     
+                    <!-- Parte inferior: Creador -->
                     <div class="pb-4">
-                        <img src="avatares/jon.png" alt="Creador del juego" class="w-32 h-32 rounded-full mx-auto border-2 border-yellow-300" onerror="this.style.display='none'">
+                        <img src="avatares/jon.png" alt="Creador del juego" class="w-24 h-24 rounded-full mx-auto border-2 border-yellow-300" onerror="this.style.display='none'">
                         <p class="font-title mt-2 text-xl">
                             <span class="text-green-400">Jon</span>
                             <span class="text-gray-400"> Zabalok egina ©</span>
@@ -380,16 +383,16 @@
                 <div class="flex flex-col justify-between h-full w-full">
                     <h1 class="font-title text-3xl sm:text-4xl mb-4 text-yellow-300 text-center">Instrucciones</h1>
                     
-                    <div class="space-y-4 text-left text-base sm:text-lg">
-                        <div class="flex items-center gap-4"><span class="text-3xl">🎯</span><div><strong class="text-yellow-300">OBJETIVO:</strong> ¡Aguanta el máximo de asaltos que puedas!</div></div>
-                        <div class="flex items-center gap-4"><span class="text-3xl">🤔</span><div><strong class="text-yellow-300">DECISIONES:</strong> En cada turno, un Brawler te dará dos opciones. ¡Elige con cuidado!</div></div>
-                        <div class="flex items-center gap-4"><span class="text-3xl">📊</span><div><strong class="text-yellow-300">ESTADÍSTICAS:</strong> Tus elecciones afectan a tu Vida, Ataque, Defensa y Superpoder.</div></div>
-                        <div class="flex items-center gap-4"><span class="text-3xl">⚔️</span><div><strong class="text-yellow-300">ENEMIGOS:</strong> Después de cada turno, los enemigos atacan. ¡La defensa es clave!</div></div>
-                        <div class="flex items-center gap-4"><span class="text-3xl">🎁</span><div><strong class="text-yellow-300">SORPRESAS:</strong> A veces, aparecerán eventos y acertijos con grandes recompensas.</div></div>
-                        <div class="flex items-center gap-4"><span class="text-3xl">🌟</span><div><strong class="text-yellow-300">SUPERPODER:</strong> Al 100%, ¡úsalo para obtener una gran ventaja y equilibrar tus stats!</div></div>
+                    <div class="flex-grow space-y-3 sm:space-y-4 text-left text-base sm:text-lg overflow-y-auto">
+                        <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎯</span><div><strong class="text-yellow-300">OBJETIVO:</strong> ¡Aguanta el máximo de asaltos que puedas!</div></div>
+                        <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🤔</span><div><strong class="text-yellow-300">DECISIONES:</strong> En cada turno, un Brawler te dará dos opciones. ¡Elige con cuidado!</div></div>
+                        <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">📊</span><div><strong class="text-yellow-300">ESTADÍSTICAS:</strong> Tus elecciones afectan a tu Vida, Ataque, Defensa y Superpoder.</div></div>
+                        <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">⚔️</span><div><strong class="text-yellow-300">ENEMIGOS:</strong> Después de cada turno, los enemigos atacan. ¡La defensa es clave!</div></div>
+                        <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎁</span><div><strong class="text-yellow-300">SORPRESAS:</strong> A veces, aparecerán eventos y acertijos con grandes recompensas.</div></div>
+                        <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🌟</span><div><strong class="text-yellow-300">SUPERPODER:</strong> Al 100%, ¡úsalo para obtener una gran ventaja y equilibrar tus stats!</div></div>
                     </div>
 
-                    <div class="text-center mt-6">
+                    <div class="text-center mt-4 sm:mt-6">
                          <p class="font-title text-lg">
                             <span class="text-green-400">Jon</span>
                             <span class="text-gray-400"> Zabalok egina ©</span>
