@@ -34,6 +34,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 8px;
         }
         .choice-button:hover {
             transform: translateY(-2px);
@@ -54,12 +55,12 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
 
-    <div id="game-container" class="game-container bg-gray-800 rounded-3xl shadow-2xl p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden">
+    <div id="game-container" class="game-container bg-gray-800 rounded-3xl shadow-2xl p-3 sm:p-6 flex flex-col justify-between relative overflow-hidden">
         
-        <!-- Sección de Estadísticas (MODIFICADA PARA SER MÁS COMPACTA) -->
-        <div id="stats-container" class="space-y-2">
+        <!-- Sección de Estadísticas -->
+        <div id="stats-container" class="space-y-1.5">
             <div class="flex justify-between items-center text-yellow-300 font-title text-base">
                 <span>ASALTO</span>
                 <span id="assault-counter">1</span>
@@ -87,40 +88,40 @@
         </div>
 
         <!-- Sección de Carta del Dilema -->
-        <div class="flex-grow flex flex-col items-center justify-center my-4 relative">
+        <div class="flex-grow flex flex-col items-center justify-center my-2 sm:my-4 relative">
             <div id="dilemma-card" class="bg-gray-700 rounded-2xl shadow-xl p-4 w-full max-w-sm text-center flex flex-col items-center justify-center flex-grow">
-                <img id="char-img" src="" class="w-[150px] h-[150px] rounded-full object-cover mb-3 border-4 border-gray-600" alt="Personaje">
-                <h2 id="char-name" class="font-title text-3xl text-yellow-300 mb-1"></h2>
-                <p id="dilemma-description" class="text-gray-200 text-lg"></p>
+                <img id="char-img" src="" class="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover mb-2 border-4 border-gray-600" alt="Personaje">
+                <h2 id="char-name" class="font-title text-2xl sm:text-3xl text-yellow-300 mb-1"></h2>
+                <p id="dilemma-description" class="text-gray-200 text-base sm:text-lg"></p>
             </div>
         </div>
         
         <!-- Botón de Superpoder -->
         <div class="my-2">
-            <button id="super-button" class="choice-button w-full bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-4 rounded-xl text-xl font-title">
+            <button id="super-button" class="choice-button w-full bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded-xl text-lg sm:text-xl font-title">
                 USAR SUPERPODER
             </button>
         </div>
 
         <!-- Sección de Decisiones -->
-        <div id="choices-section" class="grid grid-cols-2 gap-3">
-            <button id="choice-1" class="choice-button bg-red-600 border-red-800 hover:bg-red-500 text-white font-bold py-3 px-4 rounded-xl text-base"></button>
-            <button id="choice-2" class="choice-button bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl text-base"></button>
+        <div id="choices-section" class="grid grid-cols-2 gap-2 sm:gap-3">
+            <button id="choice-1" class="choice-button bg-red-600 border-red-800 hover:bg-red-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
+            <button id="choice-2" class="choice-button bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
         </div>
 
         <!-- Overlay de Resolución -->
         <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30">
-            <h1 id="resolution-title" class="font-title text-4xl mb-3 text-yellow-300"></h1>
-            <p id="resolution-narrative" class="text-lg mb-4"></p>
+            <h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1>
+            <p id="resolution-narrative" class="text-base sm:text-lg mb-4"></p>
             <div id="resolution-effects" class="text-left space-y-1 mb-6 text-base"></div>
-            <button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-xl font-title">Continuar</button>
+            <button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button>
         </div>
 
         <!-- Overlay de Inicio/Fin -->
         <div id="game-overlay" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20">
-            <h1 id="overlay-title" class="font-title text-6xl mb-4 text-yellow-300"></h1>
-            <p id="overlay-text" class="text-xl mb-8"></p>
-            <button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-2xl font-title"></button>
+            <h1 id="overlay-title" class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300"></h1>
+            <p id="overlay-text" class="text-lg sm:text-xl mb-8"></p>
+            <button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button>
         </div>
     </div>
 
