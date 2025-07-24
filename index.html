@@ -53,6 +53,24 @@
             opacity: 0;
             pointer-events: none;
         }
+        #player-name-input {
+            background-color: #2d3748;
+            border: 2px solid #4a5568;
+            color: white;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 1.25rem;
+        }
+        #ranking-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid #4a5568;
+        }
+        #ranking-list li:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
@@ -120,8 +138,23 @@
         <!-- Overlay de Inicio/Fin -->
         <div id="game-overlay" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20">
             <h1 id="overlay-title" class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300"></h1>
-            <p id="overlay-text" class="text-lg sm:text-xl mb-8"></p>
-            <button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button>
+            
+            <!-- Pantalla de Inicio -->
+            <div id="start-screen">
+                <input type="text" id="player-name-input" placeholder="Escribe tu nombre" class="w-full mb-4 font-title">
+                <p id="overlay-text" class="text-lg sm:text-xl mb-8"></p>
+                <button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button>
+            </div>
+
+            <!-- Pantalla de Fin -->
+            <div id="end-screen" class="hidden w-full">
+                 <p id="end-score-text" class="text-xl mb-4"></p>
+                 <div id="ranking-container" class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6">
+                    <h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2>
+                    <ul id="ranking-list" class="text-lg"></ul>
+                 </div>
+                 <button id="restart-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button>
+            </div>
         </div>
     </div>
 
@@ -147,6 +180,7 @@
         let currentAssault = 1;
         let gameOver = false;
         let isSuperResolution = false; 
+        let playerName = '';
 
         // --- CARGA DE DATOS ---
         const characters = window.gameCharacters;
@@ -162,20 +196,24 @@
             dilemmaDescription: document.getElementById('dilemma-description'),
             choice1: document.getElementById('choice-1'), choice2: document.getElementById('choice-2'),
             superButton: document.getElementById('super-button'),
-            gameOverlay: document.getElementById('game-overlay'), overlayTitle: document.getElementById('overlay-title'), overlayText: document.getElementById('overlay-text'), overlayButton: document.getElementById('overlay-button'),
+            gameOverlay: document.getElementById('game-overlay'), overlayTitle: document.getElementById('overlay-title'),
+            startScreen: document.getElementById('start-screen'), overlayText: document.getElementById('overlay-text'), overlayButton: document.getElementById('overlay-button'),
+            playerNameInput: document.getElementById('player-name-input'),
+            endScreen: document.getElementById('end-screen'), endScoreText: document.getElementById('end-score-text'),
+            rankingContainer: document.getElementById('ranking-container'), rankingList: document.getElementById('ranking-list'),
+            restartButton: document.getElementById('restart-button'),
             resolutionOverlay: document.getElementById('resolution-overlay'), resolutionTitle: document.getElementById('resolution-title'), resolutionNarrative: document.getElementById('resolution-narrative'), resolutionEffects: document.getElementById('resolution-effects'), resolutionContinue: document.getElementById('resolution-continue'),
         };
 
         // --- LÓGICA DEL JUEGO ---
         
         function initGame() {
+            playerName = ui.playerNameInput.value.trim() || 'Brawler';
             stats = { vida: 80, ataque: 20, defensa: 20, superpoder: 0 };
             currentAssault = 1;
             gameOver = false;
             
             ui.gameOverlay.classList.add('hidden-overlay');
-            ui.superButton.onclick = useSuper;
-            ui.resolutionContinue.onclick = handleContinueClick;
             nextAssault();
         }
 
@@ -197,7 +235,6 @@
 
             ui.charName.textContent = char.name;
             ui.charImg.src = char.img;
-            // Fallback por si la imagen local no carga
             ui.charImg.onerror = () => { ui.charImg.src = `https://placehold.co/150x150/cccccc/ffffff?text=${char.name.substring(0,2)}`; };
 
             ui.dilemmaDescription.textContent = dilemma.description;
@@ -217,8 +254,7 @@
             let combinedEffects = { ...action.effects };
             let narrative = action.narrative;
 
-            // DIFICULTAD PROGRESIVA: El daño aumenta con cada asalto
-            const baseDamage = 3 + (currentAssault * 2); // El daño escala más rápido
+            const baseDamage = 3 + (currentAssault * 2); 
             const finalDamage = Math.max(1, baseDamage - Math.floor(stats.defensa / 5));
             combinedEffects.vida = (combinedEffects.vida || 0) - finalDamage;
             narrative += ` Los enemigos contraatacan.`;
@@ -282,19 +318,57 @@
             }
         }
 
+        function saveScore(name, score) {
+            const ranking = JSON.parse(localStorage.getItem('brawlStarsRanking')) || [];
+            ranking.push({ name, score });
+            ranking.sort((a, b) => b.score - a.score);
+            const topScores = ranking.slice(0, 5); // Guardar solo el top 5
+            localStorage.setItem('brawlStarsRanking', JSON.stringify(topScores));
+        }
+
+        function displayRanking() {
+            const ranking = JSON.parse(localStorage.getItem('brawlStarsRanking')) || [];
+            ui.rankingList.innerHTML = '';
+            if (ranking.length === 0) {
+                ui.rankingList.innerHTML = '<li>¡Sé el primero en jugar!</li>';
+                return;
+            }
+            ranking.forEach(entry => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${entry.name}</span><span>${entry.score} Asaltos</span>`;
+                ui.rankingList.appendChild(li);
+            });
+        }
+
         function showEndScreen() {
             gameOver = true;
-            ui.gameOverlay.classList.remove('hidden-overlay');
+            saveScore(playerName, currentAssault);
+            
+            ui.startScreen.classList.add('hidden');
+            ui.endScreen.classList.remove('hidden');
+            
             ui.overlayTitle.textContent = "¡DERROTADO!";
-            ui.overlayText.textContent = `¡Has aguantado ${currentAssault} asaltos! Inténtalo de nuevo para superar tu récord.`;
-            ui.overlayButton.textContent = 'Volver a Empezar';
+            ui.endScoreText.textContent = `¡Has aguantado ${currentAssault} asaltos!`;
+            displayRanking();
+
+            ui.gameOverlay.classList.remove('hidden-overlay');
+        }
+
+        function setupStartScreen() {
+            ui.endScreen.classList.add('hidden');
+            ui.startScreen.classList.remove('hidden');
+            ui.overlayTitle.textContent = 'Brawl Stars: Batalla Infinita';
+            ui.overlayText.textContent = '¡Comanda a tu escuadrón! Aguanta el máximo número de asaltos posible.';
+            ui.overlayButton.textContent = '¡A la Batalla!';
+            ui.restartButton.textContent = 'Volver a Empezar';
+            ui.overlayButton.onclick = initGame;
+            ui.restartButton.onclick = setupStartScreen;
         }
 
         // --- INICIO DEL JUEGO ---
-        ui.overlayTitle.textContent = 'Brawl Stars: Batalla Infinita';
-        ui.overlayText.textContent = '¡Comanda a tu escuadrón! Aguanta el máximo número de asaltos posible. ¡Cada turno la batalla será más difícil!';
-        ui.overlayButton.textContent = '¡A la Batalla!';
-        ui.overlayButton.onclick = initGame;
+        ui.superButton.onclick = useSuper;
+        ui.resolutionContinue.onclick = handleContinueClick;
+        setupStartScreen();
 
     </script>
 </body>
