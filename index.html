@@ -342,17 +342,24 @@
         function showMainMenu() {
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
-                <div>
-                    <h1 class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300">Brawl Stars: Batalla Infinita</h1>
-                    <div class="my-4 text-center">
-                        <p class="text-gray-400 text-sm mb-2">Un juego creado por:</p>
-                        <img src="avatares/jon.png" alt="Creador del juego" class="w-24 h-24 rounded-full mx-auto border-2 border-yellow-300" onerror="this.style.display='none'">
-                        <p class="font-title text-green-400 mt-2 text-xl">Jon</p>
+                <div class="flex flex-col justify-between h-full w-full max-w-md text-center">
+                    <!-- Parte superior: Título y Botones -->
+                    <div>
+                        <h1 class="font-title text-4xl sm:text-6xl mb-12 text-yellow-300">Brawl Stars: Batalla Infinita</h1>
+                        <div class="space-y-4">
+                            <button onclick="showNameInputScreen()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Nueva Partida</button>
+                            <button onclick="showInstructionsScreen()" class="menu-button w-full bg-purple-600 border-purple-800 hover:bg-purple-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Instrucciones</button>
+                            <button onclick="showRankingScreen()" class="menu-button w-full bg-orange-500 border-orange-700 hover:bg-orange-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Ranking</button>
+                        </div>
                     </div>
-                    <div class="space-y-4 mt-8">
-                        <button onclick="showNameInputScreen()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Nueva Partida</button>
-                        <button onclick="showInstructionsScreen()" class="menu-button w-full bg-purple-600 border-purple-800 hover:bg-purple-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Instrucciones</button>
-                        <button onclick="showRankingScreen()" class="menu-button w-full bg-orange-500 border-orange-700 hover:bg-orange-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Ranking</button>
+                    
+                    <!-- Parte inferior: Creador -->
+                    <div class="pb-4">
+                        <img src="avatares/jon.png" alt="Creador del juego" class="w-32 h-32 rounded-full mx-auto border-2 border-yellow-300" onerror="this.style.display='none'">
+                        <p class="font-title mt-2 text-xl">
+                            <span class="text-green-400">Jon</span>
+                            <span class="text-gray-400"> Zabalok egina ©</span>
+                        </p>
                     </div>
                 </div>
             `;
