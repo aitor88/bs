@@ -46,7 +46,7 @@
             filter: grayscale(80%);
             cursor: not-allowed;
         }
-        #game-overlay, #resolution-overlay {
+        #game-overlay, #resolution-overlay, #notification {
             transition: opacity 0.5s;
         }
         .hidden-overlay {
@@ -80,8 +80,14 @@
         <!-- Sección de Estadísticas -->
         <div id="stats-container" class="space-y-1.5">
             <div class="flex justify-between items-center text-yellow-300 font-title text-base">
-                <span>ASALTO</span>
-                <span id="assault-counter">1</span>
+                <div>
+                    <span>Jugador: </span>
+                    <span id="player-name-display"></span>
+                </div>
+                <div>
+                    <span>ASALTO </span>
+                    <span id="assault-counter">1</span>
+                </div>
             </div>
             <!-- Vida -->
             <div class="stat">
@@ -156,6 +162,11 @@
                  <button id="restart-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button>
             </div>
         </div>
+
+        <!-- Notificación de Superpoder (NUEVO) -->
+        <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title">
+            ¡No tienes superpoder suficiente!
+        </div>
     </div>
 
     <!-- =================================================================== -->
@@ -188,6 +199,7 @@
         // --- ELEMENTOS DEL DOM ---
         const ui = {
             assaultCounter: document.getElementById('assault-counter'),
+            playerNameDisplay: document.getElementById('player-name-display'),
             healthBar: document.getElementById('health-bar'), healthText: document.getElementById('health-text'),
             attackBar: document.getElementById('attack-bar'), attackText: document.getElementById('attack-text'),
             defenseBar: document.getElementById('defense-bar'), defenseText: document.getElementById('defense-text'),
@@ -196,6 +208,7 @@
             dilemmaDescription: document.getElementById('dilemma-description'),
             choice1: document.getElementById('choice-1'), choice2: document.getElementById('choice-2'),
             superButton: document.getElementById('super-button'),
+            notification: document.getElementById('notification'), // (NUEVO)
             gameOverlay: document.getElementById('game-overlay'), overlayTitle: document.getElementById('overlay-title'),
             startScreen: document.getElementById('start-screen'), overlayText: document.getElementById('overlay-text'), overlayButton: document.getElementById('overlay-button'),
             playerNameInput: document.getElementById('player-name-input'),
@@ -219,6 +232,7 @@
 
         function updateUI() {
             ui.assaultCounter.textContent = currentAssault;
+            ui.playerNameDisplay.textContent = playerName;
             ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}%`;
             ui.attackBar.style.width = `${stats.ataque}%`; ui.attackText.textContent = `${stats.ataque}%`;
             ui.defenseBar.style.width = `${stats.defensa}%`; ui.defenseText.textContent = `${stats.defensa}%`;
@@ -264,7 +278,14 @@
         }
         
         function useSuper() {
-            if (stats.superpoder < 100) return;
+            if (stats.superpoder < 100) {
+                // (NUEVO) Mostrar notificación
+                ui.notification.classList.remove('hidden-overlay');
+                setTimeout(() => {
+                    ui.notification.classList.add('hidden-overlay');
+                }, 2000); // El mensaje desaparece después de 2 segundos
+                return;
+            }
             
             const superEffects = {
                 superpoder: -100,
