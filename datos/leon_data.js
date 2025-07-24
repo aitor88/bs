@@ -3,35 +3,17 @@
 // Añadimos los datos de Leon al array global de personajes
 window.gameCharacters.push({
     name: 'Leon',
-    img: 'avatares/leon.png', // Asegúrate de tener una imagen leon.png en la carpeta avatares
+    img: 'avatares/leon.png',
     dilemmas: [
-        {
-            description: '¡Hay muchos enemigos! Puedo usar mi Súper para volverme invisible y pasar sin que nos vean.',
-            options: [
-                { text: '¡Hazte invisible!', narrative: 'Pasáis sigilosamente entre los enemigos. ¡Ni se han enterado!', effects: { defensa: 20, vida: 5 } },
-                { text: '¡Lucha contra ellos!', narrative: 'Decides luchar. Es una batalla dura y pierdes vida.', effects: { ataque: 10, superpoder: 15, vida: -15 } }
-            ]
-        },
-        {
-            description: 'Veo a un enemigo importante solo. Podría usar la invisibilidad para acercarme y darle un golpe sorpresa.',
-            options: [
-                { text: '¡Ataque sorpresa!', narrative: '¡El ataque es un éxito! Ganas mucho ataque y cargas Súper, pero te llevas un golpe al escapar.', effects: { ataque: 20, superpoder: 25, vida: -10 } },
-                { text: 'No te arriesgues', narrative: 'Prefieres no arriesgarte. Buscáis una posición más segura.', effects: { defensa: 10 } }
-            ]
-        },
-        {
-            description: '¡Nos han acorralado! Puedo crear un clon para que los enemigos le disparen a él mientras escapamos.',
-            options: [
-                { text: '¡Crea un clon!', narrative: '¡El truco funciona! Los enemigos disparan al clon y vosotros os ponéis a salvo.', effects: { defensa: 25, vida: 5 } },
-                { text: '¡Lucha para salir!', narrative: 'Lucháis para abriros paso. Es arriesgado y pierdes vida.', effects: { ataque: 10, vida: -20 } }
-            ]
-        },
-        {
-            description: 'No sabemos qué hay más adelante. Puedo hacerme invisible para explorar el camino sin peligro.',
-            options: [
-                { text: 'Explora el camino', narrative: 'Leon explora y vuelve con información. Ahora estáis mejor preparados.', effects: { defensa: 20 } },
-                { text: '¡Vamos todos juntos!', narrative: 'Avanzáis todos juntos. Es más rápido, pero más peligroso.', effects: { ataque: 5, vida: -10 } }
-            ]
-        }
+        { description: '¡Hay muchos enemigos! Puedo usar mi Súper para volverme invisible y pasar sin que nos vean.', options: [{ text: '¡Hazte invisible!', narrative: 'Pasáis sigilosamente entre los enemigos. ¡Ni se han enterado!', effects: { defensa: 20, vida: 5, superpoder: -25 } }, { text: '¡Lucha contra ellos!', narrative: 'Decides luchar. Es una batalla dura y pierdes vida.', effects: { ataque: 10, superpoder: 15, vida: -15 } }] },
+        { description: 'Veo a un enemigo importante solo. Podría usar la invisibilidad para darle un golpe sorpresa.', options: [{ text: '¡Ataque sorpresa!', narrative: '¡El ataque es un éxito! Ganas mucho ataque y cargas Súper, pero te llevas un golpe al escapar.', effects: { ataque: 20, superpoder: 25, vida: -10 } }, { text: 'No te arriesgues', narrative: 'Prefieres no arriesgarte. Buscáis una posición más segura.', effects: { defensa: 10 } }] },
+        { description: '¡Nos han acorralado! Puedo crear un clon para que los enemigos le disparen a él mientras escapamos.', options: [{ text: '¡Crea un clon!', narrative: '¡El truco funciona! Los enemigos disparan al clon y vosotros os ponéis a salvo.', effects: { defensa: 25, vida: 5, superpoder: -15 } }, { text: '¡Lucha para salir!', narrative: 'Lucháis para abriros paso. Es arriesgado y pierdes vida.', effects: { ataque: 10, vida: -20 } }] },
+        { description: 'No sabemos qué hay más adelante. Puedo hacerme invisible para explorar el camino sin peligro.', options: [{ text: 'Explora el camino', narrative: 'Leon explora y vuelve con información. Ahora estáis mejor preparados.', effects: { defensa: 20 } }, { text: '¡Vamos todos juntos!', narrative: 'Avanzáis todos juntos. Es más rápido, pero más peligroso.', effects: { ataque: 5, vida: -10 } }] },
+        { description: 'Hay una caja de poder sin vigilar. Puedo volverme invisible y robarla sin que me vean.', options: [{ text: '¡Roba la caja!', narrative: '¡El robo es un éxito! Consigues el poder sin que nadie se dé cuenta.', effects: { ataque: 15, defensa: 15, vida: 15, superpoder: -20 } }, { text: 'Es demasiado arriesgado', narrative: 'No te fías y prefieres no arriesgar la posición por una caja.', effects: { defensa: 5 } }] },
+        { description: 'Estoy escondido en un arbusto. Puedo lanzar mis shurikens desde aquí sin que sepan de dónde vienen.', options: [{ text: 'Dispara desde el arbusto', narrative: 'Los shurikens impactan por sorpresa, causando mucho daño.', effects: { ataque: 20, defensa: 5 } }, { text: 'Espera a que se acerquen', narrative: 'Prefieres esperar el momento perfecto para un ataque a corta distancia.', effects: { defensa: 10 } }] },
+        { description: '¡Mi Súper de invisibilidad está listo! ¿Lo uso para escapar o para atacar por la espalda?', options: [{ text: '¡Escapemos!', narrative: 'Usas el Súper para una retirada táctica. Recuperáis vida y os reposicionáis.', effects: { vida: 20, defensa: 10, superpoder: -100 } }, { text: '¡A por ellos!', narrative: 'Te haces invisible y apareces detrás de ellos. ¡El ataque es devastador!', effects: { ataque: 30, vida: -10, superpoder: -100 } }] },
+        { description: 'Puedo lanzar una bomba de humo para confundir a los enemigos.', options: [{ text: '¡Bomba de humo!', narrative: 'El humo lo cubre todo. Los enemigos están confusos y vuestra defensa aumenta.', effects: { defensa: 25 } }, { text: 'No gastes el humo', narrative: 'Prefieres guardar el humo para una emergencia y seguir atacando.', effects: { ataque: 10 } }] },
+        { description: 'Ese enemigo tiene un objeto brillante. Podría intentar robárselo con sigilo.', options: [{ text: 'Intenta el robo', narrative: '¡Lo consigues! Robas el objeto, que resulta ser un potenciador de Súper.', effects: { superpoder: 40, vida: -10 } }, { text: 'No es el momento', narrative: 'No quieres arriesgarte a que te descubran por un objeto.', effects: { defensa: 5 } }] },
+        { description: 'Puedo seguir a ese enemigo invisiblemente para ver a dónde va.', options: [{ text: 'Síguele', narrative: 'Descubres una debilidad en su defensa. ¡Vuestro ataque aumenta!', effects: { ataque: 20 } }, { text: 'No te separes', narrative: 'Prefieres que el equipo permanezca unido y no correr riesgos.', effects: { defensa: 10 } }] }
     ]
 });
