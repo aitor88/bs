@@ -216,7 +216,8 @@
             let combinedEffects = { ...action.effects };
             let narrative = action.narrative;
 
-            const baseDamage = 5 + currentAssault;
+            // DIFICULTAD PROGRESIVA: El daño aumenta con cada asalto
+            const baseDamage = 3 + (currentAssault * 2); // El daño escala más rápido
             const finalDamage = Math.max(1, baseDamage - Math.floor(stats.defensa / 5));
             combinedEffects.vida = (combinedEffects.vida || 0) - finalDamage;
             narrative += ` Los enemigos contraatacan.`;
