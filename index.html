@@ -24,15 +24,19 @@
         #super-button:disabled { filter: grayscale(80%); cursor: not-allowed; }
         #game-overlay, #resolution-overlay, #notification, #splash-screen { transition: opacity 0.5s; }
         .hidden-overlay { opacity: 0; pointer-events: none; }
-        #player-name-input { background-color: #2d3748; border: 2px solid #4a5568; color: white; border-radius: 0.5rem; padding: 0.75rem; text-align: center; font-size: 1.25rem; }
-        #ranking-list li { display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px solid #4a5568; }
-        #ranking-list li:last-child { border-bottom: none; }
+        #player-name-input { background-color: #2d3748; border: 2px solid #4a5568; color: white; border-radius: 0.5rem; padding: 0.75rem; text-align: center; font-size: 16px; }
         .inventory-item { height: 100%; width: auto; max-height: 40px; }
 
         #splash-logo { width: 300px; position: relative; opacity: 0; transform: translateY(-200px) scale(2) rotate(10deg); animation: dropIn 1.2s ease-out forwards; }
         @keyframes dropIn { 0% { opacity: 0; transform: translateY(-200px) scale(2.5) rotate(10deg); filter: blur(20px); } 60% { opacity: 1; transform: translateY(20px) scale(1.05) rotate(-3deg); filter: blur(0px); } 80% { transform: translateY(-5px) scale(1.02); } 100% { transform: translateY(0px) scale(1); } }
         #splash-logo.shake { animation: shake 0.2s ease-in-out 1; }
         @keyframes shake { 0% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-4px) rotate(1deg); } 50% { transform: translateY(4px) rotate(-1deg); } 75% { transform: translateY(-2px) rotate(0.5deg); } 100% { transform: translateY(0) rotate(0); } }
+        
+        .ranking-table { width: 100%; border-collapse: collapse; }
+        .ranking-table th, .ranking-table td { padding: 8px; text-align: center; }
+        .ranking-table th { color: #facc15; }
+        .ranking-table tr:not(:last-child) { border-bottom: 1px solid #4a5568; }
+        .ranking-table td:nth-child(2) { text-align: left; }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
@@ -61,7 +65,7 @@
                 <div id="dilemma-card" class="bg-gray-700 rounded-2xl shadow-xl p-4 w-full max-w-sm text-center flex flex-col items-center justify-center flex-grow">
                     <img id="char-img" src="" class="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover mb-2 border-4 border-gray-600" alt="Personaje">
                     <h2 id="char-name" class="font-title text-2xl sm:text-3xl text-yellow-300 mb-1"></h2>
-                    <p id="dilemma-description" class="text-gray-200 text-base sm:text-lg font-bold"></p>
+                    <p id="dilemma-description" class="text-gray-200 text-lg sm:text-xl font-bold"></p>
                 </div>
             </div>
             <div class="flex items-center gap-2 sm:gap-3 my-2">
@@ -79,7 +83,7 @@
                  <button id="challenge-choice-4" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
             </div>
         </div>
-        <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30"><h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1><p id="resolution-narrative" class="text-base sm:text-lg mb-4 font-bold"></p><div id="resolution-effects" class="text-left space-y-1 mb-6 text-base font-bold"></div><button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button></div>
+        <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30"><h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1><p id="resolution-narrative" class="text-lg sm:text-xl mb-4 font-bold"></p><div id="resolution-effects" class="text-left space-y-1 mb-6 text-lg font-bold"></div><button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button></div>
         <div id="game-overlay" class="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20 hidden-overlay"></div>
         <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title">¡No tienes superpoder suficiente!</div>
     </div>
@@ -110,7 +114,6 @@
             messagingSenderId: "11560476574",
             appId: "1:11560476574:web:0603074665db720fdd008f"
         };
-        // Inicializar Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
@@ -319,38 +322,45 @@
             }
         }
 
-        function saveScore(name, score) {
+        function saveScore(name, score, collectibles) {
             db.collection("ranking").add({
                 name: name,
-                score: score
+                score: score,
+                collectibles: collectibles
             }).catch(error => console.error("Error al guardar en Firebase: ", error));
         }
 
         function displayRanking(rankingListElement) {
-            rankingListElement.innerHTML = '<li>Cargando...</li>';
+            rankingListElement.innerHTML = '<tr><td colspan="3">Cargando...</td></tr>';
             db.collection("ranking").orderBy("score", "desc").limit(5).get()
                 .then((querySnapshot) => {
                     rankingListElement.innerHTML = '';
                     if (querySnapshot.empty) {
-                        rankingListElement.innerHTML = '<li>¡Sé el primero en jugar!</li>';
+                        rankingListElement.innerHTML = '<tr><td colspan="3">¡Sé el primero en jugar!</td></tr>';
                         return;
                     }
+                    let rank = 1;
                     querySnapshot.forEach((doc) => {
                         const entry = doc.data();
-                        const li = document.createElement('li');
-                        li.innerHTML = `<span>${entry.name.toUpperCase()}</span><span>${entry.score} Asaltos</span>`;
-                        rankingListElement.appendChild(li);
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${rank++}</td>
+                            <td class="text-left">${entry.name.toUpperCase()}</td>
+                            <td>${entry.collectibles || 0}</td>
+                            <td>${entry.score}</td>
+                        `;
+                        rankingListElement.appendChild(row);
                     });
                 })
                 .catch(error => {
                     console.error("Error al cargar ranking: ", error);
-                    rankingListElement.innerHTML = '<li>Error al cargar ranking.</li>';
+                    rankingListElement.innerHTML = '<tr><td colspan="3">Error al cargar ranking.</td></tr>';
                 });
         }
 
         function showEndScreen() {
             gameOver = true;
-            saveScore(playerName, currentAssault);
+            saveScore(playerName, currentAssault, inventory.length);
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
                 <div class="w-full">
@@ -358,7 +368,10 @@
                     <p class="text-xl mb-4">¡Has aguantado ${currentAssault} asaltos!</p>
                     <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto">
                         <h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2>
-                        <ul id="end-ranking-list" class="text-lg"></ul>
+                        <table class="ranking-table text-lg">
+                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>💎</th><th>Asaltos</th></tr></thead>
+                            <tbody id="end-ranking-list"></tbody>
+                        </table>
                     </div>
                     <button onclick="showMainMenu()" class="menu-button bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Menú Principal</button>
                 </div>
@@ -369,7 +382,7 @@
 
         function showMainMenu() {
             ui.gameUI.classList.add('hidden');
-            ui.gameOverlay.innerHTML = `
+            const menuHTML = `
                 <div class="flex flex-col justify-between h-full w-full max-w-md text-center">
                     <div class="flex-grow flex flex-col justify-center">
                         <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-8 sm:mb-12" onerror="this.style.display='none'; document.getElementById('fallback-title').classList.remove('hidden')">
@@ -386,6 +399,7 @@
                     </div>
                 </div>
             `;
+            ui.gameOverlay.innerHTML = menuHTML;
             ui.gameOverlay.classList.remove('hidden-overlay');
         }
 
@@ -425,31 +439,30 @@
                 <div class="w-full">
                     <h1 class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300">Ranking</h1>
                     <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto">
-                        <ul id="ranking-list" class="text-lg"></ul>
+                        <table class="ranking-table text-lg">
+                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>💎</th><th>Asaltos</th></tr></thead>
+                            <tbody id="ranking-list-table"></tbody>
+                        </table>
                     </div>
                     <button onclick="showMainMenu()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Volver al Menú</button>
                 </div>
             `;
-            displayRanking(document.getElementById('ranking-list'));
+            displayRanking(document.getElementById('ranking-list-table'));
         }
 
         // --- INICIO DEL JUEGO ---
         ui.superButton.onclick = useSuper;
         ui.resolutionContinue.onclick = handleContinueClick;
         
-        const splashLogo = document.getElementById('splash-logo');
-        const impactSound = document.getElementById('impact-sound');
-        const gameContainer = document.getElementById('game-container');
-
-        splashLogo.addEventListener('animationend', () => {
-            splashLogo.classList.add('shake');
-            impactSound.play().catch(e => console.log("El navegador bloqueó la reproducción automática de sonido."));
+        ui.splashLogo.addEventListener('animationend', () => {
+            ui.splashLogo.classList.add('shake');
+            ui.impactSound.play().catch(e => console.log("El navegador bloqueó la reproducción automática de sonido."));
             
+            showMainMenu();
             setTimeout(() => {
                 ui.splashScreen.classList.add('hidden-overlay');
-                gameContainer.classList.remove('hidden');
-                showMainMenu();
-            }, 1500);
+                ui.gameContainer.classList.remove('hidden');
+            }, 300); // Reducido el tiempo de espera para una transición más rápida
         });
 
     </script>
