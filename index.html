@@ -163,7 +163,7 @@
             </div>
         </div>
 
-        <!-- Notificación de Superpoder (NUEVO) -->
+        <!-- Notificación de Superpoder -->
         <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title">
             ¡No tienes superpoder suficiente!
         </div>
@@ -179,6 +179,7 @@
     <script src="datos/shelly_data.js"></script>
     <script src="datos/poco_data.js"></script>
     <script src="datos/el_primo_data.js"></script>
+    <script src="datos/leon_data.js"></script>
     <!-- Si añades más personajes, añade una línea <script> aquí para su archivo -->
 
 
@@ -208,7 +209,7 @@
             dilemmaDescription: document.getElementById('dilemma-description'),
             choice1: document.getElementById('choice-1'), choice2: document.getElementById('choice-2'),
             superButton: document.getElementById('super-button'),
-            notification: document.getElementById('notification'), // (NUEVO)
+            notification: document.getElementById('notification'), 
             gameOverlay: document.getElementById('game-overlay'), overlayTitle: document.getElementById('overlay-title'),
             startScreen: document.getElementById('start-screen'), overlayText: document.getElementById('overlay-text'), overlayButton: document.getElementById('overlay-button'),
             playerNameInput: document.getElementById('player-name-input'),
@@ -279,11 +280,10 @@
         
         function useSuper() {
             if (stats.superpoder < 100) {
-                // (NUEVO) Mostrar notificación
                 ui.notification.classList.remove('hidden-overlay');
                 setTimeout(() => {
                     ui.notification.classList.add('hidden-overlay');
-                }, 2000); // El mensaje desaparece después de 2 segundos
+                }, 2000);
                 return;
             }
             
