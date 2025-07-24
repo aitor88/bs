@@ -7,14 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FUENTE ACTUALIZADA -->
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700&display=swap" rel="stylesheet">
     
     <!-- SCRIPTS DE FIREBASE -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        body { font-family: 'Roboto', sans-serif; background-color: #1a202c; }
+        /* FUENTE ACTUALIZADA */
+        body { font-family: 'Nunito', sans-serif; background-color: #1a202c; }
         .font-title { font-family: 'Lilita One', cursive; }
         .stat-bar-inner { transition: width 0.5s ease-in-out; }
         .game-container { max-width: 500px; width: 100%; height: 100vh; max-height: 900px; display: flex; flex-direction: column; }
@@ -331,12 +333,12 @@
         }
 
         function displayRanking(rankingListElement) {
-            rankingListElement.innerHTML = '<tr><td colspan="3">Cargando...</td></tr>';
+            rankingListElement.innerHTML = '<tr><td colspan="4">Cargando...</td></tr>';
             db.collection("ranking").orderBy("score", "desc").limit(5).get()
                 .then((querySnapshot) => {
                     rankingListElement.innerHTML = '';
                     if (querySnapshot.empty) {
-                        rankingListElement.innerHTML = '<tr><td colspan="3">¡Sé el primero en jugar!</td></tr>';
+                        rankingListElement.innerHTML = '<tr><td colspan="4">¡Sé el primero en jugar!</td></tr>';
                         return;
                     }
                     let rank = 1;
@@ -354,7 +356,7 @@
                 })
                 .catch(error => {
                     console.error("Error al cargar ranking: ", error);
-                    rankingListElement.innerHTML = '<tr><td colspan="3">Error al cargar ranking.</td></tr>';
+                    rankingListElement.innerHTML = '<tr><td colspan="4">Error al cargar ranking.</td></tr>';
                 });
         }
 
@@ -368,8 +370,8 @@
                     <p class="text-xl mb-4">¡Has aguantado ${currentAssault} asaltos!</p>
                     <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto">
                         <h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2>
-                        <table class="ranking-table text-lg">
-                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>💎</th><th>Asaltos</th></tr></thead>
+                        <table class="ranking-table text-lg font-bold">
+                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>🏆</th><th>Asaltos</th></tr></thead>
                             <tbody id="end-ranking-list"></tbody>
                         </table>
                     </div>
@@ -418,7 +420,7 @@
             ui.gameOverlay.innerHTML = `
                 <div class="flex flex-col justify-between h-full w-full">
                     <h1 class="font-title text-3xl sm:text-4xl mb-4 text-yellow-300 text-center">Instrucciones</h1>
-                    <div class="flex-grow space-y-3 sm:space-y-4 text-left text-base sm:text-lg overflow-y-auto">
+                    <div class="flex-grow space-y-3 sm:space-y-4 text-left text-base sm:text-lg overflow-y-auto font-bold">
                         <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎯</span><div><strong class="text-yellow-300">OBJETIVO:</strong> ¡Aguanta el máximo de asaltos que puedas!</div></div>
                         <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🤔</span><div><strong class="text-yellow-300">DECISIONES:</strong> En cada turno, un Brawler te dará dos opciones. ¡Elige con cuidado!</div></div>
                         <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">📊</span><div><strong class="text-yellow-300">ESTADÍSTICAS:</strong> Tus elecciones afectan a tu Vida, Ataque, Defensa y Superpoder.</div></div>
@@ -439,8 +441,8 @@
                 <div class="w-full">
                     <h1 class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300">Ranking</h1>
                     <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto">
-                        <table class="ranking-table text-lg">
-                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>💎</th><th>Asaltos</th></tr></thead>
+                        <table class="ranking-table text-lg font-bold">
+                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>🏆</th><th>Asaltos</th></tr></thead>
                             <tbody id="ranking-list-table"></tbody>
                         </table>
                     </div>
@@ -454,15 +456,18 @@
         ui.superButton.onclick = useSuper;
         ui.resolutionContinue.onclick = handleContinueClick;
         
-        ui.splashLogo.addEventListener('animationend', () => {
-            ui.splashLogo.classList.add('shake');
-            ui.impactSound.play().catch(e => console.log("El navegador bloqueó la reproducción automática de sonido."));
-            
-            showMainMenu();
-            setTimeout(() => {
-                ui.splashScreen.classList.add('hidden-overlay');
-                ui.gameContainer.classList.remove('hidden');
-            }, 300); // Reducido el tiempo de espera para una transición más rápida
+        ui.splashLogo.addEventListener('animationend', (event) => {
+            if (event.animationName === 'dropIn') {
+                ui.splashLogo.classList.add('shake');
+                ui.impactSound.play().catch(e => console.log("El navegador bloqueó la reproducción automática de sonido."));
+                
+                // CORRECCIÓN: Preparar el menú antes de la transición
+                showMainMenu(); 
+                setTimeout(() => {
+                    ui.splashScreen.classList.add('hidden-overlay');
+                    ui.gameContainer.classList.remove('hidden');
+                }, 1500); 
+            }
         });
 
     </script>
