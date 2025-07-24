@@ -3,74 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brawl Stars: Batalla con Eventos</title>
+    <title>Brawl Stars: Batalla con Retos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #1a202c;
-        }
-        .font-title {
-            font-family: 'Lilita One', cursive;
-        }
-        .stat-bar-inner {
-            transition: width 0.5s ease-in-out;
-        }
-        .game-container {
-            max-width: 500px;
-            width: 100%;
-            height: 100vh;
-            max-height: 900px;
-            display: flex;
-            flex-direction: column;
-        }
-        .choice-button {
-            transition: background-color 0.2s, transform 0.2s;
-            border-bottom-width: 4px;
-            min-height: 70px; /* Asegura altura mínima */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-        }
-        .choice-button:hover {
-            transform: translateY(-2px);
-        }
-        .choice-button:active {
-            transform: translateY(1px);
-        }
-        #super-button:disabled {
-            filter: grayscale(80%);
-            cursor: not-allowed;
-        }
-        #game-overlay, #resolution-overlay, #notification {
-            transition: opacity 0.5s;
-        }
-        .hidden-overlay {
-            opacity: 0;
-            pointer-events: none;
-        }
-        #player-name-input {
-            background-color: #2d3748;
-            border: 2px solid #4a5568;
-            color: white;
-            border-radius: 0.5rem;
-            padding: 0.75rem;
-            text-align: center;
-            font-size: 1.25rem;
-        }
-        #ranking-list li {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem;
-            border-bottom: 1px solid #4a5568;
-        }
-        #ranking-list li:last-child {
-            border-bottom: none;
-        }
+        body { font-family: 'Roboto', sans-serif; background-color: #1a202c; }
+        .font-title { font-family: 'Lilita One', cursive; }
+        .stat-bar-inner { transition: width 0.5s ease-in-out; }
+        .game-container { max-width: 500px; width: 100%; height: 100vh; max-height: 900px; display: flex; flex-direction: column; }
+        .choice-button { transition: background-color 0.2s, transform 0.2s; border-bottom-width: 4px; min-height: 70px; display: flex; align-items: center; justify-content: center; padding: 8px; }
+        .choice-button:hover { transform: translateY(-2px); }
+        .choice-button:active { transform: translateY(1px); }
+        #super-button:disabled { filter: grayscale(80%); cursor: not-allowed; }
+        #game-overlay, #resolution-overlay, #notification { transition: opacity 0.5s; }
+        .hidden-overlay { opacity: 0; pointer-events: none; }
+        #player-name-input { background-color: #2d3748; border: 2px solid #4a5568; color: white; border-radius: 0.5rem; padding: 0.75rem; text-align: center; font-size: 1.25rem; }
+        #ranking-list li { display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px solid #4a5568; }
+        #ranking-list li:last-child { border-bottom: none; }
+        .inventory-slot { font-size: 1.5rem; line-height: 2rem; }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
@@ -80,35 +32,14 @@
         <!-- Sección de Estadísticas -->
         <div id="stats-container" class="space-y-1.5">
             <div class="flex justify-between items-center font-title text-base">
-                <div>
-                    <span class="text-yellow-300">JUGADOR:&nbsp;</span>
-                    <span id="player-name-display" class="text-green-400 uppercase"></span>
-                </div>
-                <div class="text-yellow-300">
-                    <span>ASALTO </span>
-                    <span id="assault-counter">1</span>
-                </div>
+                <div><span class="text-yellow-300">JUGADOR:&nbsp;</span><span id="player-name-display" class="text-green-400 uppercase"></span></div>
+                <div class="text-yellow-300"><span>ASALTO </span><span id="assault-counter">1</span></div>
             </div>
-            <!-- Vida -->
-            <div class="stat">
-                <div class="flex justify-between items-center"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div>
-                <div class="w-full bg-gray-700 rounded-full h-2"><div id="health-bar" class="bg-green-500 h-2 rounded-full stat-bar-inner"></div></div>
-            </div>
-            <!-- Ataque -->
-            <div class="stat">
-                <div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 ATAQUE</span><span id="attack-text" class="text-sm font-bold"></span></div>
-                <div class="w-full bg-gray-700 rounded-full h-2"><div id="attack-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div>
-            </div>
-            <!-- Defensa -->
-            <div class="stat">
-                <div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">🛡️ DEFENSA</span><span id="defense-text" class="text-sm font-bold"></span></div>
-                <div class="w-full bg-gray-700 rounded-full h-2"><div id="defense-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div>
-            </div>
-            <!-- Superpoder -->
-            <div class="stat">
-                <div class="flex justify-between items-center"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div>
-                <div class="w-full bg-gray-700 rounded-full h-2"><div id="super-bar" class="bg-yellow-400 h-2 rounded-full stat-bar-inner"></div></div>
-            </div>
+            <!-- Barras de stats -->
+            <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="health-bar" class="bg-green-500 h-2 rounded-full stat-bar-inner"></div></div></div>
+            <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 ATAQUE</span><span id="attack-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="attack-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
+            <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">🛡️ DEFENSA</span><span id="defense-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="defense-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div></div>
+            <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="super-bar" class="bg-yellow-400 h-2 rounded-full stat-bar-inner"></div></div></div>
         </div>
 
         <!-- Sección de Carta del Dilema -->
@@ -120,11 +51,12 @@
             </div>
         </div>
         
-        <!-- Botón de Superpoder -->
-        <div class="my-2">
-            <button id="super-button" class="choice-button w-full bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-4 rounded-xl text-lg sm:text-xl font-title">
-                USAR SUPERPODER
-            </button>
+        <!-- Botón de Superpoder e Inventario -->
+        <div class="flex items-center gap-2 sm:gap-3 my-2">
+            <button id="super-button" class="choice-button w-1/3 bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-2 rounded-xl text-base sm:text-lg font-title">SUPER</button>
+            <div id="inventory-container" class="flex-grow bg-gray-900/50 h-14 rounded-lg flex items-center justify-start p-2 gap-2 overflow-x-auto">
+                <!-- Los objetos coleccionados aparecerán aquí -->
+            </div>
         </div>
 
         <!-- Sección de Decisiones -->
@@ -132,106 +64,71 @@
             <button id="choice-1" class="choice-button bg-red-600 border-red-800 hover:bg-red-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
             <button id="choice-2" class="choice-button bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
         </div>
-
-        <!-- Overlay de Resolución -->
-        <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30">
-            <h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1>
-            <p id="resolution-narrative" class="text-base sm:text-lg mb-4"></p>
-            <div id="resolution-effects" class="text-left space-y-1 mb-6 text-base"></div>
-            <button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button>
+        <div id="challenge-choices-section" class="hidden grid grid-cols-2 gap-2 sm:gap-3 mt-2">
+             <button id="challenge-choice-1" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
+             <button id="challenge-choice-2" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
+             <button id="challenge-choice-3" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
+             <button id="challenge-choice-4" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
         </div>
 
-        <!-- Overlay de Inicio/Fin -->
-        <div id="game-overlay" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20">
-            <h1 id="overlay-title" class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300"></h1>
-            
-            <!-- Pantalla de Inicio -->
-            <div id="start-screen">
-                <input type="text" id="player-name-input" placeholder="Escribe tu nombre" class="w-full mb-4 font-title">
-                <p id="overlay-text" class="text-lg sm:text-xl mb-8"></p>
-                <button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button>
-            </div>
-
-            <!-- Pantalla de Fin -->
-            <div id="end-screen" class="hidden w-full">
-                 <p id="end-score-text" class="text-xl mb-4"></p>
-                 <div id="ranking-container" class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6">
-                    <h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2>
-                    <ul id="ranking-list" class="text-lg"></ul>
-                 </div>
-                 <button id="restart-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button>
-            </div>
-        </div>
-
-        <!-- Notificación de Superpoder -->
-        <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title">
-            ¡No tienes superpoder suficiente!
-        </div>
+        <!-- Overlays -->
+        <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30"><h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1><p id="resolution-narrative" class="text-base sm:text-lg mb-4"></p><div id="resolution-effects" class="text-left space-y-1 mb-6 text-base"></div><button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button></div>
+        <div id="game-overlay" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20"><h1 id="overlay-title" class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300"></h1><div id="start-screen"><input type="text" id="player-name-input" placeholder="Escribe tu nombre" class="w-full mb-4 font-title"><p id="overlay-text" class="text-lg sm:text-xl mb-8"></p><button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button></div><div id="end-screen" class="hidden w-full"><p id="end-score-text" class="text-xl mb-4"></p><div id="ranking-container" class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6"><h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2><ul id="ranking-list" class="text-lg"></ul></div><button id="restart-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button></div></div>
+        <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title">¡No tienes superpoder suficiente!</div>
     </div>
 
-    <!-- =================================================================== -->
-    <!-- === CARGA DE DATOS DESDE ARCHIVOS EXTERNOS === -->
-    <!-- =================================================================== -->
+    <!-- CARGA DE DATOS -->
     <script>
-        // Estos arrays se llenarán con los datos de los archivos .js
         window.gameCharacters = [];
         window.gameEvents = [];
+        window.gameChallenges = [];
     </script>
     <script src="datos/shelly_data.js"></script>
     <script src="datos/poco_data.js"></script>
     <script src="datos/el_primo_data.js"></script>
     <script src="datos/leon_data.js"></script>
-    <script src="datos/eventos_data.js"></script> <!-- CARGA DE EVENTOS -->
-    <!-- Si añades más personajes, añade una línea <script> aquí para su archivo -->
+    <script src="datos/eventos_data.js"></script>
+    <script src="datos/retos_data.js"></script>
 
-
-    <!-- =================================================================== -->
-    <!-- === MOTOR DEL JUEGO (La Lógica Principal) === -->
-    <!-- =================================================================== -->
+    <!-- MOTOR DEL JUEGO -->
     <script>
-        // --- ESTADO DEL JUEGO ---
         let stats = { vida: 80, ataque: 20, defensa: 20, superpoder: 0 };
         let currentAssault = 1;
         let gameOver = false;
-        let isSuperResolution = false; 
+        let isSpecialTurn = false; 
         let playerName = '';
-        let activeModifiers = []; // Para guardar efectos temporales de eventos
-
-        // --- CARGA DE DATOS ---
+        let inventory = [];
         const characters = window.gameCharacters;
         const events = window.gameEvents;
+        const challenges = window.gameChallenges;
 
-        // --- ELEMENTOS DEL DOM ---
         const ui = {
-            assaultCounter: document.getElementById('assault-counter'),
-            playerNameDisplay: document.getElementById('player-name-display'),
+            assaultCounter: document.getElementById('assault-counter'), playerNameDisplay: document.getElementById('player-name-display'),
             healthBar: document.getElementById('health-bar'), healthText: document.getElementById('health-text'),
             attackBar: document.getElementById('attack-bar'), attackText: document.getElementById('attack-text'),
             defenseBar: document.getElementById('defense-bar'), defenseText: document.getElementById('defense-text'),
             superBar: document.getElementById('super-bar'), superText: document.getElementById('super-text'),
             charImg: document.getElementById('char-img'), charName: document.getElementById('char-name'),
             dilemmaDescription: document.getElementById('dilemma-description'),
-            choice1: document.getElementById('choice-1'), choice2: document.getElementById('choice-2'),
-            superButton: document.getElementById('super-button'),
-            notification: document.getElementById('notification'), 
+            choicesSection: document.getElementById('choices-section'), choice1: document.getElementById('choice-1'), choice2: document.getElementById('choice-2'),
+            challengeChoicesSection: document.getElementById('challenge-choices-section'),
+            superButton: document.getElementById('super-button'), notification: document.getElementById('notification'), 
+            inventoryContainer: document.getElementById('inventory-container'),
             gameOverlay: document.getElementById('game-overlay'), overlayTitle: document.getElementById('overlay-title'),
             startScreen: document.getElementById('start-screen'), overlayText: document.getElementById('overlay-text'), overlayButton: document.getElementById('overlay-button'),
             playerNameInput: document.getElementById('player-name-input'),
             endScreen: document.getElementById('end-screen'), endScoreText: document.getElementById('end-score-text'),
-            rankingContainer: document.getElementById('ranking-container'), rankingList: document.getElementById('ranking-list'),
-            restartButton: document.getElementById('restart-button'),
+            rankingList: document.getElementById('ranking-list'), restartButton: document.getElementById('restart-button'),
             resolutionOverlay: document.getElementById('resolution-overlay'), resolutionTitle: document.getElementById('resolution-title'), resolutionNarrative: document.getElementById('resolution-narrative'), resolutionEffects: document.getElementById('resolution-effects'), resolutionContinue: document.getElementById('resolution-continue'),
         };
-
-        // --- LÓGICA DEL JUEGO ---
         
         function initGame() {
             playerName = ui.playerNameInput.value.trim() || 'Brawler';
             stats = { vida: 80, ataque: 20, defensa: 20, superpoder: 0 };
             currentAssault = 1;
             gameOver = false;
-            activeModifiers = [];
-            
+            inventory = [];
+            updateInventoryUI();
             ui.gameOverlay.classList.add('hidden-overlay');
             nextAssault();
         }
@@ -243,56 +140,54 @@
             ui.attackBar.style.width = `${stats.ataque}%`; ui.attackText.textContent = `${stats.ataque}%`;
             ui.defenseBar.style.width = `${stats.defensa}%`; ui.defenseText.textContent = `${stats.defensa}%`;
             ui.superBar.style.width = `${stats.superpoder}%`; ui.superText.textContent = `${stats.superpoder}%`;
-
             ui.superButton.disabled = stats.superpoder < 100;
+        }
+
+        function updateInventoryUI() {
+            ui.inventoryContainer.innerHTML = '';
+            if (inventory.length === 0) {
+                const emptyText = document.createElement('span');
+                emptyText.className = 'text-gray-500 text-sm italic px-2';
+                emptyText.textContent = 'Tu inventario está vacío';
+                ui.inventoryContainer.appendChild(emptyText);
+            } else {
+                inventory.forEach(item => {
+                    const itemEl = document.createElement('span');
+                    itemEl.className = 'inventory-slot';
+                    itemEl.textContent = item.icon;
+                    itemEl.title = item.name; // Tooltip con el nombre
+                    ui.inventoryContainer.appendChild(itemEl);
+                });
+            }
         }
 
         function nextAssault() {
             if (gameOver) return;
-
+            ui.choicesSection.classList.remove('hidden');
+            ui.challengeChoicesSection.classList.add('hidden');
             const char = characters[Math.floor(Math.random() * characters.length)];
             const dilemma = char.dilemmas[Math.floor(Math.random() * char.dilemmas.length)];
-            
             ui.charImg.style.display = 'block';
             ui.charName.textContent = char.name;
             ui.charImg.src = char.img;
             ui.charImg.onerror = () => { ui.charImg.src = `https://placehold.co/150x150/cccccc/ffffff?text=${char.name.substring(0,2)}`; };
-
             ui.dilemmaDescription.textContent = dilemma.description;
-            
             ui.choice1.textContent = dilemma.options[0].text;
             ui.choice2.textContent = dilemma.options[1].text;
-            
             ui.choice1.onclick = () => chooseOption(dilemma.options[0], char.name);
             ui.choice2.onclick = () => chooseOption(dilemma.options[1], char.name);
-
             updateUI();
         }
 
         function chooseOption(action, charName) {
             if (gameOver) return;
-            
             let combinedEffects = { ...action.effects };
             let narrative = action.narrative;
-
-            // Aplicar modificadores de eventos activos
-            activeModifiers = activeModifiers.filter(mod => {
-                if(mod.effects.superpoderModifier) {
-                    combinedEffects.superpoder = (combinedEffects.superpoder || 0) * mod.effects.superpoderModifier;
-                }
-                if(mod.effects.ataque) combinedEffects.ataque = (combinedEffects.ataque || 0) + mod.effects.ataque;
-                if(mod.effects.defensa) combinedEffects.defensa = (combinedEffects.defensa || 0) + mod.effects.defensa;
-                
-                // Si el modificador es de un solo turno, se elimina
-                return false; 
-            });
-
             const baseDamage = 3 + (currentAssault * 2); 
             const finalDamage = Math.max(1, baseDamage - Math.floor(stats.defensa / 5));
             combinedEffects.vida = (combinedEffects.vida || 0) - finalDamage;
             narrative += ` Los enemigos contraatacan.`;
-
-            isSuperResolution = false; 
+            isSpecialTurn = false; 
             showResolution(charName, narrative, combinedEffects);
         }
         
@@ -302,9 +197,8 @@
                 setTimeout(() => { ui.notification.classList.add('hidden-overlay'); }, 2000);
                 return;
             }
-            
             const superEffects = { superpoder: -100, vida: 33, ataque: 33, defensa: 34 };
-            isSuperResolution = true;
+            isSpecialTurn = true;
             showResolution('¡SUPERPODER!', '¡Un impulso de poder refuerza todas tus capacidades por igual!', superEffects);
         }
 
@@ -315,14 +209,12 @@
                 const value = effects[key];
                 stats[key] = Math.round(stats[key] + value);
                 stats[key] = Math.max(0, Math.min(100, stats[key]));
-                
                 const icon = {vida: '❤️', ataque: '💥', defensa: '🛡️', superpoder: '🌟'}[key];
                 const name = {vida: 'Vida', ataque: 'Ataque', defensa: 'Defensa', superpoder: 'Superpoder'}[key];
                 const change = value > 0 ? `+${value}%` : `${value}%`;
                 const color = value > 0 ? 'text-green-400' : 'text-red-400';
                 effectDescriptions.push(`<p class="${color}">${icon} ${name}: ${change}</p>`);
             }
-            
             ui.resolutionTitle.textContent = title;
             ui.resolutionNarrative.textContent = narrative;
             ui.resolutionEffects.innerHTML = effectDescriptions.join('');
@@ -331,17 +223,17 @@
 
         function handleContinueClick() {
             ui.resolutionOverlay.classList.add('hidden-overlay');
-            
-            if (!isSuperResolution) {
+            if (!isSpecialTurn) {
                 currentAssault++;
             }
-
             updateUI();
             checkGameOver();
             if (!gameOver) {
-                // Probabilidad de evento aleatorio
-                if (Math.random() < 0.3) { // 30% de probabilidad
+                const rand = Math.random();
+                if (rand < 0.2 && events.length > 0) { // 20% de probabilidad de evento
                     triggerRandomEvent();
+                } else if (rand < 0.35 && challenges.length > 0) { // 15% de probabilidad de reto
+                    triggerRandomChallenge();
                 } else {
                     nextAssault();
                 }
@@ -350,18 +242,13 @@
 
         function triggerRandomEvent() {
             const event = events[Math.floor(Math.random() * events.length)];
-            
+            isSpecialTurn = true; // Para que no sume asalto
             if (event.type === 'immediate') {
-                isSuperResolution = true; // Para que no sume asalto
                 showResolution(`¡EVENTO: ${event.name}!`, event.effects.narrative, event.effects);
-            } else if (event.type === 'modifier') {
-                activeModifiers.push(event);
-                isSuperResolution = true;
-                showResolution(`¡EVENTO: ${event.name}!`, event.effects.narrative, {});
             } else if (event.type === 'choice') {
                 displayEventChoice(event);
             } else {
-                nextAssault(); // Si el tipo de evento no está implementado, seguir
+                nextAssault();
             }
         }
 
@@ -369,18 +256,44 @@
             ui.charImg.style.display = 'none';
             ui.charName.textContent = `¡EVENTO: ${event.name}!`;
             ui.dilemmaDescription.textContent = event.message;
-
             ui.choice1.textContent = event.options[0].text;
             ui.choice2.textContent = event.options[1].text;
+            ui.choice1.onclick = () => { showResolution(event.name, event.options[0].narrative, event.options[0].effects); };
+            ui.choice2.onclick = () => { showResolution(event.name, event.options[1].narrative, event.options[1].effects); };
+        }
 
-            ui.choice1.onclick = () => {
-                isSuperResolution = true;
-                showResolution(event.name, event.options[0].narrative, event.options[0].effects);
-            };
-            ui.choice2.onclick = () => {
-                isSuperResolution = true;
-                showResolution(event.name, event.options[1].narrative, event.options[1].effects);
-            };
+        function triggerRandomChallenge() {
+            const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+            isSpecialTurn = true;
+            ui.choicesSection.classList.add('hidden');
+            ui.challengeChoicesSection.classList.remove('hidden');
+            ui.charImg.src = challenge.img;
+            ui.charName.textContent = "¡ACERTIJO!";
+            ui.dilemmaDescription.textContent = challenge.challenge;
+
+            const buttons = [
+                document.getElementById('challenge-choice-1'),
+                document.getElementById('challenge-choice-2'),
+                document.getElementById('challenge-choice-3'),
+                document.getElementById('challenge-choice-4')
+            ];
+            
+            // Mezclar opciones para que la correcta no esté siempre en el mismo sitio
+            const shuffledOptions = [...challenge.options].sort(() => Math.random() - 0.5);
+
+            buttons.forEach((button, index) => {
+                const option = shuffledOptions[index];
+                button.textContent = option.text;
+                button.onclick = () => {
+                    if (option.correct) {
+                        inventory.push(challenge.reward);
+                        updateInventoryUI();
+                        showResolution("¡CORRECTO!", challenge.success, { superpoder: 15 });
+                    } else {
+                        showResolution("¡INCORRECTO!", challenge.failure, { vida: -5 });
+                    }
+                };
+            });
         }
 
         function checkGameOver() {
@@ -414,14 +327,11 @@
         function showEndScreen() {
             gameOver = true;
             saveScore(playerName, currentAssault);
-            
             ui.startScreen.classList.add('hidden');
             ui.endScreen.classList.remove('hidden');
-            
             ui.overlayTitle.textContent = "¡DERROTADO!";
             ui.endScoreText.textContent = `¡Has aguantado ${currentAssault} asaltos!`;
             displayRanking();
-
             ui.gameOverlay.classList.remove('hidden-overlay');
         }
 
