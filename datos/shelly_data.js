@@ -3,7 +3,7 @@
 // Añadimos los datos de Shelly al array global de personajes
 window.gameCharacters.push({
     name: 'Shelly',
-    img: 'avatares/shelly.png', // Asegúrate de tener una imagen shelly.png en la carpeta avatares
+    img: 'avatares/shelly.png',
     dilemmas: [
         { description: '¡Hay un enemigo solo! Puedo acercarme y acabar con él.', options: [{ text: '¡Ataca de cerca!', narrative: '¡BUM! Acabas con él, pero te llevas un golpe.', effects: { ataque: 15, superpoder: 15, vida: -10 } }, { text: '¡A cubierto!', narrative: 'Te pones a cubierto. Más seguro, pero pierdes la oportunidad.', effects: { defensa: 15 } }] },
         { description: '¡Mi Súper está listo! Puedo romperles la cobertura.', options: [{ text: '¡Usa el Súper!', narrative: '¡El Súper arrasa con todo! Los enemigos están al descubierto.', effects: { ataque: 25, superpoder: -100 } }, { text: 'Guárdalo', narrative: 'Decides esperar. Te preparas para defender.', effects: { defensa: 10 } }] },
