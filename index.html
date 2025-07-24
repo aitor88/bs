@@ -343,7 +343,6 @@
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
                 <div class="flex flex-col justify-between h-full w-full max-w-md text-center">
-                    <!-- Parte superior: Título y Botones -->
                     <div>
                         <h1 class="font-title text-4xl sm:text-6xl mb-12 text-yellow-300">Brawl Stars: Batalla Infinita</h1>
                         <div class="space-y-4">
@@ -353,7 +352,6 @@
                         </div>
                     </div>
                     
-                    <!-- Parte inferior: Creador -->
                     <div class="pb-4">
                         <img src="avatares/jon.png" alt="Creador del juego" class="w-32 h-32 rounded-full mx-auto border-2 border-yellow-300" onerror="this.style.display='none'">
                         <p class="font-title mt-2 text-xl">
@@ -379,17 +377,25 @@
 
         function showInstructionsScreen() {
             ui.gameOverlay.innerHTML = `
-                <div class="text-left">
+                <div class="flex flex-col justify-between h-full w-full">
                     <h1 class="font-title text-3xl sm:text-4xl mb-4 text-yellow-300 text-center">Instrucciones</h1>
-                    <ul class="space-y-3 text-base sm:text-lg">
-                        <li>- Tu objetivo es aguantar el máximo número de asaltos posible.</li>
-                        <li>- En cada asalto, un Brawler te dará a elegir entre dos decisiones tácticas.</li>
-                        <li>- Cada decisión afecta a tu Vida, Ataque, Defensa y Superpoder.</li>
-                        <li>- Después de cada turno, los enemigos te atacarán. ¡La defensa es importante!</li>
-                        <li>- A veces, aparecerán eventos y acertijos con grandes recompensas.</li>
-                        <li>- Cuando tu Superpoder llegue al 100%, ¡úsalo para obtener una gran ventaja!</li>
-                    </ul>
-                    <button onclick="showMainMenu()" class="menu-button w-full mt-8 bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Entendido</button>
+                    
+                    <div class="space-y-4 text-left text-base sm:text-lg">
+                        <div class="flex items-center gap-4"><span class="text-3xl">🎯</span><div><strong class="text-yellow-300">OBJETIVO:</strong> ¡Aguanta el máximo de asaltos que puedas!</div></div>
+                        <div class="flex items-center gap-4"><span class="text-3xl">🤔</span><div><strong class="text-yellow-300">DECISIONES:</strong> En cada turno, un Brawler te dará dos opciones. ¡Elige con cuidado!</div></div>
+                        <div class="flex items-center gap-4"><span class="text-3xl">📊</span><div><strong class="text-yellow-300">ESTADÍSTICAS:</strong> Tus elecciones afectan a tu Vida, Ataque, Defensa y Superpoder.</div></div>
+                        <div class="flex items-center gap-4"><span class="text-3xl">⚔️</span><div><strong class="text-yellow-300">ENEMIGOS:</strong> Después de cada turno, los enemigos atacan. ¡La defensa es clave!</div></div>
+                        <div class="flex items-center gap-4"><span class="text-3xl">🎁</span><div><strong class="text-yellow-300">SORPRESAS:</strong> A veces, aparecerán eventos y acertijos con grandes recompensas.</div></div>
+                        <div class="flex items-center gap-4"><span class="text-3xl">🌟</span><div><strong class="text-yellow-300">SUPERPODER:</strong> Al 100%, ¡úsalo para obtener una gran ventaja y equilibrar tus stats!</div></div>
+                    </div>
+
+                    <div class="text-center mt-6">
+                         <p class="font-title text-lg">
+                            <span class="text-green-400">Jon</span>
+                            <span class="text-gray-400"> Zabalok egina ©</span>
+                        </p>
+                        <button onclick="showMainMenu()" class="menu-button w-full mt-4 bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Entendido</button>
+                    </div>
                 </div>
             `;
         }
