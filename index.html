@@ -22,7 +22,11 @@
         #player-name-input { background-color: #2d3748; border: 2px solid #4a5568; color: white; border-radius: 0.5rem; padding: 0.75rem; text-align: center; font-size: 1.25rem; }
         #ranking-list li { display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px solid #4a5568; }
         #ranking-list li:last-child { border-bottom: none; }
-        .inventory-slot { font-size: 1.5rem; line-height: 2rem; }
+        .inventory-item {
+            height: 100%;
+            width: auto;
+            max-height: 40px;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
@@ -153,10 +157,11 @@
                 ui.inventoryContainer.appendChild(emptyText);
             } else {
                 inventory.forEach(item => {
-                    const itemEl = document.createElement('span');
-                    itemEl.className = 'inventory-slot';
-                    itemEl.textContent = item.icon;
-                    itemEl.title = item.name; // Tooltip con el nombre
+                    const itemEl = document.createElement('img');
+                    itemEl.className = 'inventory-item';
+                    itemEl.src = item.image;
+                    itemEl.title = item.name;
+                    itemEl.onerror = () => { itemEl.style.display = 'none'; };
                     ui.inventoryContainer.appendChild(itemEl);
                 });
             }
