@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brawl Stars: Batalla Modular</title>
+    <title>Brawl Stars: Batalla con Eventos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -173,13 +173,15 @@
     <!-- === CARGA DE DATOS DESDE ARCHIVOS EXTERNOS === -->
     <!-- =================================================================== -->
     <script>
-        // Este array se llenará con los datos de los archivos .js
+        // Estos arrays se llenarán con los datos de los archivos .js
         window.gameCharacters = [];
+        window.gameEvents = [];
     </script>
     <script src="datos/shelly_data.js"></script>
     <script src="datos/poco_data.js"></script>
     <script src="datos/el_primo_data.js"></script>
     <script src="datos/leon_data.js"></script>
+    <script src="datos/eventos_data.js"></script> <!-- CARGA DE EVENTOS -->
     <!-- Si añades más personajes, añade una línea <script> aquí para su archivo -->
 
 
@@ -193,9 +195,11 @@
         let gameOver = false;
         let isSuperResolution = false; 
         let playerName = '';
+        let activeModifiers = []; // Para guardar efectos temporales de eventos
 
         // --- CARGA DE DATOS ---
         const characters = window.gameCharacters;
+        const events = window.gameEvents;
 
         // --- ELEMENTOS DEL DOM ---
         const ui = {
@@ -226,6 +230,7 @@
             stats = { vida: 80, ataque: 20, defensa: 20, superpoder: 0 };
             currentAssault = 1;
             gameOver = false;
+            activeModifiers = [];
             
             ui.gameOverlay.classList.add('hidden-overlay');
             nextAssault();
@@ -247,7 +252,8 @@
 
             const char = characters[Math.floor(Math.random() * characters.length)];
             const dilemma = char.dilemmas[Math.floor(Math.random() * char.dilemmas.length)];
-
+            
+            ui.charImg.style.display = 'block';
             ui.charName.textContent = char.name;
             ui.charImg.src = char.img;
             ui.charImg.onerror = () => { ui.charImg.src = `https://placehold.co/150x150/cccccc/ffffff?text=${char.name.substring(0,2)}`; };
@@ -269,6 +275,18 @@
             let combinedEffects = { ...action.effects };
             let narrative = action.narrative;
 
+            // Aplicar modificadores de eventos activos
+            activeModifiers = activeModifiers.filter(mod => {
+                if(mod.effects.superpoderModifier) {
+                    combinedEffects.superpoder = (combinedEffects.superpoder || 0) * mod.effects.superpoderModifier;
+                }
+                if(mod.effects.ataque) combinedEffects.ataque = (combinedEffects.ataque || 0) + mod.effects.ataque;
+                if(mod.effects.defensa) combinedEffects.defensa = (combinedEffects.defensa || 0) + mod.effects.defensa;
+                
+                // Si el modificador es de un solo turno, se elimina
+                return false; 
+            });
+
             const baseDamage = 3 + (currentAssault * 2); 
             const finalDamage = Math.max(1, baseDamage - Math.floor(stats.defensa / 5));
             combinedEffects.vida = (combinedEffects.vida || 0) - finalDamage;
@@ -281,19 +299,11 @@
         function useSuper() {
             if (stats.superpoder < 100) {
                 ui.notification.classList.remove('hidden-overlay');
-                setTimeout(() => {
-                    ui.notification.classList.add('hidden-overlay');
-                }, 2000);
+                setTimeout(() => { ui.notification.classList.add('hidden-overlay'); }, 2000);
                 return;
             }
             
-            const superEffects = {
-                superpoder: -100,
-                vida: 33,
-                ataque: 33,
-                defensa: 34
-            };
-            
+            const superEffects = { superpoder: -100, vida: 33, ataque: 33, defensa: 34 };
             isSuperResolution = true;
             showResolution('¡SUPERPODER!', '¡Un impulso de poder refuerza todas tus capacidades por igual!', superEffects);
         }
@@ -329,8 +339,48 @@
             updateUI();
             checkGameOver();
             if (!gameOver) {
-                nextAssault();
+                // Probabilidad de evento aleatorio
+                if (Math.random() < 0.3) { // 30% de probabilidad
+                    triggerRandomEvent();
+                } else {
+                    nextAssault();
+                }
             }
+        }
+
+        function triggerRandomEvent() {
+            const event = events[Math.floor(Math.random() * events.length)];
+            
+            if (event.type === 'immediate') {
+                isSuperResolution = true; // Para que no sume asalto
+                showResolution(`¡EVENTO: ${event.name}!`, event.effects.narrative, event.effects);
+            } else if (event.type === 'modifier') {
+                activeModifiers.push(event);
+                isSuperResolution = true;
+                showResolution(`¡EVENTO: ${event.name}!`, event.effects.narrative, {});
+            } else if (event.type === 'choice') {
+                displayEventChoice(event);
+            } else {
+                nextAssault(); // Si el tipo de evento no está implementado, seguir
+            }
+        }
+
+        function displayEventChoice(event) {
+            ui.charImg.style.display = 'none';
+            ui.charName.textContent = `¡EVENTO: ${event.name}!`;
+            ui.dilemmaDescription.textContent = event.message;
+
+            ui.choice1.textContent = event.options[0].text;
+            ui.choice2.textContent = event.options[1].text;
+
+            ui.choice1.onclick = () => {
+                isSuperResolution = true;
+                showResolution(event.name, event.options[0].narrative, event.options[0].effects);
+            };
+            ui.choice2.onclick = () => {
+                isSuperResolution = true;
+                showResolution(event.name, event.options[1].narrative, event.options[1].effects);
+            };
         }
 
         function checkGameOver() {
@@ -343,7 +393,7 @@
             const ranking = JSON.parse(localStorage.getItem('brawlStarsRanking')) || [];
             ranking.push({ name, score });
             ranking.sort((a, b) => b.score - a.score);
-            const topScores = ranking.slice(0, 5); // Guardar solo el top 5
+            const topScores = ranking.slice(0, 5);
             localStorage.setItem('brawlStarsRanking', JSON.stringify(topScores));
         }
 
