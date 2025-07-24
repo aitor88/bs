@@ -56,32 +56,32 @@
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
 
-    <div id="game-container" class="game-container bg-gray-800 rounded-3xl shadow-2xl p-4 sm:p-6 flex flex-col justify-between relative">
+    <div id="game-container" class="game-container bg-gray-800 rounded-3xl shadow-2xl p-4 sm:p-6 flex flex-col justify-between relative overflow-hidden">
         
         <!-- Sección de Estadísticas -->
         <div id="stats-container" class="space-y-3">
-            <div class="flex justify-between items-center text-yellow-300 font-title">
+            <div class="flex justify-between items-center text-yellow-300 font-title text-lg">
                 <span>ASALTO</span>
                 <span id="assault-counter">1</span>
             </div>
             <!-- Vida -->
             <div class="stat">
-                <div class="flex justify-between items-center mb-1"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div>
+                <div class="flex justify-between items-center mb-1"><span class="text-base font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-base font-bold"></span></div>
                 <div class="w-full bg-gray-700 rounded-full h-2.5"><div id="health-bar" class="bg-green-500 h-2.5 rounded-full stat-bar-inner"></div></div>
             </div>
             <!-- Ataque -->
             <div class="stat">
-                <div class="flex justify-between items-center mb-1"><span class="text-sm font-bold text-orange-400">💥 ATAQUE</span><span id="attack-text" class="text-sm font-bold"></span></div>
+                <div class="flex justify-between items-center mb-1"><span class="text-base font-bold text-orange-400">💥 ATAQUE</span><span id="attack-text" class="text-base font-bold"></span></div>
                 <div class="w-full bg-gray-700 rounded-full h-2.5"><div id="attack-bar" class="bg-orange-500 h-2.5 rounded-full stat-bar-inner"></div></div>
             </div>
             <!-- Defensa -->
             <div class="stat">
-                <div class="flex justify-between items-center mb-1"><span class="text-sm font-bold text-sky-400">🛡️ DEFENSA</span><span id="defense-text" class="text-sm font-bold"></span></div>
+                <div class="flex justify-between items-center mb-1"><span class="text-base font-bold text-sky-400">🛡️ DEFENSA</span><span id="defense-text" class="text-base font-bold"></span></div>
                 <div class="w-full bg-gray-700 rounded-full h-2.5"><div id="defense-bar" class="bg-sky-500 h-2.5 rounded-full stat-bar-inner"></div></div>
             </div>
             <!-- Superpoder -->
             <div class="stat">
-                <div class="flex justify-between items-center mb-1"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div>
+                <div class="flex justify-between items-center mb-1"><span class="text-base font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-base font-bold"></span></div>
                 <div class="w-full bg-gray-700 rounded-full h-2.5"><div id="super-bar" class="bg-yellow-400 h-2.5 rounded-full stat-bar-inner"></div></div>
             </div>
         </div>
@@ -89,79 +89,52 @@
         <!-- Sección de Carta del Dilema -->
         <div class="flex-grow flex flex-col items-center justify-center my-4 relative">
             <div id="dilemma-card" class="bg-gray-700 rounded-2xl shadow-xl p-4 w-full max-w-sm text-center flex flex-col items-center justify-center flex-grow">
-                <img id="char-img" src="" class="w-20 h-20 rounded-full object-cover mb-3 border-4 border-gray-600" alt="Personaje">
-                <h2 id="char-name" class="font-title text-2xl text-yellow-300 mb-1"></h2>
-                <p id="dilemma-description" class="text-gray-200"></p>
+                <img id="char-img" src="" class="w-[150px] h-[150px] rounded-full object-cover mb-3 border-4 border-gray-600" alt="Personaje">
+                <h2 id="char-name" class="font-title text-3xl text-yellow-300 mb-1"></h2>
+                <p id="dilemma-description" class="text-gray-200 text-lg"></p>
             </div>
         </div>
         
         <!-- Botón de Superpoder -->
         <div class="my-2">
-            <button id="super-button" class="choice-button w-full bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-4 rounded-xl text-lg font-title">
+            <button id="super-button" class="choice-button w-full bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-4 rounded-xl text-xl font-title">
                 USAR SUPERPODER
             </button>
         </div>
 
         <!-- Sección de Decisiones -->
         <div id="choices-section" class="grid grid-cols-2 gap-3">
-            <button id="choice-1" class="choice-button bg-red-600 border-red-800 hover:bg-red-500 text-white font-bold py-3 px-4 rounded-xl text-sm"></button>
-            <button id="choice-2" class="choice-button bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl text-sm"></button>
+            <button id="choice-1" class="choice-button bg-red-600 border-red-800 hover:bg-red-500 text-white font-bold py-3 px-4 rounded-xl text-base"></button>
+            <button id="choice-2" class="choice-button bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-xl text-base"></button>
         </div>
 
         <!-- Overlay de Resolución -->
         <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30">
-            <h1 id="resolution-title" class="font-title text-3xl mb-3 text-yellow-300"></h1>
-            <p id="resolution-narrative" class="text-base mb-4"></p>
-            <div id="resolution-effects" class="text-left space-y-1 mb-6"></div>
-            <button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg font-title">Continuar</button>
+            <h1 id="resolution-title" class="font-title text-4xl mb-3 text-yellow-300"></h1>
+            <p id="resolution-narrative" class="text-lg mb-4"></p>
+            <div id="resolution-effects" class="text-left space-y-1 mb-6 text-base"></div>
+            <button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-xl font-title">Continuar</button>
         </div>
 
         <!-- Overlay de Inicio/Fin -->
         <div id="game-overlay" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20">
-            <h1 id="overlay-title" class="font-title text-5xl mb-4 text-yellow-300"></h1>
-            <p id="overlay-text" class="text-lg mb-8"></p>
-            <button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl font-title"></button>
+            <h1 id="overlay-title" class="font-title text-6xl mb-4 text-yellow-300"></h1>
+            <p id="overlay-text" class="text-xl mb-8"></p>
+            <button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-2xl font-title"></button>
         </div>
     </div>
 
     <!-- =================================================================== -->
-    <!-- === CONTENIDO (Simulando archivos .js separados) === -->
+    <!-- === CARGA DE DATOS DESDE ARCHIVOS EXTERNOS === -->
     <!-- =================================================================== -->
-    
     <script>
-        // Este array contendrá los datos de todos los personajes
+        // Este array se llenará con los datos de los archivos .js
         window.gameCharacters = [];
-
-        // --- shelly_data.js ---
-        window.gameCharacters.push({
-            name: 'Shelly',
-            img: 'avatares/shelly.png', // Ejemplo de ruta local
-            dilemmas: [
-                { description: '¡Hay un enemigo solo! Puedo acercarme y acabar con él.', options: [{ text: '¡Ataca de cerca!', narrative: '¡BUM! Acabas con él, pero te llevas un golpe.', effects: { ataque: 15, superpoder: 15, vida: -10 } }, { text: '¡A cubierto!', narrative: 'Te pones a cubierto. Más seguro, pero pierdes la oportunidad.', effects: { defensa: 15 } }] },
-                { description: '¡Mi Súper está listo! Puedo romperles la cobertura.', options: [{ text: '¡Usa el Súper!', narrative: '¡El Súper arrasa con todo! Los enemigos están al descubierto.', effects: { ataque: 25, superpoder: -100 } }, { text: 'Guárdalo', narrative: 'Decides esperar. Te preparas para defender.', effects: { defensa: 10 } }] }
-            ]
-        });
-
-        // --- poco_data.js ---
-        window.gameCharacters.push({
-            name: 'Poco',
-            img: 'avatares/poco.png',
-            dilemmas: [
-                { description: '¡El equipo necesita curación! Puedo tocar mi guitarra para sanarnos.', options: [{ text: '¡Toca para curar!', narrative: 'La música de Poco cura al equipo. ¡Qué alivio!', effects: { vida: 25, ataque: -5 } }, { text: '¡Sigue atacando!', narrative: 'Decides que atacar es lo mejor. ¡No hay descanso!', effects: { ataque: 10, superpoder: 10 } }] },
-                { description: 'Puedo tocar una canción que sube la moral. ¡Atacaremos con más ganas!', options: [{ text: '¡Dale ritmo!', narrative: '¡La música es pegadiza! El equipo ataca con más fuerza.', effects: { ataque: 15, superpoder: 15, defensa: -5 } }, { text: 'Mejor silencio', narrative: 'Pides concentración. El equipo se prepara para defender.', effects: { defensa: 15 } }] }
-            ]
-        });
-
-        // --- el_primo_data.js ---
-        window.gameCharacters.push({
-            name: 'El Primo',
-            img: 'avatares/el_primo.png',
-            dilemmas: [
-                { description: '¡Hay muchos enemigos juntos! ¡Es el momento de mi salto!', options: [{ text: '¡SALTA!', narrative: '¡EL PRIMOOO! Cae sobre ellos. Recibes daño pero cargas mucho Súper.', effects: { vida: -20, ataque: 10, superpoder: 30 } }, { text: 'Espera y defiende', narrative: 'Aseguras la posición. Aburrido, pero seguro.', effects: { defensa: 15 } }] },
-                { description: '¡Ese robot grande parece fuerte! ¡Quiero pegarle!', options: [{ text: '¡A por él!', narrative: 'Te lanzas contra el robot. Es una pelea dura que te deja herido.', effects: { vida: -25, superpoder: 25 } }, { text: 'Mejor desde lejos', narrative: 'Le disparáis desde una distancia segura.', effects: { ataque: 10 } }] }
-            ]
-        });
     </script>
+    <script src="datos/shelly_data.js"></script>
+    <script src="datos/poco_data.js"></script>
+    <script src="datos/el_primo_data.js"></script>
+    <!-- Si añades más personajes, añade una línea <script> aquí para su archivo -->
 
 
     <!-- =================================================================== -->
@@ -224,7 +197,7 @@
             ui.charName.textContent = char.name;
             ui.charImg.src = char.img;
             // Fallback por si la imagen local no carga
-            ui.charImg.onerror = () => { ui.charImg.src = `https://placehold.co/800x800/cccccc/ffffff?text=${char.name.substring(0,2)}`; };
+            ui.charImg.onerror = () => { ui.charImg.src = `https://placehold.co/150x150/cccccc/ffffff?text=${char.name.substring(0,2)}`; };
 
             ui.dilemmaDescription.textContent = dilemma.description;
             
