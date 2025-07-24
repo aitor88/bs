@@ -7,9 +7,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- CAMBIO DE FUENTE: Se ha reemplazado 'Roboto' por 'Nunito' para un estilo más amigable -->
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Roboto', sans-serif; background-color: #1a202c; }
+        /* CAMBIO DE FUENTE: Se establece 'Nunito' como la fuente principal del juego */
+        body { font-family: 'Nunito', sans-serif; background-color: #1a202c; }
         .font-title { font-family: 'Lilita One', cursive; }
         .stat-bar-inner { transition: width 0.5s ease-in-out; }
         .game-container { max-width: 500px; width: 100%; height: 100vh; max-height: 900px; display: flex; flex-direction: column; }
@@ -84,7 +86,7 @@
                 <div id="dilemma-card" class="bg-gray-700 rounded-2xl shadow-xl p-4 w-full max-w-sm text-center flex flex-col items-center justify-center flex-grow">
                     <img id="char-img" src="" class="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover mb-2 border-4 border-gray-600" alt="Personaje">
                     <h2 id="char-name" class="font-title text-2xl sm:text-3xl text-yellow-300 mb-1"></h2>
-                    <p id="dilemma-description" class="text-gray-200 text-base sm:text-lg"></p>
+                    <p id="dilemma-description" class="text-gray-200 text-base sm:text-lg font-bold"></p>
                 </div>
             </div>
             
@@ -108,7 +110,7 @@
         </div>
 
         <!-- Overlays -->
-        <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30"><h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1><p id="resolution-narrative" class="text-base sm:text-lg mb-4"></p><div id="resolution-effects" class="text-left space-y-1 mb-6 text-base"></div><button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button></div>
+        <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30"><h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1><p id="resolution-narrative" class="text-base sm:text-lg mb-4 font-bold"></p><div id="resolution-effects" class="text-left space-y-1 mb-6 text-base font-bold"></div><button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button></div>
         <div id="game-overlay" class="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20 hidden-overlay">
             <!-- Contenido del overlay cambiará dinámicamente -->
         </div>
@@ -259,7 +261,7 @@
                 effectDescriptions.push(`<p class="${color}">${icon} ${name}: ${change}</p>`);
             }
             ui.resolutionTitle.textContent = title;
-            ui.resolutionNarrative.textContent = narrative;
+            ui.resolutionNarrative.innerHTML = narrative;
             ui.resolutionEffects.innerHTML = effectDescriptions.join('');
             ui.resolutionOverlay.classList.remove('hidden-overlay');
         }
