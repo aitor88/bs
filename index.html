@@ -73,7 +73,16 @@
 
         <!-- Overlays -->
         <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30"><h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1><p id="resolution-narrative" class="text-base sm:text-lg mb-4"></p><div id="resolution-effects" class="text-left space-y-1 mb-6 text-base"></div><button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button></div>
-        <div id="game-overlay" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20"><h1 id="overlay-title" class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300"></h1><div id="start-screen"><input type="text" id="player-name-input" placeholder="Escribe tu nombre" class="w-full mb-4 font-title"><p id="overlay-text" class="text-lg sm:text-xl mb-8"></p><button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button></div><div id="end-screen" class="hidden w-full"><p id="end-score-text" class="text-xl mb-4"></p><div id="ranking-container" class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6"><h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2><ul id="ranking-list" class="text-lg"></ul></div><button id="restart-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button></div></div>
+        <div id="game-overlay" class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20"><h1 id="overlay-title" class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300"></h1><div id="start-screen"><input type="text" id="player-name-input" placeholder="Escribe tu nombre" class="w-full mb-4 font-title">
+            
+            <!-- SECCIÓN DEL CREADOR AÑADIDA -->
+            <div class="my-4 text-center">
+                <p class="text-gray-400 text-sm mb-2">Un juego creado por:</p>
+                <img src="avatares/jon.png" alt="Creador del juego" class="w-24 h-24 rounded-full mx-auto border-2 border-yellow-300" onerror="this.style.display='none'">
+                <p class="font-title text-green-400 mt-2 text-xl">Jon</p>
+            </div>
+
+            <p id="overlay-text" class="text-lg sm:text-xl mb-4"></p><button id="overlay-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button></div><div id="end-screen" class="hidden w-full"><p id="end-score-text" class="text-xl mb-4"></p><div id="ranking-container" class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6"><h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2><ul id="ranking-list" class="text-lg"></ul></div><button id="restart-button" class="bg-green-500 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title"></button></div></div>
         <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title">¡No tienes superpoder suficiente!</div>
     </div>
 
