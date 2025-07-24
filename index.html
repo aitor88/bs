@@ -79,12 +79,12 @@
         
         <!-- Sección de Estadísticas -->
         <div id="stats-container" class="space-y-1.5">
-            <div class="flex justify-between items-center text-yellow-300 font-title text-base">
+            <div class="flex justify-between items-center font-title text-base">
                 <div>
-                    <span>Jugador: </span>
-                    <span id="player-name-display"></span>
+                    <span class="text-yellow-300">JUGADOR:&nbsp;</span>
+                    <span id="player-name-display" class="text-green-400 uppercase"></span>
                 </div>
-                <div>
+                <div class="text-yellow-300">
                     <span>ASALTO </span>
                     <span id="assault-counter">1</span>
                 </div>
@@ -356,7 +356,7 @@
             }
             ranking.forEach(entry => {
                 const li = document.createElement('li');
-                li.innerHTML = `<span>${entry.name}</span><span>${entry.score} Asaltos</span>`;
+                li.innerHTML = `<span>${entry.name.toUpperCase()}</span><span>${entry.score} Asaltos</span>`;
                 ui.rankingList.appendChild(li);
             });
         }
