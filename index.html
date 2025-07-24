@@ -8,6 +8,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- SCRIPTS DE FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <style>
         body { font-family: 'Roboto', sans-serif; background-color: #1a202c; }
         .font-title { font-family: 'Lilita One', cursive; }
@@ -24,33 +29,10 @@
         #ranking-list li:last-child { border-bottom: none; }
         .inventory-item { height: 100%; width: auto; max-height: 40px; }
 
-        /* Estilos para la animación del logo */
-        #splash-logo {
-            width: 300px;
-            position: relative;
-            opacity: 0;
-            transform: translateY(-200px) scale(2) rotate(10deg);
-            animation: dropIn 1.2s ease-out forwards;
-        }
-
-        @keyframes dropIn {
-            0% { opacity: 0; transform: translateY(-200px) scale(2.5) rotate(10deg); filter: blur(20px); }
-            60% { opacity: 1; transform: translateY(20px) scale(1.05) rotate(-3deg); filter: blur(0px); }
-            80% { transform: translateY(-5px) scale(1.02); }
-            100% { transform: translateY(0px) scale(1); }
-        }
-
-        #splash-logo.shake {
-            animation: shake 0.2s ease-in-out 1;
-        }
-
-        @keyframes shake {
-            0% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-4px) rotate(1deg); }
-            50% { transform: translateY(4px) rotate(-1deg); }
-            75% { transform: translateY(-2px) rotate(0.5deg); }
-            100% { transform: translateY(0) rotate(0); }
-        }
+        #splash-logo { width: 300px; position: relative; opacity: 0; transform: translateY(-200px) scale(2) rotate(10deg); animation: dropIn 1.2s ease-out forwards; }
+        @keyframes dropIn { 0% { opacity: 0; transform: translateY(-200px) scale(2.5) rotate(10deg); filter: blur(20px); } 60% { opacity: 1; transform: translateY(20px) scale(1.05) rotate(-3deg); filter: blur(0px); } 80% { transform: translateY(-5px) scale(1.02); } 100% { transform: translateY(0px) scale(1); } }
+        #splash-logo.shake { animation: shake 0.2s ease-in-out 1; }
+        @keyframes shake { 0% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-4px) rotate(1deg); } 50% { transform: translateY(4px) rotate(-1deg); } 75% { transform: translateY(-2px) rotate(0.5deg); } 100% { transform: translateY(0) rotate(0); } }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
@@ -64,22 +46,17 @@
     <!-- Contenedor Principal del Juego (Oculto al inicio) -->
     <div id="game-container" class="hidden game-container bg-gray-800 rounded-3xl shadow-2xl p-3 sm:p-6 flex-col justify-between relative overflow-hidden">
         
-        <!-- UI del Juego (Oculta al inicio) -->
         <div id="game-ui" class="hidden h-full flex flex-col">
-            <!-- Sección de Estadísticas -->
             <div id="stats-container" class="space-y-1.5">
                 <div class="flex justify-between items-center font-title text-base">
                     <div><span class="text-yellow-300">JUGADOR:&nbsp;</span><span id="player-name-display" class="text-green-400 uppercase"></span></div>
                     <div class="text-yellow-300"><span>ASALTO </span><span id="assault-counter">1</span></div>
                 </div>
-                <!-- Barras de stats -->
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="health-bar" class="bg-green-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 ATAQUE</span><span id="attack-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="attack-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">🛡️ DEFENSA</span><span id="defense-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="defense-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="super-bar" class="bg-yellow-400 h-2 rounded-full stat-bar-inner"></div></div></div>
             </div>
-
-            <!-- Sección de Carta del Dilema -->
             <div class="flex-grow flex flex-col items-center justify-center my-2 sm:my-4 relative">
                 <div id="dilemma-card" class="bg-gray-700 rounded-2xl shadow-xl p-4 w-full max-w-sm text-center flex flex-col items-center justify-center flex-grow">
                     <img id="char-img" src="" class="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover mb-2 border-4 border-gray-600" alt="Personaje">
@@ -87,14 +64,10 @@
                     <p id="dilemma-description" class="text-gray-200 text-base sm:text-lg font-bold"></p>
                 </div>
             </div>
-            
-            <!-- Botón de Superpoder e Inventario -->
             <div class="flex items-center gap-2 sm:gap-3 my-2">
                 <button id="super-button" class="choice-button w-1/3 bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-2 rounded-xl text-base sm:text-lg font-title">SUPER</button>
                 <div id="inventory-container" class="flex-grow bg-gray-900/50 h-14 rounded-lg flex items-center justify-start p-2 gap-2 overflow-x-auto"></div>
             </div>
-
-            <!-- Sección de Decisiones -->
             <div id="choices-section" class="grid grid-cols-2 gap-2 sm:gap-3">
                 <button id="choice-1" class="choice-button bg-red-600 border-red-800 hover:bg-red-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
                 <button id="choice-2" class="choice-button bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
@@ -106,12 +79,8 @@
                  <button id="challenge-choice-4" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
             </div>
         </div>
-
-        <!-- Overlays -->
         <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30"><h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1><p id="resolution-narrative" class="text-base sm:text-lg mb-4 font-bold"></p><div id="resolution-effects" class="text-left space-y-1 mb-6 text-base font-bold"></div><button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button></div>
-        <div id="game-overlay" class="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20 hidden-overlay">
-            <!-- Contenido del overlay cambiará dinámicamente -->
-        </div>
+        <div id="game-overlay" class="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20 hidden-overlay"></div>
         <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title">¡No tienes superpoder suficiente!</div>
     </div>
 
@@ -130,6 +99,22 @@
 
     <!-- MOTOR DEL JUEGO -->
     <script>
+        // ===================================================================
+        // === INICIALIZACIÓN DE FIREBASE ===
+        // ===================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDFhLfNxTGZqPa8BEDhDJ9GMqUXkBCYAn0",
+            authDomain: "juego-brawl-stars-ranking.firebaseapp.com",
+            projectId: "juego-brawl-stars-ranking",
+            storageBucket: "juego-brawl-stars-ranking.firebasestorage.app",
+            messagingSenderId: "11560476574",
+            appId: "1:11560476574:web:0603074665db720fdd008f"
+        };
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // --- ESTADO DEL JUEGO ---
         let stats = { vida: 80, ataque: 20, defensa: 20, superpoder: 0 };
         let currentAssault = 1;
         let gameOver = false;
@@ -212,9 +197,7 @@
             ui.charName.textContent = char.name;
             ui.charImg.src = char.img;
             ui.charImg.onerror = () => { ui.charImg.src = `https://placehold.co/150x150/cccccc/ffffff?text=${char.name.substring(0,2)}`; };
-            
             ui.dilemmaDescription.innerHTML = dilemma.description;
-            
             ui.choice1.textContent = dilemma.options[0].text;
             ui.choice2.textContent = dilemma.options[1].text;
             ui.choice1.onclick = () => chooseOption(dilemma.options[0], char.name);
@@ -337,42 +320,50 @@
         }
 
         function saveScore(name, score) {
-            const ranking = JSON.parse(localStorage.getItem('brawlStarsRanking')) || [];
-            ranking.push({ name, score });
-            ranking.sort((a, b) => b.score - a.score);
-            const topScores = ranking.slice(0, 5);
-            localStorage.setItem('brawlStarsRanking', JSON.stringify(topScores));
+            db.collection("ranking").add({
+                name: name,
+                score: score
+            }).catch(error => console.error("Error al guardar en Firebase: ", error));
         }
 
-        function displayRanking() {
-            const ranking = JSON.parse(localStorage.getItem('brawlStarsRanking')) || [];
-            let listHTML = '';
-            if (ranking.length === 0) {
-                listHTML = '<li>¡Sé el primero en jugar!</li>';
-            } else {
-                ranking.forEach(entry => {
-                    listHTML += `<li><span>${entry.name.toUpperCase()}</span><span>${entry.score} Asaltos</span></li>`;
+        function displayRanking(rankingListElement) {
+            rankingListElement.innerHTML = '<li>Cargando...</li>';
+            db.collection("ranking").orderBy("score", "desc").limit(5).get()
+                .then((querySnapshot) => {
+                    rankingListElement.innerHTML = '';
+                    if (querySnapshot.empty) {
+                        rankingListElement.innerHTML = '<li>¡Sé el primero en jugar!</li>';
+                        return;
+                    }
+                    querySnapshot.forEach((doc) => {
+                        const entry = doc.data();
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span>${entry.name.toUpperCase()}</span><span>${entry.score} Asaltos</span>`;
+                        rankingListElement.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error al cargar ranking: ", error);
+                    rankingListElement.innerHTML = '<li>Error al cargar ranking.</li>';
                 });
-            }
-            return listHTML;
         }
 
         function showEndScreen() {
             gameOver = true;
             saveScore(playerName, currentAssault);
             ui.gameUI.classList.add('hidden');
-            const rankingHTML = displayRanking();
             ui.gameOverlay.innerHTML = `
                 <div class="w-full">
                     <h1 class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300">¡DERROTADO!</h1>
                     <p class="text-xl mb-4">¡Has aguantado ${currentAssault} asaltos!</p>
                     <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto">
                         <h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2>
-                        <ul class="text-lg">${rankingHTML}</ul>
+                        <ul id="end-ranking-list" class="text-lg"></ul>
                     </div>
                     <button onclick="showMainMenu()" class="menu-button bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Menú Principal</button>
                 </div>
             `;
+            displayRanking(document.getElementById('end-ranking-list'));
             ui.gameOverlay.classList.remove('hidden-overlay');
         }
 
@@ -389,13 +380,9 @@
                             <button onclick="showRankingScreen()" class="menu-button w-full bg-orange-500 border-orange-700 hover:bg-orange-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Ranking</button>
                         </div>
                     </div>
-                    
                     <div class="pb-2">
                         <img src="avatares/jon.png" alt="Creador del juego" class="w-20 h-20 rounded-full mx-auto" onerror="this.style.display='none'">
-                        <p class="font-title mt-2 text-lg">
-                            <span class="text-green-400">Jon</span>
-                            <span class="text-gray-400"> Zabalok egina ©</span>
-                        </p>
+                        <p class="font-title mt-2 text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
                     </div>
                 </div>
             `;
@@ -417,7 +404,6 @@
             ui.gameOverlay.innerHTML = `
                 <div class="flex flex-col justify-between h-full w-full">
                     <h1 class="font-title text-3xl sm:text-4xl mb-4 text-yellow-300 text-center">Instrucciones</h1>
-                    
                     <div class="flex-grow space-y-3 sm:space-y-4 text-left text-base sm:text-lg overflow-y-auto">
                         <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎯</span><div><strong class="text-yellow-300">OBJETIVO:</strong> ¡Aguanta el máximo de asaltos que puedas!</div></div>
                         <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🤔</span><div><strong class="text-yellow-300">DECISIONES:</strong> En cada turno, un Brawler te dará dos opciones. ¡Elige con cuidado!</div></div>
@@ -426,12 +412,8 @@
                         <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎁</span><div><strong class="text-yellow-300">SORPRESAS:</strong> A veces, aparecerán eventos y acertijos con grandes recompensas.</div></div>
                         <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🌟</span><div><strong class="text-yellow-300">SUPERPODER:</strong> Al 100%, ¡úsalo para obtener una gran ventaja y equilibrar tus stats!</div></div>
                     </div>
-
                     <div class="text-center mt-4 sm:mt-6">
-                         <p class="font-title text-lg">
-                            <span class="text-green-400">Jon</span>
-                            <span class="text-gray-400"> Zabalok egina ©</span>
-                        </p>
+                         <p class="font-title text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
                         <button onclick="showMainMenu()" class="menu-button w-full mt-4 bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Entendido</button>
                     </div>
                 </div>
@@ -439,16 +421,16 @@
         }
 
         function showRankingScreen() {
-            const rankingHTML = displayRanking();
             ui.gameOverlay.innerHTML = `
                 <div class="w-full">
                     <h1 class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300">Ranking</h1>
                     <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto">
-                        <ul class="text-lg">${rankingHTML}</ul>
+                        <ul id="ranking-list" class="text-lg"></ul>
                     </div>
                     <button onclick="showMainMenu()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Volver al Menú</button>
                 </div>
             `;
+            displayRanking(document.getElementById('ranking-list'));
         }
 
         // --- INICIO DEL JUEGO ---
