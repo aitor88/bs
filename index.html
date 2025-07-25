@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brawl Stars: Batalla Infinita</title>
+    <title>Brawl Stars: Batalla Táctica</title>
 
     <!-- Meta Tags para compartir en redes sociales (WhatsApp, etc.) -->
     <meta property="og:title" content="Brawl Stars: Batalla Infinita">
     <meta property="og:description" content="¡Un juego de decisiones tácticas! ¿Cuántos asaltos podrás aguantar?">
-    <!-- IMPORTANTE: Reemplaza la siguiente URL con la URL real de tu logo en GitHub -->
     <meta property="og:image" content="https://raw.githubusercontent.com/aitor88/bs/main/imagenes/logo.png">
     <meta property="og:type" content="website">
     
@@ -64,9 +63,10 @@
                     <div><span class="text-yellow-300">JUGADOR:&nbsp;</span><span id="player-name-display" class="text-green-400 uppercase"></span></div>
                     <div class="text-yellow-300"><span>ASALTO </span><span id="assault-counter">1</span></div>
                 </div>
+                <!-- NUEVAS VARIABLES -->
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="health-bar" class="bg-green-500 h-2 rounded-full stat-bar-inner"></div></div></div>
-                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 ATAQUE</span><span id="attack-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="attack-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
-                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">🛡️ DEFENSA</span><span id="defense-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="defense-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div></div>
+                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 PODER</span><span id="power-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="power-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
+                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold font-title text-lg"></span></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="super-bar" class="bg-yellow-400 h-2 rounded-full stat-bar-inner"></div></div></div>
             </div>
             <div class="flex-grow flex flex-col items-center justify-center my-2 sm:my-4 relative">
@@ -93,7 +93,7 @@
         </div>
         <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30"><h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1><p id="resolution-narrative" class="text-lg sm:text-xl mb-4 font-bold"></p><div id="resolution-effects" class="text-left space-y-1 mb-6 text-lg font-bold"></div><button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button></div>
         <div id="game-overlay" class="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20 hidden-overlay"></div>
-        <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title">¡No tienes superpoder suficiente!</div>
+        <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title"></div>
     </div>
 
     <!-- CARGA DE DATOS -->
@@ -127,7 +127,7 @@
         const db = firebase.firestore();
 
         // --- ESTADO DEL JUEGO ---
-        let stats = { vida: 80, ataque: 20, defensa: 20, superpoder: 0 };
+        let stats = { vida: 80, poder: 20, recursos: 5, superpoder: 0 };
         let currentAssault = 1;
         let gameOver = false;
         let isSpecialTurn = false; 
@@ -150,8 +150,8 @@
             gameUI: document.getElementById('game-ui'),
             assaultCounter: document.getElementById('assault-counter'), playerNameDisplay: document.getElementById('player-name-display'),
             healthBar: document.getElementById('health-bar'), healthText: document.getElementById('health-text'),
-            attackBar: document.getElementById('attack-bar'), attackText: document.getElementById('attack-text'),
-            defenseBar: document.getElementById('defense-bar'), defenseText: document.getElementById('defense-text'),
+            powerBar: document.getElementById('power-bar'), powerText: document.getElementById('power-text'),
+            resourcesText: document.getElementById('resources-text'),
             superBar: document.getElementById('super-bar'), superText: document.getElementById('super-text'),
             charImg: document.getElementById('char-img'), charName: document.getElementById('char-name'),
             dilemmaDescription: document.getElementById('dilemma-description'),
@@ -180,7 +180,7 @@
 
         function initGame() {
             playerName = document.getElementById('player-name-input').value.trim() || 'Brawler';
-            stats = { vida: 80, ataque: 20, defensa: 20, superpoder: 0 };
+            stats = { vida: 80, poder: 20, recursos: 5, superpoder: 0 };
             currentAssault = 1;
             gameOver = false;
             inventory = [];
@@ -197,8 +197,8 @@
             ui.assaultCounter.textContent = currentAssault;
             ui.playerNameDisplay.textContent = playerName;
             ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}%`;
-            ui.attackBar.style.width = `${stats.ataque}%`; ui.attackText.textContent = `${stats.ataque}%`;
-            ui.defenseBar.style.width = `${stats.defensa}%`; ui.defenseText.textContent = `${stats.defensa}%`;
+            ui.powerBar.style.width = `${stats.poder}%`; ui.powerText.textContent = `${stats.poder}%`;
+            ui.resourcesText.textContent = stats.recursos;
             ui.superBar.style.width = `${stats.superpoder}%`; ui.superText.textContent = `${stats.superpoder}%`;
             ui.superButton.disabled = stats.superpoder < 100;
         }
@@ -234,7 +234,7 @@
             lastCharacterName = char.name;
 
             if (dilemmaDecks[char.name].length === 0) {
-                createDilemmaDecks(); // Reshuffle all decks if one runs out
+                createDilemmaDecks();
             }
             const dilemma = dilemmaDecks[char.name].pop();
             
@@ -252,10 +252,21 @@
 
         function chooseOption(action, charName) {
             if (gameOver) return;
+            if (action.cost && stats.recursos < action.cost) {
+                ui.notification.textContent = "¡No tienes suficientes recursos!";
+                ui.notification.classList.remove('hidden-overlay');
+                setTimeout(() => { ui.notification.classList.add('hidden-overlay'); }, 2000);
+                return;
+            }
+
             let combinedEffects = { ...action.effects };
+            if(action.cost) {
+                combinedEffects.recursos = (combinedEffects.recursos || 0) - action.cost;
+            }
+
             let narrative = action.narrative;
-            const baseDamage = 3 + (currentAssault * 2); 
-            const finalDamage = Math.max(1, baseDamage - Math.floor(stats.defensa / 5));
+            const baseDamage = 3 + currentAssault; 
+            const finalDamage = Math.max(1, baseDamage - Math.floor(stats.poder / 5));
             combinedEffects.vida = (combinedEffects.vida || 0) - finalDamage;
             narrative += ` Los enemigos contraatacan.`;
             isSpecialTurn = false; 
@@ -264,13 +275,14 @@
         
         function useSuper() {
             if (stats.superpoder < 100) {
+                ui.notification.textContent = "¡No tienes superpoder suficiente!";
                 ui.notification.classList.remove('hidden-overlay');
                 setTimeout(() => { ui.notification.classList.add('hidden-overlay'); }, 2000);
                 return;
             }
-            const superEffects = { superpoder: -100, vida: 33, ataque: 33, defensa: 34 };
+            const superEffects = { superpoder: -100, vida: 30, poder: 20, recursos: 1 };
             isSpecialTurn = true;
-            showResolution('¡SUPERPODER!', '¡Un impulso de poder refuerza todas tus capacidades por igual!', superEffects);
+            showResolution('¡SUPERPODER!', '¡Un impulso de poder te da vida, poder y un recurso extra!', superEffects);
         }
 
         function showResolution(title, narrative, effects) {
@@ -285,11 +297,15 @@
             if(gameOver) return;
 
             for (const key in effects) {
-                stats[key] = Math.max(0, Math.min(100, stats[key]));
+                if (key !== 'recursos') {
+                    stats[key] = Math.max(0, Math.min(100, stats[key]));
+                } else {
+                    stats[key] = Math.max(0, stats[key]); // Recursos no tienen límite de 100
+                }
                 const value = effects[key];
-                const icon = {vida: '❤️', ataque: '💥', defensa: '🛡️', superpoder: '🌟'}[key];
-                const name = {vida: 'Vida', ataque: 'Ataque', defensa: 'Defensa', superpoder: 'Superpoder'}[key];
-                const change = value > 0 ? `+${value}%` : `${value}%`;
+                const icon = {vida: '❤️', poder: '💥', recursos: '⚙️', superpoder: '🌟'}[key];
+                const name = {vida: 'Vida', poder: 'Poder', recursos: 'Recursos', superpoder: 'Superpoder'}[key];
+                const change = value > 0 ? `+${value}` : `${value}`;
                 const color = value > 0 ? 'text-green-400' : 'text-red-400';
                 effectDescriptions.push(`<p class="${color}">${icon} ${name}: ${change}</p>`);
             }
@@ -363,7 +379,7 @@
                     if (option.correct) {
                         inventory.push(challenge.reward);
                         updateInventoryUI();
-                        showResolution("¡CORRECTO!", challenge.success, { superpoder: 15 });
+                        showResolution("¡CORRECTO!", challenge.success, { superpoder: 15, recursos: 1 });
                     } else {
                         showResolution("¡INCORRECTO!", challenge.failure, { vida: -5 });
                     }
@@ -375,8 +391,7 @@
             if (gameOver) return;
             let reason = null;
             if (stats.vida <= 0) reason = { title: '¡Sin Vida!', text: 'La vida de tu escuadrón ha llegado a cero.' };
-            if (stats.ataque >= 100) reason = { title: '¡Furia Descontrolada!', text: 'Tu ataque es tan alto que has destruido todo, ¡incluido a ti mismo!' };
-            if (stats.defensa >= 100) reason = { title: '¡Fortaleza Inmóvil!', text: 'Tu defensa es tan perfecta que te has convertido en una estatua.' };
+            if (stats.poder >= 100) reason = { title: '¡Poder Descontrolado!', text: 'Tu poder es tan alto que has perdido el control.' };
 
             if (reason) {
                 showEndScreen(reason);
@@ -442,12 +457,10 @@
                 let rank = 0;
                 let found = false;
                 querySnapshot.forEach((doc, index) => {
-                    if (!found) {
-                        const entry = doc.data();
-                        if (entry.name === playerName && entry.score === currentAssault) {
-                            rank = index + 1;
-                            found = true; 
-                        }
+                    const entry = doc.data();
+                    if (!found && entry.name === playerName && entry.score === currentAssault) {
+                        rank = index + 1;
+                        found = true; 
                     }
                 });
                 const rankText = document.getElementById('player-rank-text');
