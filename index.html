@@ -437,7 +437,6 @@
                 </div>
             `;
             
-            // Calcular y mostrar el ranking del jugador
             db.collection("ranking").orderBy("score", "desc").get().then(querySnapshot => {
                 let rank = 0;
                 let found = false;
