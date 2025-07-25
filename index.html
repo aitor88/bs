@@ -44,7 +44,7 @@
         .ranking-table th, .ranking-table td { padding: 8px; text-align: center; }
         .ranking-table th { color: #facc15; }
         .ranking-table tr:not(:last-child) { border-bottom: 1px solid #4a5568; }
-        .ranking-table td:nth-child(2) { text-align: left; }
+        .ranking-table td:nth-child(2), .ranking-table th:nth-child(2) { text-align: left; }
     </style>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
@@ -423,24 +423,41 @@
             saveScore(playerName, currentAssault, inventory.length);
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
-                <div class="w-full flex flex-col items-center">
-                    <img src="avatares/momoxorro.png" alt="Villano" class="w-32 h-32 mb-4 rounded-full" onerror="this.style.display='none'">
-                    <h1 class="font-title text-4xl sm:text-6xl mb-2 text-yellow-300">¡DERROTADO!</h1>
-                    <p class="text-xl mb-4 text-red-400 font-bold">${reason.text}</p>
-                    <p class="text-lg mb-4">Has aguantado ${currentAssault} asaltos.</p>
-                    <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto">
-                        <h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2>
-                        <table class="ranking-table text-lg font-bold">
-                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>💎</th><th>Asaltos</th></tr></thead>
-                            <tbody id="end-ranking-list"></tbody>
-                        </table>
-                    </div>
-                    <div class="flex justify-center">
-                        <button onclick="showMainMenu()" class="menu-button bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Menú Principal</button>
+                <div class="w-full flex flex-col items-center justify-center h-full">
+                    <img src="avatares/momoxorro.png" alt="Villano" class="w-28 h-28 sm:w-32 sm:h-32 mb-4 rounded-full" onerror="this.style.display='none'">
+                    <h1 class="font-title text-4xl sm:text-5xl mb-2 text-yellow-300">¡DERROTADO!</h1>
+                    <p class="text-lg mb-2 text-red-400 font-bold">${reason.text}</p>
+                    <p class="text-base sm:text-lg mb-2">Has aguantado <span class="font-bold text-yellow-300">${currentAssault}</span> asaltos.</p>
+                    <p id="player-rank-text" class="text-base sm:text-lg mb-6">Calculando tu posición en el ranking...</p>
+                    
+                    <div class="w-full max-w-xs space-y-3 mt-auto">
+                        <button onclick="showRankingScreen()" class="menu-button w-full bg-orange-500 border-orange-700 hover:bg-orange-400 text-white font-bold py-3 px-8 rounded-full text-xl font-title">Ver Ranking</button>
+                        <button onclick="showMainMenu()" class="menu-button w-full bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl font-title">Menú Principal</button>
                     </div>
                 </div>
             `;
-            displayRanking(document.getElementById('end-ranking-list'));
+            
+            // Calcular y mostrar el ranking del jugador
+            db.collection("ranking").orderBy("score", "desc").get().then(querySnapshot => {
+                let rank = 0;
+                let found = false;
+                querySnapshot.forEach((doc, index) => {
+                    if (!found) {
+                        const entry = doc.data();
+                        if (entry.name === playerName && entry.score === currentAssault) {
+                            rank = index + 1;
+                            found = true; 
+                        }
+                    }
+                });
+                const rankText = document.getElementById('player-rank-text');
+                if (rank > 0) {
+                    rankText.innerHTML = `¡Has quedado en la <span class="font-bold text-yellow-300">${rank}ª</span> posición!`;
+                } else {
+                    rankText.textContent = 'Tu puntuación ha sido guardada.';
+                }
+            });
+
             ui.gameOverlay.classList.remove('hidden-overlay');
         }
 
@@ -536,7 +553,7 @@
                     ui.gameContainer.classList.remove('hidden');
                     showMainMenu();
                     setTimeout(() => ui.splashScreen.style.display = 'none', 500);
-                }, 2000); // Pausa de 2 segundos
+                }, 500);
             }
         });
 
