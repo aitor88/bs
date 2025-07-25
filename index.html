@@ -6,7 +6,7 @@
     <title>Brawl Stars: Batalla Táctica</title>
 
     <!-- Meta Tags para compartir en redes sociales (WhatsApp, etc.) -->
-    <meta property="og:title" content="Brawl Stars: Batalla Infinita">
+    <meta property="og:title" content="Brawl Stars: Batalla Táctica">
     <meta property="og:description" content="¡Un juego de decisiones tácticas! ¿Cuántos asaltos podrás aguantar?">
     <meta property="og:image" content="https://raw.githubusercontent.com/aitor88/bs/main/imagenes/logo.png">
     <meta property="og:type" content="website">
@@ -63,7 +63,6 @@
                     <div><span class="text-yellow-300">JUGADOR:&nbsp;</span><span id="player-name-display" class="text-green-400 uppercase"></span></div>
                     <div class="text-yellow-300"><span>ASALTO </span><span id="assault-counter">1</span></div>
                 </div>
-                <!-- NUEVAS VARIABLES -->
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="health-bar" class="bg-green-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 PODER</span><span id="power-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="power-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold font-title text-lg"></span></div></div>
@@ -127,7 +126,7 @@
         const db = firebase.firestore();
 
         // --- ESTADO DEL JUEGO ---
-        let stats = { vida: 80, poder: 20, recursos: 5, superpoder: 0 };
+        let stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
         let currentAssault = 1;
         let gameOver = false;
         let isSpecialTurn = false; 
@@ -180,7 +179,7 @@
 
         function initGame() {
             playerName = document.getElementById('player-name-input').value.trim() || 'Brawler';
-            stats = { vida: 80, poder: 20, recursos: 5, superpoder: 0 };
+            stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
             currentAssault = 1;
             gameOver = false;
             inventory = [];
@@ -196,8 +195,8 @@
         function updateUI() {
             ui.assaultCounter.textContent = currentAssault;
             ui.playerNameDisplay.textContent = playerName;
-            ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}%`;
-            ui.powerBar.style.width = `${stats.poder}%`; ui.powerText.textContent = `${stats.poder}%`;
+            ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}`;
+            ui.powerBar.style.width = `${stats.poder}%`; ui.powerText.textContent = `${stats.poder}`;
             ui.resourcesText.textContent = stats.recursos;
             ui.superBar.style.width = `${stats.superpoder}%`; ui.superText.textContent = `${stats.superpoder}%`;
             ui.superButton.disabled = stats.superpoder < 100;
@@ -265,8 +264,8 @@
             }
 
             let narrative = action.narrative;
-            const baseDamage = 3 + currentAssault; 
-            const finalDamage = Math.max(1, baseDamage - Math.floor(stats.poder / 5));
+            const baseDamage = 2 + currentAssault; 
+            const finalDamage = Math.max(1, baseDamage - Math.floor(stats.poder / 10));
             combinedEffects.vida = (combinedEffects.vida || 0) - finalDamage;
             narrative += ` Los enemigos contraatacan.`;
             isSpecialTurn = false; 
@@ -280,7 +279,7 @@
                 setTimeout(() => { ui.notification.classList.add('hidden-overlay'); }, 2000);
                 return;
             }
-            const superEffects = { superpoder: -100, vida: 30, poder: 20, recursos: 1 };
+            const superEffects = { superpoder: -100, vida: 25, poder: 25, recursos: 1 };
             isSpecialTurn = true;
             showResolution('¡SUPERPODER!', '¡Un impulso de poder te da vida, poder y un recurso extra!', superEffects);
         }
@@ -300,7 +299,7 @@
                 if (key !== 'recursos') {
                     stats[key] = Math.max(0, Math.min(100, stats[key]));
                 } else {
-                    stats[key] = Math.max(0, stats[key]); // Recursos no tienen límite de 100
+                    stats[key] = Math.max(0, stats[key]);
                 }
                 const value = effects[key];
                 const icon = {vida: '❤️', poder: '💥', recursos: '⚙️', superpoder: '🌟'}[key];
