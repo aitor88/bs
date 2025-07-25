@@ -8,7 +8,6 @@
     <!-- Meta Tags para compartir en redes sociales (WhatsApp, etc.) -->
     <meta property="og:title" content="Brawl Stars: Batalla Infinita">
     <meta property="og:description" content="¡Un juego de decisiones tácticas! ¿Cuántos asaltos podrás aguantar?">
-    <!-- IMPORTANTE: Reemplaza la siguiente URL con la URL real de tu logo en GitHub -->
     <meta property="og:image" content="https://raw.githubusercontent.com/aitor88/bs/main/imagenes/logo.png">
     <meta property="og:type" content="website">
     
@@ -200,7 +199,7 @@
             ui.playerNameDisplay.textContent = playerName;
             ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}`;
             ui.powerBar.style.width = `${stats.poder}%`; ui.powerText.textContent = `${stats.poder}`;
-            ui.resourcesText.textContent = stats.recursos;
+            ui.resourcesText.textContent = `${stats.recursos} / 10`;
             ui.superBar.style.width = `${stats.superpoder}%`; ui.superText.textContent = `${stats.superpoder}%`;
             ui.superButton.disabled = stats.superpoder < 100;
         }
@@ -394,6 +393,7 @@
             let reason = null;
             if (stats.vida <= 0) reason = { title: '¡Sin Vida!', text: 'La vida de tu escuadrón ha llegado a cero.' };
             if (stats.poder >= 100) reason = { title: '¡Poder Descontrolado!', text: 'Tu poder es tan alto que has perdido el control.' };
+            if (stats.recursos > 10) reason = { title: '¡Avaricia!', text: 'Has acumulado demasiados recursos y te has vuelto un blanco fácil.' };
 
             if (reason) {
                 showEndScreen(reason);
