@@ -1,19 +1,78 @@
 // Contenido para shelly_data.js
 
-// Añadimos los datos de Shelly al array global de personajes
 window.gameCharacters.push({
     name: 'Shelly',
     img: 'avatares/shelly.png',
     dilemmas: [
-        { description: '¡Hay un enemigo solo! Puedo acercarme y acabar con él.', options: [{ text: '¡Ataca de cerca!', narrative: '¡BUM! Acabas con él, pero te llevas un golpe.', effects: { ataque: 15, superpoder: 15, vida: -10 } }, { text: '¡A cubierto!', narrative: 'Te pones a cubierto. Más seguro, pero pierdes la oportunidad.', effects: { defensa: 15 } }] },
-        { description: '¡Mi Súper está listo! Puedo romperles la cobertura.', options: [{ text: '¡Usa el Súper!', narrative: '¡El Súper arrasa con todo! Los enemigos están al descubierto.', effects: { ataque: 25, superpoder: -100 } }, { text: 'Guárdalo', narrative: 'Decides esperar. Te preparas para defender.', effects: { defensa: 10 } }] },
-        { description: 'Oigo enemigos al otro lado de la esquina. Puedo preparar una emboscada.', options: [{ text: 'Prepara la trampa', narrative: '¡Sorpresa! La emboscada funciona y ganas ventaja.', effects: { ataque: 20, vida: 5 } }, { text: 'Busca otra ruta', narrative: 'Evitas el riesgo y buscas un camino más seguro.', effects: { defensa: 15 } }] },
-        { description: 'Un enemigo tanque avanza. Mi escopeta le hace mucho daño de cerca.', options: [{ text: '¡Baila a su alrededor!', narrative: 'Te mueves muy rápido cerca del tanque y lo destrozas. Cargas Súper pero recibes un golpe.', effects: { superpoder: 30, vida: -20 } }, { text: 'Disparad desde lejos', narrative: 'Todo el equipo dispara desde lejos, derribando al tanque sin peligro.', effects: { ataque: 10, defensa: 5 } }] },
-        { description: '¡Están atacando a un compañero! ¿Lo protejo o disparo a los malos?', options: [{ text: '¡Fuego de cobertura!', narrative: 'Tu ráfaga obliga a los enemigos a esconderse, salvando a tu amigo.', effects: { ataque: 10, vida: -15 } }, { text: '¡Yo te cubro!', narrative: 'Te pones delante y recibes el daño por tu compañero.', effects: { defensa: 20, vida: -25 } }] },
-        { description: '¡Necesito recargar! ¿Me cubrís o disparo una última vez?', options: [{ text: '¡Un último disparo!', narrative: 'El último disparo acierta, pero te deja sin defensa mientras recargas.', effects: { ataque: 15, defensa: -20 } }, { text: '¡Cubridme!', narrative: 'El equipo te cubre. Recargas sin problemas y mejoras tu defensa.', effects: { defensa: 20 } }] },
-        { description: 'Este pasillo es muy estrecho. Soy muy fuerte aquí, pero también un blanco fácil.', options: [{ text: 'Avanzar por el pasillo', narrative: 'El pasillo es una trampa mortal para ellos, pero tú también recibes daño.', effects: { ataque: 25, vida: -20 } }, { text: 'Buscar otro sitio', narrative: 'Decides no arriesgar y buscas una posición más segura.', effects: { defensa: 10 } }] },
-        { description: '¡Vienen muchos enemigos pequeños! Mi Súper los barrería a todos.', options: [{ text: '¡Usa el Súper!', narrative: 'El Súper limpia la zona por completo, dándote un respiro.', effects: { vida: 15, superpoder: -100 } }, { text: 'Retroceder', narrative: 'Os retiráis a un lugar mejor para defenderos.', effects: { defensa: 20, vida: -5 } }] },
-        { description: 'Veo una caja de poder en campo abierto. ¡Está peligroso llegar!', options: [{ text: '¡A por ella!', narrative: 'Corres bajo el fuego y consigues la caja. ¡El poder es tuyo, pero te han dado!', effects: { vida: -25, ataque: 20, defensa: 20 } }, { text: 'Es una trampa', narrative: 'Decides que el riesgo es demasiado alto.', effects: { defensa: 5 } }] },
-        { description: '¡Son demasiados! ¿Nos retiramos para pensar un plan o luchamos ahora?', options: [{ text: '¡No nos rendimos!', narrative: 'Lucháis con todo. Es muy duro, pero si aguantáis, cargáis mucho Súper.', effects: { vida: -30, defensa: -20, superpoder: 50 } }, { text: '¡Retirada!', narrative: 'Os retiráis a un lugar seguro para recuperar vida.', effects: { vida: 10, ataque: -10 } }] }
+        {
+            description: '¡Veo una caja de poder! Puedo gastar <span class="text-sky-400">1 Recurso</span> en cartuchos especiales para abrirla desde lejos.',
+            options: [
+                { text: '¡Gasta el recurso!', cost: 1, narrative: 'Los cartuchos especiales revientan la caja. ¡El poder es tuyo!', effects: { poder: 25 } },
+                { text: 'Ahorra munición', narrative: 'Prefieres guardar los recursos para algo más importante.', effects: { superpoder: 10 } }
+            ]
+        },
+        {
+            description: '¡Mi Súper está listo! Puedo usarlo para <span class="text-red-500">destruir esa cobertura</span> enemiga y dejarlos al descubierto.',
+            options: [
+                { text: '¡Usa el Súper!', narrative: '¡El Súper arrasa con todo! Los enemigos están vulnerables.', effects: { poder: 15, superpoder: -100 } },
+                { text: 'Guárdalo', narrative: 'Decides esperar a un mejor momento. Te preparas para defender.', effects: { poder: 5 } }
+            ]
+        },
+        {
+            description: 'Oigo enemigos al otro lado de la esquina. Puedo preparar una <span class="text-yellow-300">emboscada</span>.',
+            options: [
+                { text: 'Prepara la trampa', narrative: '¡Sorpresa! La emboscada funciona y ganas ventaja.', effects: { poder: 20, vida: 5 } },
+                { text: 'Busca otra ruta', narrative: 'Evitas el riesgo y buscas un camino más seguro.', effects: { vida: 10 } }
+            ]
+        },
+        {
+            description: 'Un enemigo <span class="text-red-500">tanque</span> avanza. Mi escopeta le hace mucho daño de cerca.',
+            options: [
+                { text: '¡Lucha de cerca!', narrative: 'Te mueves muy rápido cerca del tanque y lo destrozas. Cargas Súper pero recibes un golpe.', effects: { superpoder: 30, vida: -20 } },
+                { text: 'Disparad desde lejos', narrative: 'Todo el equipo dispara desde lejos, derribando al tanque sin peligro.', effects: { poder: 10 } }
+            ]
+        },
+        {
+            description: '¡Están atacando a un compañero! Puedo gastar <span class="text-sky-400">1 Recurso</span> en una <span class="text-green-400">granada de humo</span> para cubrirlo.',
+            options: [
+                { text: '¡Lanza el humo!', cost: 1, narrative: 'El humo cubre a tu compañero y podéis reposicionaros.', effects: { vida: 15 } },
+                { text: '¡Fuego de cobertura!', narrative: 'Disparas para que los enemigos se escondan, pero te expones al peligro.', effects: { poder: 10, vida: -15 } }
+            ]
+        },
+        {
+            description: '¡Necesito recargar! ¿Me cubrís o aprovecho para disparar un último cartucho?',
+            options: [
+                { text: '¡Un último disparo!', narrative: 'El último disparo acierta, pero te deja vulnerable mientras recargas.', effects: { poder: 15, vida: -10 } },
+                { text: '¡Cubridme!', narrative: 'El equipo te cubre. Recargas sin problemas y recuperas algo de vida.', effects: { vida: 10 } }
+            ]
+        },
+        {
+            description: 'Este <span class="text-yellow-300">pasillo estrecho</span> es perfecto para mi escopeta, pero muy peligroso.',
+            options: [
+                { text: 'Avanzar por el pasillo', narrative: 'El pasillo es una trampa mortal para ellos, pero tú también recibes daño.', effects: { poder: 25, vida: -20 } },
+                { text: 'Busca otra posición', narrative: 'Decides no arriesgar y buscas un lugar más seguro.', effects: { poder: -5, vida: 5 } }
+            ]
+        },
+        {
+            description: 'Veo un botiquín (<span class="text-sky-400">+1 Recurso</span>), pero está en una zona abierta.',
+            options: [
+                { text: '¡Corre a por él!', narrative: 'Corres bajo el fuego y consigues el botiquín, pero te llevas un par de balas.', effects: { recursos: 1, vida: -20 } },
+                { text: 'No vale la pena', narrative: 'Decides que el riesgo es demasiado alto.', effects: { superpoder: 5 } }
+            ]
+        },
+        {
+            description: 'Podemos <span class="text-sky-400">gastar 2 Recursos</span> en mejorar mi escopeta para el resto de la partida.',
+            options: [
+                { text: '¡Mejora el arma!', cost: 2, narrative: '¡Tu escopeta ahora es una bestia! Tu poder base aumenta.', effects: { poder: 20 } },
+                { text: 'Ahorra los recursos', narrative: 'Prefieres guardar los recursos para curaciones o granadas.', effects: { } }
+            ]
+        },
+        {
+            description: '¡Son demasiados! ¿Nos retiramos para pensar un plan o luchamos ahora?',
+            options: [
+                { text: '¡No nos rendimos!', narrative: 'Lucháis con todo. Es muy duro, pero si aguantáis, cargáis mucho Súper.', effects: { vida: -30, poder: -10, superpoder: 50 } },
+                { text: '¡Retirada!', narrative: 'Os retiráis a un lugar seguro para recuperar vida.', effects: { vida: 10, poder: -5 } }
+            ]
+        }
     ]
 });
