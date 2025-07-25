@@ -3,11 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Brawl Stars: Batalla con Retos</title>
+    <title>Brawl Stars: Batalla Infinita</title>
+
+    <!-- Meta Tags para compartir en redes sociales (WhatsApp, etc.) -->
+    <meta property="og:title" content="Brawl Stars: Batalla Infinita">
+    <meta property="og:description" content="¡Un juego de decisiones tácticas! ¿Cuántos asaltos podrás aguantar?">
+    <!-- IMPORTANTE: Reemplaza la siguiente URL con la URL real de tu logo en GitHub -->
+    <meta property="og:image" content="https://raw.githubusercontent.com/user/repo/main/imagenes/logo.png">
+    <meta property="og:type" content="website">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- FUENTE ACTUALIZADA -->
     <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700&display=swap" rel="stylesheet">
     
     <!-- SCRIPTS DE FIREBASE -->
@@ -15,7 +22,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        /* FUENTE ACTUALIZADA */
         body { font-family: 'Nunito', sans-serif; background-color: #1a202c; }
         .font-title { font-family: 'Lilita One', cursive; }
         .stat-bar-inner { transition: width 0.5s ease-in-out; }
@@ -29,14 +35,7 @@
         #player-name-input { background-color: #2d3748; border: 2px solid #4a5568; color: white; border-radius: 0.5rem; padding: 0.75rem; text-align: center; font-size: 16px; }
         .inventory-item { height: 100%; width: auto; max-height: 40px; }
 
-        #splash-logo { 
-            width: 300px; 
-            position: relative; 
-            opacity: 0; 
-            transform: translateY(-200px) scale(2) rotate(10deg); 
-            /* CORRECCIÓN: Animación más larga */
-            animation: dropIn 2.2s ease-out forwards; 
-        }
+        #splash-logo { width: 300px; position: relative; opacity: 0; transform: translateY(-200px) scale(2) rotate(10deg); animation: dropIn 1.2s ease-out forwards; }
         @keyframes dropIn { 0% { opacity: 0; transform: translateY(-200px) scale(2.5) rotate(10deg); filter: blur(20px); } 60% { opacity: 1; transform: translateY(20px) scale(1.05) rotate(-3deg); filter: blur(0px); } 80% { transform: translateY(-5px) scale(1.02); } 100% { transform: translateY(0px) scale(1); } }
         #splash-logo.shake { animation: shake 0.2s ease-in-out 1; }
         @keyframes shake { 0% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-4px) rotate(1deg); } 50% { transform: translateY(4px) rotate(-1deg); } 75% { transform: translateY(-2px) rotate(0.5deg); } 100% { transform: translateY(0) rotate(0); } }
@@ -137,6 +136,11 @@
         const events = window.gameEvents;
         const challenges = window.gameChallenges;
 
+        // --- LÓGICA ANTI-REPETICIÓN ---
+        let lastCharacterName = '';
+        let lastEventName = '';
+        let dilemmaDecks = {};
+
         const ui = {
             splashScreen: document.getElementById('splash-screen'),
             splashLogo: document.getElementById('splash-logo'),
@@ -158,12 +162,30 @@
             resolutionOverlay: document.getElementById('resolution-overlay'), resolutionTitle: document.getElementById('resolution-title'), resolutionNarrative: document.getElementById('resolution-narrative'), resolutionEffects: document.getElementById('resolution-effects'), resolutionContinue: document.getElementById('resolution-continue'),
         };
         
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createDilemmaDecks() {
+            dilemmaDecks = {};
+            characters.forEach(char => {
+                dilemmaDecks[char.name] = shuffleArray([...char.dilemmas]);
+            });
+        }
+
         function initGame() {
             playerName = document.getElementById('player-name-input').value.trim() || 'Brawler';
             stats = { vida: 80, ataque: 20, defensa: 20, superpoder: 0 };
             currentAssault = 1;
             gameOver = false;
             inventory = [];
+            lastCharacterName = '';
+            lastEventName = '';
+            createDilemmaDecks();
             updateInventoryUI();
             ui.gameOverlay.classList.add('hidden-overlay');
             ui.gameUI.classList.remove('hidden');
@@ -203,8 +225,18 @@
             if (gameOver) return;
             ui.choicesSection.classList.remove('hidden');
             ui.challengeChoicesSection.classList.add('hidden');
-            const char = characters[Math.floor(Math.random() * characters.length)];
-            const dilemma = char.dilemmas[Math.floor(Math.random() * char.dilemmas.length)];
+            
+            let char;
+            do {
+                char = characters[Math.floor(Math.random() * characters.length)];
+            } while (char.name === lastCharacterName && characters.length > 1);
+            lastCharacterName = char.name;
+
+            if (dilemmaDecks[char.name].length === 0) {
+                createDilemmaDecks(); // Reshuffle all decks if one runs out
+            }
+            const dilemma = dilemmaDecks[char.name].pop();
+            
             ui.charImg.style.display = 'block';
             ui.charName.textContent = char.name;
             ui.charImg.src = char.img;
@@ -246,13 +278,21 @@
                 if (effects[key] === 0) continue;
                 const value = effects[key];
                 stats[key] = Math.round(stats[key] + value);
+            }
+            
+            checkGameOver(); // Comprobar si hay game over ANTES de limitar a 100
+            if(gameOver) return;
+
+            for (const key in effects) {
                 stats[key] = Math.max(0, Math.min(100, stats[key]));
+                const value = effects[key];
                 const icon = {vida: '❤️', ataque: '💥', defensa: '🛡️', superpoder: '🌟'}[key];
                 const name = {vida: 'Vida', ataque: 'Ataque', defensa: 'Defensa', superpoder: 'Superpoder'}[key];
                 const change = value > 0 ? `+${value}%` : `${value}%`;
                 const color = value > 0 ? 'text-green-400' : 'text-red-400';
                 effectDescriptions.push(`<p class="${color}">${icon} ${name}: ${change}</p>`);
             }
+
             ui.resolutionTitle.textContent = title;
             ui.resolutionNarrative.innerHTML = narrative;
             ui.resolutionEffects.innerHTML = effectDescriptions.join('');
@@ -279,7 +319,12 @@
         }
 
         function triggerRandomEvent() {
-            const event = events[Math.floor(Math.random() * events.length)];
+            let event;
+            do {
+                event = events[Math.floor(Math.random() * events.length)];
+            } while (event.name === lastEventName && events.length > 1);
+            lastEventName = event.name;
+
             isSpecialTurn = true;
             if (event.type === 'immediate') {
                 showResolution(`¡EVENTO: ${event.name}!`, event.effects.narrative, event.effects);
@@ -326,8 +371,15 @@
         }
 
         function checkGameOver() {
-            if (stats.vida <= 0) {
-                showEndScreen();
+            if (gameOver) return; // Evitar múltiples llamadas
+            let reason = null;
+            if (stats.vida <= 0) reason = { title: '¡Sin Vida!', text: 'La vida de tu escuadrón ha llegado a cero.' };
+            if (stats.vida > 100) reason = { title: '¡Sobrecarga de Energía!', text: 'Demasiada curación es peligrosa. ¡El equipo ha explotado!' };
+            if (stats.ataque >= 100) reason = { title: '¡Furia Descontrolada!', text: 'Tu ataque es tan alto que has destruido todo, ¡incluido a ti mismo!' };
+            if (stats.defensa >= 100) reason = { title: '¡Fortaleza Inmóvil!', text: 'Tu defensa es tan perfecta que te has convertido en una estatua.' };
+
+            if (reason) {
+                showEndScreen(reason);
             }
         }
 
@@ -367,22 +419,25 @@
                 });
         }
 
-        function showEndScreen() {
+        function showEndScreen(reason) {
             gameOver = true;
             saveScore(playerName, currentAssault, inventory.length);
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
                 <div class="w-full">
-                    <h1 class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300">¡DERROTADO!</h1>
-                    <p class="text-xl mb-4">¡Has aguantado ${currentAssault} asaltos!</p>
+                    <h1 class="font-title text-4xl sm:text-6xl mb-2 text-yellow-300">¡DERROTADO!</h1>
+                    <p class="text-xl mb-4 text-red-400 font-bold">${reason.text}</p>
+                    <p class="text-lg mb-4">Has aguantado ${currentAssault} asaltos.</p>
                     <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto">
                         <h2 class="font-title text-2xl text-yellow-300 mb-2">🏆 Ranking 🏆</h2>
                         <table class="ranking-table text-lg font-bold">
-                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>🏆</th><th>Asaltos</th></tr></thead>
+                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>💎</th><th>Asaltos</th></tr></thead>
                             <tbody id="end-ranking-list"></tbody>
                         </table>
                     </div>
-                    <button onclick="showMainMenu()" class="menu-button bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Menú Principal</button>
+                    <div class="flex justify-center">
+                        <button onclick="showMainMenu()" class="menu-button bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Menú Principal</button>
+                    </div>
                 </div>
             `;
             displayRanking(document.getElementById('end-ranking-list'));
@@ -449,11 +504,13 @@
                     <h1 class="font-title text-4xl sm:text-6xl mb-4 text-yellow-300">Ranking</h1>
                     <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto">
                         <table class="ranking-table text-lg font-bold">
-                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>🏆</th><th>Asaltos</th></tr></thead>
+                            <thead><tr><th>#</th><th class="text-left">Nombre</th><th>💎</th><th>Asaltos</th></tr></thead>
                             <tbody id="ranking-list-table"></tbody>
                         </table>
                     </div>
-                    <button onclick="showMainMenu()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Volver al Menú</button>
+                    <div class="flex justify-center">
+                        <button onclick="showMainMenu()" class="menu-button w-full max-w-xs bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">Volver al Menú</button>
+                    </div>
                 </div>
             `;
             displayRanking(document.getElementById('ranking-list-table'));
@@ -468,12 +525,11 @@
                 ui.splashLogo.classList.add('shake');
                 ui.impactSound.play().catch(e => console.log("El navegador bloqueó la reproducción automática de sonido."));
                 
-                // CORRECCIÓN: Preparar el menú antes de la transición
-                showMainMenu(); 
                 setTimeout(() => {
                     ui.splashScreen.classList.add('hidden-overlay');
                     ui.gameContainer.classList.remove('hidden');
-                }, 2000); // Pausa de 2 segundos
+                    showMainMenu();
+                }, 500); // Pausa de 0.5 segundos
             }
         });
 
