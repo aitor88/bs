@@ -5,9 +5,9 @@ window.gameCharacters.push({
     img: 'avatares/poco.png',
     dilemmas: [
         {
-            description: '¡El equipo necesita <span class="text-green-400">curación</span>! Puedo usar mi guitarra para sanarnos.',
+            description: '¡El equipo necesita <span class="text-green-400">curación</span>! Puedo tocar mi guitarra para sanarnos.',
             options: [
-                { text: '¡Toca para curar!', narrative: 'La música de Poco cura al equipo. ¡Qué alivio!', effects: { vida: 25, poder: -5 } },
+                { text: '¡Toca para curar!', narrative: 'La música de Poco cura al equipo. ¡Qué alivio!', effects: { vida: 20, poder: -5 } },
                 { text: '¡Sigue atacando!', narrative: 'Decides que atacar es lo mejor. ¡No hay descanso!', effects: { poder: 10, superpoder: 10 } }
             ]
         },
@@ -21,14 +21,14 @@ window.gameCharacters.push({
         {
             description: 'Detecto una frecuencia que <span class="text-yellow-300">aturde a los robots</span>. Puedo emitirla, pero nos descubrirán.',
             options: [
-                { text: '¡Emite la frecuencia!', narrative: 'Los robots se quedan parados, ¡es tu oportunidad de atacar!', effects: { poder: 25, vida: -10 } },
+                { text: '¡Emite la frecuencia!', narrative: 'Los robots se quedan parados, ¡es tu oportunidad de atacar!', effects: { poder: 20, vida: -10 } },
                 { text: 'No hagas ruido', narrative: 'Mantienes un perfil bajo para no atraer más enemigos.', effects: { vida: 5 } }
             ]
         },
         {
             description: 'Si gasto <span class="text-sky-400">1 Recurso</span> en un amplificador, mi <span class="text-green-400">curación</span> será mucho más potente.',
             options: [
-                { text: '¡Usa el ampli!', cost: 1, narrative: 'El sonido es atronador. Tu siguiente curación será el doble de efectiva.', effects: { vida: 20 } },
+                { text: '¡Usa el ampli!', cost: 1, narrative: 'El sonido es atronador. Tu siguiente curación será el doble de efectiva.', effects: { vida: 15 } },
                 { text: 'Ahorra el recurso', narrative: 'Prefieres guardar el recurso para otra cosa.', effects: { } }
             ]
         },
@@ -56,12 +56,12 @@ window.gameCharacters.push({
         {
             description: 'Mi Súper está listo. ¿Lo uso para <span class="text-green-400">curar a todos</span> o lo guardo?',
             options: [
-                { text: '¡Cura a todo el equipo!', narrative: 'Una ola de energía positiva cura a todo el equipo. ¡Estáis como nuevos!', effects: { vida: 40, superpoder: -100 } },
+                { text: '¡Cura a todo el equipo!', narrative: 'Una ola de energía positiva cura a todo el equipo. ¡Estáis como nuevos!', effects: { vida: 35, superpoder: -100 } },
                 { text: 'Guárdalo todavía', narrative: 'Decides esperar a un momento de más necesidad.', effects: { } }
             ]
         },
         {
-            description: 'Puedo tocar una canción triste para que los enemigos <span class="text-red-500">bajen su ataque</span>.',
+            description: 'Puedo tocar una canción triste para que los enemigos <span class="text-red-500">bajen su poder</span>.',
             options: [
                 { text: '¡Qué triste!', narrative: 'La balada es tan triste que los enemigos dejan de atacar con tanta fuerza.', effects: { vida: 15, poder: -5 } },
                 { text: '¡No queremos llorar!', narrative: 'Prefieres mantener la moral alta con música alegre.', effects: { poder: 10 } }
