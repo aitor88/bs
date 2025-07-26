@@ -165,7 +165,8 @@
         let lastCharacterName = '';
         let lastEventName = '';
         let dilemmaDecks = {};
-        
+        let audioUnlocked = false;
+
         const ui = {
             startButtonScreen: document.getElementById('start-button-screen'),
             startButton: document.getElementById('start-game-button'),
@@ -188,57 +189,49 @@
             resolutionOverlay: document.getElementById('resolution-overlay'), resolutionTitle: document.getElementById('resolution-title'), resolutionNarrative: document.getElementById('resolution-narrative'), resolutionEffects: document.getElementById('resolution-effects'), resolutionContinue: document.getElementById('resolution-continue'),
         };
 
-        // --- GESTOR DE SONIDO ---
-        const SoundManager = {
-            sounds: {
-                splash: document.getElementById('sound-splash'),
-                click: document.getElementById('sound-click'),
-                correct: document.getElementById('sound-correct'),
-                wrong: document.getElementById('sound-wrong'),
-                super: document.getElementById('sound-super'),
-                event: document.getElementById('sound-event'),
-                menuMusic: document.getElementById('music-menu'),
-                gameMusic: document.getElementById('music-game'),
-                defeatMusic: document.getElementById('music-defeat'),
-            },
-            isUnlocked: false,
-            currentMusic: null,
-
-            unlockAudio() {
-                if (this.isUnlocked) return;
-                for (const key in this.sounds) {
-                    this.sounds[key].play().catch(() => {});
-                    this.sounds[key].pause();
-                    this.sounds[key].currentTime = 0;
-                }
-                this.isUnlocked = true;
-            },
-
-            playSfx(name) {
-                if (!this.isUnlocked || !this.sounds[name]) return;
-                const sound = this.sounds[name].cloneNode();
-                sound.play().catch(e => {});
-            },
-
-            playMusic(name) {
-                if (!this.isUnlocked || !this.sounds[name]) return;
-                if (this.currentMusic) {
-                    this.currentMusic.pause();
-                    this.currentMusic.currentTime = 0;
-                }
-                this.currentMusic = this.sounds[name];
-                this.currentMusic.play().catch(e => {});
-            },
-
-            stopAllMusic() {
-                if (this.currentMusic) {
-                    this.currentMusic.pause();
-                    this.currentMusic.currentTime = 0;
-                }
-                this.currentMusic = null;
-            }
+        const sounds = {
+            splash: document.getElementById('sound-splash'),
+            click: document.getElementById('sound-click'),
+            correct: document.getElementById('sound-correct'),
+            wrong: document.getElementById('sound-wrong'),
+            super: document.getElementById('sound-super'),
+            event: document.getElementById('sound-event'),
+            menuMusic: document.getElementById('music-menu'),
+            gameMusic: document.getElementById('music-game'),
+            defeatMusic: document.getElementById('music-defeat'),
         };
         
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            for (const key in sounds) {
+                sounds[key].play().catch(() => {});
+                sounds[key].pause();
+                sounds[key].currentTime = 0;
+            }
+            audioUnlocked = true;
+        }
+
+        function playSound(sound) {
+            if (!audioUnlocked) return;
+            const soundClone = sound.cloneNode();
+            soundClone.play().catch(e => {});
+        }
+
+        function playMusic(name) {
+            if (!audioUnlocked || !sounds[name]) return;
+            stopAllMusic();
+            sounds[name].play().catch(e => {});
+        }
+
+        function stopAllMusic() {
+            for (const key in sounds) {
+                if (sounds[key].loop) {
+                    sounds[key].pause();
+                    sounds[key].currentTime = 0;
+                }
+            }
+        }
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -255,8 +248,9 @@
         }
 
         function initGame() {
-            SoundManager.playSfx('click');
-            SoundManager.playMusic('gameMusic');
+            playSound(sounds.click);
+            stopAllMusic();
+            playMusic('gameMusic');
             playerName = document.getElementById('player-name-input').value.trim() || 'Brawler';
             stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
             currentAssault = 1;
@@ -325,8 +319,8 @@
             ui.dilemmaDescription.innerHTML = dilemma.description;
             ui.choice1.textContent = dilemma.options[0].text;
             ui.choice2.textContent = dilemma.options[1].text;
-            ui.choice1.onclick = () => { SoundManager.playSfx('click'); chooseOption(dilemma.options[0], char.name); };
-            ui.choice2.onclick = () => { SoundManager.playSfx('click'); chooseOption(dilemma.options[1], char.name); };
+            ui.choice1.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[0], char.name); };
+            ui.choice2.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[1], char.name); };
             updateUI();
         }
 
@@ -360,7 +354,7 @@
                 setTimeout(() => { ui.notification.classList.add('hidden-overlay'); }, 2000);
                 return;
             }
-            SoundManager.playSfx('super');
+            playSound(sounds.super);
             const superEffects = { superpoder: -100, vida: 25, poder: 25, recursos: 1 };
             isSpecialTurn = true;
             showResolution('¡SUPERPODER!', '¡Un impulso de poder te da vida, poder y un recurso extra!', superEffects);
@@ -400,7 +394,7 @@
         }
 
         function handleContinueClick() {
-            SoundManager.playSfx('click');
+            playSound(sounds.click);
             ui.resolutionOverlay.classList.add('hidden-overlay');
             
             if (checkGameOver()) return;
@@ -421,7 +415,7 @@
         }
 
         function triggerRandomEvent() {
-            SoundManager.playSfx('event');
+            playSound(sounds.event);
             let event;
             do {
                 event = events[Math.floor(Math.random() * events.length)];
@@ -448,12 +442,12 @@
             ui.dilemmaDescription.innerHTML = event.message;
             ui.choice1.textContent = event.options[0].text;
             ui.choice2.textContent = event.options[1].text;
-            ui.choice1.onclick = () => { SoundManager.playSfx('click'); showResolution(event.name, event.options[0].narrative, event.options[0].effects); };
-            ui.choice2.onclick = () => { SoundManager.playSfx('click'); showResolution(event.name, event.options[1].narrative, event.options[1].effects); };
+            ui.choice1.onclick = () => { playSound(sounds.click); showResolution(event.name, event.options[0].narrative, event.options[0].effects); };
+            ui.choice2.onclick = () => { playSound(sounds.click); showResolution(event.name, event.options[1].narrative, event.options[1].effects); };
         }
 
         function triggerRandomChallenge() {
-            SoundManager.playSfx('event');
+            playSound(sounds.event);
             const challengeGroup = challenges[Math.floor(Math.random() * challenges.length)];
             isSpecialTurn = true;
 
@@ -482,14 +476,14 @@
                 button.textContent = option.text;
                 button.onclick = () => {
                     if (option.correct) {
-                        SoundManager.playSfx('correct');
+                        playSound(sounds.correct);
                         if (!inventory.some(item => item.name === challengeGroup.reward.name)) {
                             inventory.push(challengeGroup.reward);
                         }
                         updateInventoryUI();
                         showResolution("¡CORRECTO!", challenge.success, { superpoder: 15, recursos: 1 });
                     } else {
-                        SoundManager.playSfx('wrong');
+                        playSound(sounds.wrong);
                         showResolution("¡INCORRECTO!", challenge.failure, { vida: -5 });
                     }
                 };
