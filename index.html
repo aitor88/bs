@@ -65,11 +65,7 @@
                 </div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="health-bar" class="bg-green-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 PODER</span><span id="power-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="power-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
-                <!-- BARRA DE RECURSOS AÑADIDA -->
-                <div class="stat">
-                    <div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold"></span></div>
-                    <div class="w-full bg-gray-700 rounded-full h-2"><div id="resources-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div>
-                </div>
+                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold font-title text-lg"></span></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="super-bar" class="bg-yellow-400 h-2 rounded-full stat-bar-inner"></div></div></div>
             </div>
             <div class="flex-grow flex flex-col items-center justify-center my-2 sm:my-4 relative">
@@ -112,6 +108,7 @@
     <script src="datos/cordelius_data.js"></script>
     <script src="datos/frank_data.js"></script>
     <script src="datos/mortis_data.js"></script>
+    <script src="datos/spike_data.js"></script>
     <script src="datos/eventos_data.js"></script>
     <script src="datos/retos_data.js"></script>
 
@@ -156,7 +153,7 @@
             assaultCounter: document.getElementById('assault-counter'), playerNameDisplay: document.getElementById('player-name-display'),
             healthBar: document.getElementById('health-bar'), healthText: document.getElementById('health-text'),
             powerBar: document.getElementById('power-bar'), powerText: document.getElementById('power-text'),
-            resourcesBar: document.getElementById('resources-bar'), resourcesText: document.getElementById('resources-text'),
+            resourcesText: document.getElementById('resources-text'),
             superBar: document.getElementById('super-bar'), superText: document.getElementById('super-text'),
             charImg: document.getElementById('char-img'), charName: document.getElementById('char-name'),
             dilemmaDescription: document.getElementById('dilemma-description'),
@@ -203,7 +200,7 @@
             ui.playerNameDisplay.textContent = playerName;
             ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}`;
             ui.powerBar.style.width = `${stats.poder}%`; ui.powerText.textContent = `${stats.poder}`;
-            ui.resourcesBar.style.width = `${(stats.recursos / 10) * 100}%`; ui.resourcesText.textContent = `${stats.recursos} / 10`;
+            ui.resourcesText.textContent = `${stats.recursos} / 10`;
             ui.superBar.style.width = `${stats.superpoder}%`; ui.superText.textContent = `${stats.superpoder}%`;
             ui.superButton.disabled = stats.superpoder < 100;
         }
@@ -305,7 +302,7 @@
                 if (key !== 'recursos') {
                     stats[key] = Math.max(0, Math.min(100, stats[key]));
                 } else {
-                    stats[key] = Math.max(0, stats[key]);
+                    stats[key] = Math.max(0, 10);
                 }
                 const value = effects[key];
                 const icon = {vida: '❤️', poder: '💥', recursos: '⚙️', superpoder: '🌟'}[key];
@@ -358,7 +355,9 @@
         }
 
         function displayEventChoice(event) {
-            ui.charImg.style.display = 'none';
+            ui.charImg.style.display = 'block';
+            ui.charImg.src = event.img;
+            ui.charImg.onerror = () => { ui.charImg.style.display = 'none'; };
             ui.charName.textContent = `¡EVENTO: ${event.name}!`;
             ui.dilemmaDescription.innerHTML = event.message;
             ui.choice1.textContent = event.options[0].text;
@@ -446,7 +445,7 @@
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
                 <div class="w-full flex flex-col items-center justify-center h-full">
-                    <img src="avatares/momoxorro.png" alt="Villano" class="w-28 h-28 sm:w-32 sm:h-32 mb-4 rounded-full" onerror="this.style.display='none'">
+                    <img src="avatares/momoxorro.png" alt="Villano" class="w-28 h-28 sm:w-32 sm:h-32 mb-4 rounded-full object-cover" onerror="this.style.display='none'">
                     <h1 class="font-title text-4xl sm:text-5xl mb-2 text-yellow-300">¡DERROTADO!</h1>
                     <p class="text-lg mb-2 text-red-400 font-bold">${reason.text}</p>
                     <p class="text-base sm:text-lg mb-2">Has aguantado <span class="font-bold text-yellow-300">${currentAssault}</span> asaltos.</p>
