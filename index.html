@@ -29,12 +29,13 @@
         .choice-button:hover, .menu-button:hover { transform: translateY(-2px); }
         .choice-button:active, .menu-button:active { transform: translateY(1px); }
         #super-button:disabled { filter: grayscale(80%); cursor: not-allowed; }
-        #game-overlay, #resolution-overlay, #notification, #splash-screen { transition: opacity 0.5s; }
+        #game-overlay, #resolution-overlay, #notification, #splash-screen, #start-button-screen { transition: opacity 0.5s; }
         .hidden-overlay { opacity: 0; pointer-events: none; }
         #player-name-input { background-color: #2d3748; border: 2px solid #4a5568; color: white; border-radius: 0.5rem; padding: 0.75rem; text-align: center; font-size: 16px; }
         .inventory-item { height: 100%; width: auto; max-height: 40px; }
 
-        #splash-logo { width: 300px; position: relative; opacity: 0; transform: translateY(-200px) scale(2) rotate(10deg); animation: dropIn 1.2s ease-out forwards; }
+        #splash-logo { width: 300px; position: relative; opacity: 0; }
+        #splash-logo.animate { animation: dropIn 1.2s ease-out forwards; }
         @keyframes dropIn { 0% { opacity: 0; transform: translateY(-200px) scale(2.5) rotate(10deg); filter: blur(20px); } 60% { opacity: 1; transform: translateY(20px) scale(1.05) rotate(-3deg); filter: blur(0px); } 80% { transform: translateY(-5px) scale(1.02); } 100% { transform: translateY(0px) scale(1); } }
         #splash-logo.shake { animation: shake 0.2s ease-in-out 1; }
         @keyframes shake { 0% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-4px) rotate(1deg); } 50% { transform: translateY(4px) rotate(-1deg); } 75% { transform: translateY(-2px) rotate(0.5deg); } 100% { transform: translateY(0) rotate(0); } }
@@ -48,8 +49,14 @@
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
 
+    <!-- Pantalla de "Toca para Empezar" -->
+    <div id="start-button-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-50">
+        <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-8">
+        <button id="start-game-button" class="menu-button bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-4 px-10 rounded-full text-2xl sm:text-3xl font-title">TOCA PARA EMPEZAR</button>
+    </div>
+
     <!-- Pantalla de Bienvenida (Splash Screen) -->
-    <div id="splash-screen" class="absolute inset-0 flex items-center justify-center bg-slate-900 z-50">
+    <div id="splash-screen" class="hidden-overlay absolute inset-0 flex items-center justify-center bg-slate-900 z-40">
         <img id="splash-logo" src="imagenes/logo.png" alt="Brawl Stars: Batalla Infinita">
     </div>
 
@@ -159,6 +166,8 @@
         let audioUnlocked = false;
 
         const ui = {
+            startButtonScreen: document.getElementById('start-button-screen'),
+            startButton: document.getElementById('start-game-button'),
             splashScreen: document.getElementById('splash-screen'),
             splashLogo: document.getElementById('splash-logo'),
             gameContainer: document.getElementById('game-container'),
@@ -198,6 +207,7 @@
                 sounds[key].currentTime = 0;
             }
             audioUnlocked = true;
+            console.log("Audio unlocked");
         }
 
         function playSound(sound) {
