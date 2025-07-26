@@ -51,7 +51,6 @@
     <!-- Pantalla de Bienvenida (Splash Screen) -->
     <div id="splash-screen" class="absolute inset-0 flex items-center justify-center bg-slate-900 z-50">
         <img id="splash-logo" src="imagenes/logo.png" alt="Brawl Stars: Batalla Infinita">
-        <audio id="impact-sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_02f51f27f9.mp3"></audio>
     </div>
 
     <!-- Contenedor Principal del Juego (Oculto al inicio) -->
@@ -97,6 +96,16 @@
         <div id="game-overlay" class="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20 hidden-overlay"></div>
         <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title"></div>
     </div>
+
+    <!-- Elementos de Audio -->
+    <audio id="sound-splash" src="https://cdn.pixabay.com/audio/2022/03/15/audio_02f51f27f9.mp3" preload="auto"></audio>
+    <audio id="sound-click" src="https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8967195.mp3" preload="auto"></audio>
+    <audio id="sound-correct" src="https://cdn.pixabay.com/audio/2022/11/21/audio_a259806e5b.mp3" preload="auto"></audio>
+    <audio id="sound-wrong" src="https://cdn.pixabay.com/audio/2022/03/24/audio_39cbf2d83o.mp3" preload="auto"></audio>
+    <audio id="sound-super" src="https://cdn.pixabay.com/audio/2022/10/13/audio_731633a697.mp3" preload="auto"></audio>
+    <audio id="music-menu" src="https://cdn.pixabay.com/audio/2023/07/23/audio_1537b0e25b.mp3" loop preload="auto"></audio>
+    <audio id="music-game" src="https://cdn.pixabay.com/audio/2022/08/03/audio_51c482c971.mp3" loop preload="auto"></audio>
+    <audio id="music-defeat" src="https://cdn.pixabay.com/audio/2022/05/19/audio_24538d33e1.mp3" preload="auto"></audio>
 
     <!-- CARGA DE DATOS -->
     <script>
@@ -150,7 +159,6 @@
         const ui = {
             splashScreen: document.getElementById('splash-screen'),
             splashLogo: document.getElementById('splash-logo'),
-            impactSound: document.getElementById('impact-sound'),
             gameContainer: document.getElementById('game-container'),
             gameUI: document.getElementById('game-ui'),
             assaultCounter: document.getElementById('assault-counter'), playerNameDisplay: document.getElementById('player-name-display'),
@@ -167,7 +175,32 @@
             gameOverlay: document.getElementById('game-overlay'),
             resolutionOverlay: document.getElementById('resolution-overlay'), resolutionTitle: document.getElementById('resolution-title'), resolutionNarrative: document.getElementById('resolution-narrative'), resolutionEffects: document.getElementById('resolution-effects'), resolutionContinue: document.getElementById('resolution-continue'),
         };
+
+        const sounds = {
+            splash: document.getElementById('sound-splash'),
+            click: document.getElementById('sound-click'),
+            correct: document.getElementById('sound-correct'),
+            wrong: document.getElementById('sound-wrong'),
+            super: document.getElementById('sound-super'),
+            menuMusic: document.getElementById('music-menu'),
+            gameMusic: document.getElementById('music-game'),
+            defeatMusic: document.getElementById('music-defeat'),
+        };
         
+        function playSound(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(e => {});
+        }
+
+        function stopAllMusic() {
+            sounds.menuMusic.pause();
+            sounds.gameMusic.pause();
+            sounds.defeatMusic.pause();
+            sounds.menuMusic.currentTime = 0;
+            sounds.gameMusic.currentTime = 0;
+            sounds.defeatMusic.currentTime = 0;
+        }
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -184,6 +217,9 @@
         }
 
         function initGame() {
+            playSound(sounds.click);
+            stopAllMusic();
+            playSound(sounds.gameMusic);
             playerName = document.getElementById('player-name-input').value.trim() || 'Brawler';
             stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
             currentAssault = 1;
@@ -252,8 +288,8 @@
             ui.dilemmaDescription.innerHTML = dilemma.description;
             ui.choice1.textContent = dilemma.options[0].text;
             ui.choice2.textContent = dilemma.options[1].text;
-            ui.choice1.onclick = () => chooseOption(dilemma.options[0], char.name);
-            ui.choice2.onclick = () => chooseOption(dilemma.options[1], char.name);
+            ui.choice1.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[0], char.name); };
+            ui.choice2.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[1], char.name); };
             updateUI();
         }
 
@@ -287,6 +323,7 @@
                 setTimeout(() => { ui.notification.classList.add('hidden-overlay'); }, 2000);
                 return;
             }
+            playSound(sounds.super);
             const superEffects = { superpoder: -100, vida: 25, poder: 25, recursos: 1 };
             isSpecialTurn = true;
             showResolution('¡SUPERPODER!', '¡Un impulso de poder te da vida, poder y un recurso extra!', superEffects);
@@ -324,6 +361,7 @@
         }
 
         function handleContinueClick() {
+            playSound(sounds.click);
             ui.resolutionOverlay.classList.add('hidden-overlay');
             if (!isSpecialTurn) {
                 currentAssault++;
@@ -369,8 +407,8 @@
             ui.dilemmaDescription.innerHTML = event.message;
             ui.choice1.textContent = event.options[0].text;
             ui.choice2.textContent = event.options[1].text;
-            ui.choice1.onclick = () => { showResolution(event.name, event.options[0].narrative, event.options[0].effects); };
-            ui.choice2.onclick = () => { showResolution(event.name, event.options[1].narrative, event.options[1].effects); };
+            ui.choice1.onclick = () => { playSound(sounds.click); showResolution(event.name, event.options[0].narrative, event.options[0].effects); };
+            ui.choice2.onclick = () => { playSound(sounds.click); showResolution(event.name, event.options[1].narrative, event.options[1].effects); };
         }
 
         function triggerRandomChallenge() {
@@ -402,12 +440,14 @@
                 button.textContent = option.text;
                 button.onclick = () => {
                     if (option.correct) {
+                        playSound(sounds.correct);
                         if (!inventory.some(item => item.name === challengeGroup.reward.name)) {
                             inventory.push(challengeGroup.reward);
                         }
                         updateInventoryUI();
                         showResolution("¡CORRECTO!", challenge.success, { superpoder: 15, recursos: 1 });
                     } else {
+                        playSound(sounds.wrong);
                         showResolution("¡INCORRECTO!", challenge.failure, { vida: -5 });
                     }
                 };
@@ -464,6 +504,8 @@
 
         function showEndScreen(reason) {
             gameOver = true;
+            stopAllMusic();
+            playSound(sounds.defeatMusic);
             saveScore(playerName, currentAssault, inventory.length);
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
@@ -503,6 +545,8 @@
         }
 
         function showMainMenu() {
+            stopAllMusic();
+            playSound(sounds.menuMusic);
             ui.gameUI.classList.add('hidden');
             const menuHTML = `
                 <div class="flex flex-col justify-between h-full w-full max-w-md text-center">
@@ -526,6 +570,7 @@
         }
 
         function showNameInputScreen() {
+            playSound(sounds.click);
             ui.gameOverlay.innerHTML = `
                 <div>
                     <img src="imagenes/logo.png" alt="Logo del Juego" class="w-1/2 max-w-[180px] mx-auto mb-6">
@@ -538,6 +583,7 @@
         }
 
         function showInstructionsScreen() {
+            playSound(sounds.click);
             ui.gameOverlay.innerHTML = `
                 <div class="flex flex-col justify-between h-full w-full">
                     <div class="text-center mb-4">
@@ -560,6 +606,7 @@
         }
 
         function showRankingScreen() {
+            playSound(sounds.click);
             ui.gameOverlay.innerHTML = `
                 <div class="w-full flex flex-col h-full">
                     <div class="text-center mb-4">
@@ -587,7 +634,7 @@
         ui.splashLogo.addEventListener('animationend', (event) => {
             if (event.animationName === 'dropIn') {
                 ui.splashLogo.classList.add('shake');
-                ui.impactSound.play().catch(e => {});
+                playSound(sounds.splash);
                 
                 setTimeout(() => {
                     ui.splashScreen.style.opacity = 0;
