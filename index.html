@@ -65,7 +65,11 @@
                 </div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="health-bar" class="bg-green-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 PODER</span><span id="power-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="power-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
-                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold font-title text-lg"></span></div></div>
+                <!-- BARRA DE RECURSOS CORREGIDA -->
+                <div class="stat">
+                    <div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold"></span></div>
+                    <div class="w-full bg-gray-700 rounded-full h-2"><div id="resources-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div>
+                </div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="super-bar" class="bg-yellow-400 h-2 rounded-full stat-bar-inner"></div></div></div>
             </div>
             <div class="flex-grow flex flex-col items-center justify-center my-2 sm:my-4 relative">
@@ -153,7 +157,7 @@
             assaultCounter: document.getElementById('assault-counter'), playerNameDisplay: document.getElementById('player-name-display'),
             healthBar: document.getElementById('health-bar'), healthText: document.getElementById('health-text'),
             powerBar: document.getElementById('power-bar'), powerText: document.getElementById('power-text'),
-            resourcesText: document.getElementById('resources-text'),
+            resourcesBar: document.getElementById('resources-bar'), resourcesText: document.getElementById('resources-text'),
             superBar: document.getElementById('super-bar'), superText: document.getElementById('super-text'),
             charImg: document.getElementById('char-img'), charName: document.getElementById('char-name'),
             dilemmaDescription: document.getElementById('dilemma-description'),
@@ -200,7 +204,7 @@
             ui.playerNameDisplay.textContent = playerName;
             ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}`;
             ui.powerBar.style.width = `${stats.poder}%`; ui.powerText.textContent = `${stats.poder}`;
-            ui.resourcesText.textContent = `${stats.recursos} / 10`;
+            ui.resourcesBar.style.width = `${(stats.recursos / 10) * 100}%`; ui.resourcesText.textContent = `${stats.recursos} / 10`;
             ui.superBar.style.width = `${stats.superpoder}%`; ui.superText.textContent = `${stats.superpoder}%`;
             ui.superButton.disabled = stats.superpoder < 100;
         }
