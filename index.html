@@ -304,10 +304,10 @@
             if(gameOver) return;
 
             for (const key in effects) {
-                if (key !== 'recursos') {
-                    stats[key] = Math.max(0, Math.min(100, stats[key]));
+                if (key === 'recursos') {
+                    stats[key] = Math.max(0, stats[key]);
                 } else {
-                    stats[key] = Math.max(0, 10);
+                    stats[key] = Math.max(0, Math.min(100, stats[key]));
                 }
                 const value = effects[key];
                 const icon = {vida: '❤️', poder: '💥', recursos: '⚙️', superpoder: '🌟'}[key];
