@@ -367,11 +367,23 @@
         }
 
         function triggerRandomChallenge() {
-            const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+            const challengeGroup = challenges[Math.floor(Math.random() * challenges.length)];
             isSpecialTurn = true;
+
+            let difficulty;
+            if (currentAssault <= 5) { difficulty = "easy"; }
+            else if (currentAssault <= 10) { difficulty = "medium"; }
+            else { difficulty = "hard"; }
+
+            let availableQuestions = challengeGroup.questions.filter(q => q.difficulty === difficulty);
+            if (availableQuestions.length === 0) { availableQuestions = challengeGroup.questions; }
+            if (availableQuestions.length === 0) { nextAssault(); return; }
+
+            const challenge = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+
             ui.choicesSection.classList.add('hidden');
             ui.challengeChoicesSection.classList.remove('hidden');
-            ui.charImg.src = challenge.img;
+            ui.charImg.src = `https://placehold.co/150x150/a855f7/ffffff?text=?`;
             ui.charName.textContent = "¡ACERTIJO!";
             ui.dilemmaDescription.innerHTML = challenge.challenge;
             const buttons = Array.from(ui.challengeChoicesSection.children);
@@ -381,7 +393,9 @@
                 button.textContent = option.text;
                 button.onclick = () => {
                     if (option.correct) {
-                        inventory.push(challenge.reward);
+                        if (!inventory.some(item => item.name === challengeGroup.reward.name)) {
+                            inventory.push(challengeGroup.reward);
+                        }
                         updateInventoryUI();
                         showResolution("¡CORRECTO!", challenge.success, { superpoder: 15, recursos: 1 });
                     } else {
