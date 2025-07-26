@@ -203,7 +203,7 @@
             ui.playerNameDisplay.textContent = playerName;
             ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}`;
             ui.powerBar.style.width = `${stats.poder}%`; ui.powerText.textContent = `${stats.poder}`;
-            ui.resourcesBar.style.width = `${(stats.recursos / 15) * 100}%`; ui.resourcesText.textContent = `${stats.recursos} / 15`;
+            ui.resourcesBar.style.width = `${(stats.recursos / 10) * 100}%`; ui.resourcesText.textContent = `${stats.recursos} / 10`;
             ui.superBar.style.width = `${stats.superpoder}%`; ui.superText.textContent = `${stats.superpoder}%`;
             ui.superButton.disabled = stats.superpoder < 100;
         }
@@ -307,7 +307,7 @@
                 if (key !== 'recursos') {
                     stats[key] = Math.max(0, Math.min(100, stats[key]));
                 } else {
-                    stats[key] = Math.max(0, 15);
+                    stats[key] = Math.max(0, 10);
                 }
                 const value = effects[key];
                 const icon = {vida: '❤️', poder: '💥', recursos: '⚙️', superpoder: '🌟'}[key];
@@ -419,7 +419,7 @@
             let reason = null;
             if (stats.vida <= 0) reason = { title: '¡Sin Vida!', text: 'La vida de tu escuadrón ha llegado a cero.' };
             if (stats.poder >= 100) reason = { title: '¡Poder Descontrolado!', text: 'Tu poder es tan alto que has perdido el control.' };
-            if (stats.recursos > 15) reason = { title: '¡Avaricia!', text: 'Has acumulado demasiados recursos y te has vuelto un blanco fácil.' };
+            if (stats.recursos > 10) reason = { title: '¡Avaricia!', text: 'Has acumulado demasiados recursos y te has vuelto un blanco fácil.' };
 
             if (reason) {
                 showEndScreen(reason);
