@@ -51,7 +51,6 @@
     <!-- Pantalla de Bienvenida (Splash Screen) -->
     <div id="splash-screen" class="absolute inset-0 flex items-center justify-center bg-slate-900 z-50">
         <img id="splash-logo" src="imagenes/logo.png" alt="Brawl Stars: Batalla Infinita">
-        <audio id="impact-sound" src="sonidos/splash.mp3"></audio>
     </div>
 
     <!-- Contenedor Principal del Juego (Oculto al inicio) -->
@@ -104,6 +103,7 @@
     <audio id="sound-correct" src="sonidos/correcto.mp3" preload="auto"></audio>
     <audio id="sound-wrong" src="sonidos/incorrecto.mp3" preload="auto"></audio>
     <audio id="sound-super" src="sonidos/super.mp3" preload="auto"></audio>
+    <audio id="sound-event" src="sonidos/evento.mp3" preload="auto"></audio>
     <audio id="music-menu" src="sonidos/musica_menu.mp3" loop preload="auto"></audio>
     <audio id="music-game" src="sonidos/musica_juego.mp3" loop preload="auto"></audio>
     <audio id="music-defeat" src="sonidos/musica_derrota.mp3" preload="auto"></audio>
@@ -184,6 +184,7 @@
             correct: document.getElementById('sound-correct'),
             wrong: document.getElementById('sound-wrong'),
             super: document.getElementById('sound-super'),
+            event: document.getElementById('sound-event'),
             menuMusic: document.getElementById('music-menu'),
             gameMusic: document.getElementById('music-game'),
             defeatMusic: document.getElementById('music-defeat'),
@@ -351,19 +352,15 @@
                 stats[key] = Math.round(stats[key] + value);
             }
             
-            // Clamp values and then check for game over
-            for (const key in stats) {
+            checkGameOver();
+            if(gameOver) return;
+
+            for (const key in effects) {
                 if (key === 'recursos') {
                     stats[key] = Math.max(0, stats[key]);
                 } else {
                     stats[key] = Math.max(0, Math.min(100, stats[key]));
                 }
-            }
-
-            checkGameOver();
-            if(gameOver) return;
-
-            for (const key in effects) {
                 const value = effects[key];
                 const icon = {vida: '❤️', poder: '💥', recursos: '⚙️', superpoder: '🌟'}[key];
                 const name = {vida: 'Vida', poder: 'Poder', recursos: 'Recursos', superpoder: 'Superpoder'}[key];
@@ -399,6 +396,7 @@
         }
 
         function triggerRandomEvent() {
+            playSound(sounds.event);
             let event;
             do {
                 event = events[Math.floor(Math.random() * events.length)];
@@ -430,6 +428,7 @@
         }
 
         function triggerRandomChallenge() {
+            playSound(sounds.event);
             const challengeGroup = challenges[Math.floor(Math.random() * challenges.length)];
             isSpecialTurn = true;
 
