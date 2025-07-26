@@ -662,22 +662,10 @@
         ui.resolutionContinue.onclick = handleContinueClick;
         
         document.addEventListener('DOMContentLoaded', () => {
-            const startButton = document.createElement('button');
-            startButton.id = 'start-game-button';
-            startButton.className = 'menu-button bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-4 px-10 rounded-full text-2xl sm:text-3xl font-title';
-            startButton.textContent = 'TOCA PARA EMPEZAR';
-            
-            const startScreen = document.createElement('div');
-            startScreen.id = 'start-button-screen';
-            startScreen.className = 'absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-50';
-            startScreen.innerHTML = `<img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-8">`;
-            startScreen.appendChild(startButton);
-
-            document.body.insertBefore(startScreen, document.body.firstChild);
-
+            const startButton = document.getElementById('start-game-button');
             startButton.addEventListener('click', () => {
                 unlockAudio();
-                startScreen.classList.add('hidden-overlay');
+                ui.startButtonScreen.classList.add('hidden-overlay');
                 ui.splashScreen.classList.remove('hidden-overlay');
                 ui.splashLogo.classList.add('animate');
                 
