@@ -105,17 +105,15 @@
     </div>
 
     <!-- Elementos de Audio -->
-    <div id="audio-container">
-        <audio id="sound-splash" src="sonidos/splash.mp3" preload="auto"></audio>
-        <audio id="sound-click" src="sonidos/click.mp3" preload="auto"></audio>
-        <audio id="sound-correct" src="sonidos/correcto.mp3" preload="auto"></audio>
-        <audio id="sound-wrong" src="sonidos/incorrecto.mp3" preload="auto"></audio>
-        <audio id="sound-super" src="sonidos/super.mp3" preload="auto"></audio>
-        <audio id="sound-event" src="sonidos/evento.mp3" preload="auto"></audio>
-        <audio id="music-menu" src="sonidos/musica_menu.mp3" loop preload="auto"></audio>
-        <audio id="music-game" src="sonidos/musica_juego.mp3" loop preload="auto"></audio>
-        <audio id="music-defeat" src="sonidos/musica_derrota.mp3" preload="auto"></audio>
-    </div>
+    <audio id="sound-splash" src="sonidos/splash.mp3" preload="auto"></audio>
+    <audio id="sound-click" src="sonidos/click.mp3" preload="auto"></audio>
+    <audio id="sound-correct" src="sonidos/correcto.mp3" preload="auto"></audio>
+    <audio id="sound-wrong" src="sonidos/incorrecto.mp3" preload="auto"></audio>
+    <audio id="sound-super" src="sonidos/super.mp3" preload="auto"></audio>
+    <audio id="sound-event" src="sonidos/evento.mp3" preload="auto"></audio>
+    <audio id="music-menu" src="sonidos/musica_menu.mp3" loop preload="auto"></audio>
+    <audio id="music-game" src="sonidos/musica_juego.mp3" loop preload="auto"></audio>
+    <audio id="music-defeat" src="sonidos/musica_derrota.mp3" preload="auto"></audio>
 
     <!-- CARGA DE DATOS -->
     <script>
@@ -213,23 +211,17 @@
 
         function playSound(sound) {
             if (!audioUnlocked) return;
-            const soundClone = sound.cloneNode();
-            soundClone.play().catch(e => {});
-        }
-
-        function playMusic(name) {
-            if (!audioUnlocked || !sounds[name]) return;
-            stopAllMusic();
-            sounds[name].play().catch(e => {});
+            sound.currentTime = 0;
+            sound.play().catch(e => {});
         }
 
         function stopAllMusic() {
-            for (const key in sounds) {
-                if (sounds[key].loop) {
-                    sounds[key].pause();
-                    sounds[key].currentTime = 0;
-                }
-            }
+            sounds.menuMusic.pause();
+            sounds.gameMusic.pause();
+            sounds.defeatMusic.pause();
+            sounds.menuMusic.currentTime = 0;
+            sounds.gameMusic.currentTime = 0;
+            sounds.defeatMusic.currentTime = 0;
         }
 
         function shuffleArray(array) {
@@ -250,7 +242,7 @@
         function initGame() {
             playSound(sounds.click);
             stopAllMusic();
-            playMusic('gameMusic');
+            playSound(sounds.gameMusic);
             playerName = document.getElementById('player-name-input').value.trim() || 'Brawler';
             stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
             currentAssault = 1;
@@ -542,7 +534,8 @@
 
         function showEndScreen(reason) {
             gameOver = true;
-            SoundManager.playMusic('defeatMusic');
+            stopAllMusic();
+            playSound(sounds.defeatMusic);
             saveScore(playerName, currentAssault, inventory.length);
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
@@ -582,7 +575,8 @@
         }
 
         function showMainMenu() {
-            SoundManager.playMusic('menuMusic');
+            stopAllMusic();
+            playSound(sounds.menuMusic);
             ui.gameUI.classList.add('hidden');
             const menuHTML = `
                 <div class="flex flex-col justify-between h-full w-full max-w-md text-center">
@@ -606,7 +600,7 @@
         }
 
         function showNameInputScreen() {
-            SoundManager.playSfx('click');
+            playSound(sounds.click);
             ui.gameOverlay.innerHTML = `
                 <div>
                     <img src="imagenes/logo.png" alt="Logo del Juego" class="w-1/2 max-w-[180px] mx-auto mb-6">
@@ -619,7 +613,7 @@
         }
 
         function showInstructionsScreen() {
-            SoundManager.playSfx('click');
+            playSound(sounds.click);
             ui.gameOverlay.innerHTML = `
                 <div class="flex flex-col justify-between h-full w-full">
                     <div class="text-center mb-4">
@@ -642,7 +636,7 @@
         }
 
         function showRankingScreen() {
-            SoundManager.playSfx('click');
+            playSound(sounds.click);
             ui.gameOverlay.innerHTML = `
                 <div class="w-full flex flex-col h-full">
                     <div class="text-center mb-4">
@@ -667,27 +661,30 @@
         ui.superButton.onclick = useSuper;
         ui.resolutionContinue.onclick = handleContinueClick;
         
-        ui.startButton.addEventListener('click', () => {
-            unlockAudio();
-            ui.startButtonScreen.classList.add('hidden-overlay');
-            ui.splashScreen.classList.remove('hidden-overlay');
-            ui.splashLogo.classList.add('animate');
-            
-            ui.splashLogo.addEventListener('animationend', (event) => {
-                if (event.animationName === 'dropIn') {
-                    ui.splashLogo.classList.add('shake');
-                    playSound(sounds.splash);
-                    
-                    setTimeout(() => {
-                        ui.splashScreen.style.opacity = 0;
-                        ui.gameContainer.classList.remove('hidden');
-                        showMainMenu();
-                        setTimeout(() => ui.splashScreen.style.display = 'none', 500);
-                    }, 500);
-                }
-            });
+        document.addEventListener('DOMContentLoaded', () => {
+            const startButton = document.getElementById('start-game-button');
+            startButton.addEventListener('click', () => {
+                unlockAudio();
+                ui.startButtonScreen.classList.add('hidden-overlay');
+                ui.splashScreen.classList.remove('hidden-overlay');
+                ui.splashLogo.classList.add('animate');
+                
+                ui.splashLogo.addEventListener('animationend', (event) => {
+                    if (event.animationName === 'dropIn') {
+                        ui.splashLogo.classList.add('shake');
+                        playSound(sounds.splash);
+                        
+                        setTimeout(() => {
+                            ui.splashScreen.style.opacity = 0;
+                            ui.gameContainer.classList.remove('hidden');
+                            showMainMenu();
+                            setTimeout(() => ui.splashScreen.style.display = 'none', 500);
+                        }, 500);
+                    }
+                });
 
-        }, { once: true });
+            }, { once: true });
+        });
 
     </script>
 </body>
