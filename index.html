@@ -542,7 +542,8 @@
 
         function showEndScreen(reason) {
             gameOver = true;
-            SoundManager.playMusic('defeatMusic');
+            stopAllMusic();
+            playSound(sounds.defeatMusic);
             saveScore(playerName, currentAssault, inventory.length);
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
@@ -582,7 +583,8 @@
         }
 
         function showMainMenu() {
-            SoundManager.playMusic('menuMusic');
+            stopAllMusic();
+            playSound(sounds.menuMusic);
             ui.gameUI.classList.add('hidden');
             const menuHTML = `
                 <div class="flex flex-col justify-between h-full w-full max-w-md text-center">
@@ -606,7 +608,7 @@
         }
 
         function showNameInputScreen() {
-            SoundManager.playSfx('click');
+            playSound(sounds.click);
             ui.gameOverlay.innerHTML = `
                 <div>
                     <img src="imagenes/logo.png" alt="Logo del Juego" class="w-1/2 max-w-[180px] mx-auto mb-6">
@@ -619,7 +621,7 @@
         }
 
         function showInstructionsScreen() {
-            SoundManager.playSfx('click');
+            playSound(sounds.click);
             ui.gameOverlay.innerHTML = `
                 <div class="flex flex-col justify-between h-full w-full">
                     <div class="text-center mb-4">
@@ -642,7 +644,7 @@
         }
 
         function showRankingScreen() {
-            SoundManager.playSfx('click');
+            playSound(sounds.click);
             ui.gameOverlay.innerHTML = `
                 <div class="w-full flex flex-col h-full">
                     <div class="text-center mb-4">
