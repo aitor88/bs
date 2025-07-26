@@ -65,16 +65,12 @@
                 </div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="health-bar" class="bg-green-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 PODER</span><span id="power-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="power-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
-                <!-- BARRA DE RECURSOS CORREGIDA -->
-                <div class="stat">
-                    <div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold"></span></div>
-                    <div class="w-full bg-gray-700 rounded-full h-2"><div id="resources-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div>
-                </div>
+                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="resources-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="super-bar" class="bg-yellow-400 h-2 rounded-full stat-bar-inner"></div></div></div>
             </div>
             <div class="flex-grow flex flex-col items-center justify-center my-2 sm:my-4 relative">
                 <div id="dilemma-card" class="bg-gray-700 rounded-2xl shadow-xl p-4 w-full max-w-sm text-center flex flex-col items-center justify-center flex-grow">
-                    <img id="char-img" src="" class="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover mb-2 border-4 border-gray-600" alt="Personaje">
+                    <img id="char-img" src="" class="w-28 h-28 sm:w-36 sm:h-36 object-cover mb-2 border-4 border-gray-600" alt="Personaje">
                     <h2 id="char-name" class="font-title text-2xl sm:text-3xl text-yellow-300 mb-1"></h2>
                     <p id="dilemma-description" class="text-gray-200 text-lg sm:text-xl font-bold"></p>
                 </div>
@@ -204,7 +200,7 @@
             ui.playerNameDisplay.textContent = playerName;
             ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}`;
             ui.powerBar.style.width = `${stats.poder}%`; ui.powerText.textContent = `${stats.poder}`;
-            ui.resourcesBar.style.width = `${(stats.recursos / 10) * 100}%`; ui.resourcesText.textContent = `${stats.recursos} / 10`;
+            ui.resourcesBar.style.width = `${(stats.recursos / 15) * 100}%`; ui.resourcesText.textContent = `${stats.recursos} / 15`;
             ui.superBar.style.width = `${stats.superpoder}%`; ui.superText.textContent = `${stats.superpoder}%`;
             ui.superButton.disabled = stats.superpoder < 100;
         }
@@ -244,6 +240,8 @@
             }
             const dilemma = dilemmaDecks[char.name].pop();
             
+            ui.charImg.classList.add('rounded-full');
+            ui.charImg.classList.remove('rounded-lg');
             ui.charImg.style.display = 'block';
             ui.charName.textContent = char.name;
             ui.charImg.src = char.img;
@@ -306,7 +304,7 @@
                 if (key !== 'recursos') {
                     stats[key] = Math.max(0, Math.min(100, stats[key]));
                 } else {
-                    stats[key] = Math.max(0, 10);
+                    stats[key] = Math.max(0, 15);
                 }
                 const value = effects[key];
                 const icon = {vida: '❤️', poder: '💥', recursos: '⚙️', superpoder: '🌟'}[key];
@@ -359,6 +357,8 @@
         }
 
         function displayEventChoice(event) {
+            ui.charImg.classList.remove('rounded-full');
+            ui.charImg.classList.add('rounded-lg');
             ui.charImg.style.display = 'block';
             ui.charImg.src = event.img;
             ui.charImg.onerror = () => { ui.charImg.style.display = 'none'; };
@@ -387,6 +387,8 @@
 
             ui.choicesSection.classList.add('hidden');
             ui.challengeChoicesSection.classList.remove('hidden');
+            ui.charImg.classList.remove('rounded-full');
+            ui.charImg.classList.add('rounded-lg');
             ui.charImg.src = `https://placehold.co/150x150/a855f7/ffffff?text=?`;
             ui.charName.textContent = "¡ACERTIJO!";
             ui.dilemmaDescription.innerHTML = challenge.challenge;
@@ -414,7 +416,7 @@
             let reason = null;
             if (stats.vida <= 0) reason = { title: '¡Sin Vida!', text: 'La vida de tu escuadrón ha llegado a cero.' };
             if (stats.poder >= 100) reason = { title: '¡Poder Descontrolado!', text: 'Tu poder es tan alto que has perdido el control.' };
-            if (stats.recursos > 10) reason = { title: '¡Avaricia!', text: 'Has acumulado demasiados recursos y te has vuelto un blanco fácil.' };
+            if (stats.recursos > 15) reason = { title: '¡Avaricia!', text: 'Has acumulado demasiados recursos y te has vuelto un blanco fácil.' };
 
             if (reason) {
                 showEndScreen(reason);
@@ -463,7 +465,7 @@
             ui.gameUI.classList.add('hidden');
             ui.gameOverlay.innerHTML = `
                 <div class="w-full flex flex-col items-center justify-center h-full">
-                    <img src="avatares/momoxorro.png" alt="Villano" class="w-28 h-28 sm:w-32 sm:h-32 mb-4 rounded-full object-cover" onerror="this.style.display='none'">
+                    <img src="avatares/momoxorro.png" alt="Villano" class="w-28 h-28 sm:w-32 sm:h-32 mb-4 object-contain" onerror="this.style.display='none'">
                     <h1 class="font-title text-4xl sm:text-5xl mb-2 text-yellow-300">¡DERROTADO!</h1>
                     <p class="text-lg mb-2 text-red-400 font-bold">${reason.text}</p>
                     <p class="text-base sm:text-lg mb-2">Has aguantado <span class="font-bold text-yellow-300">${currentAssault}</span> asaltos.</p>
