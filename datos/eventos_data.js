@@ -204,5 +204,15 @@ window.gameEvents = [
             { text: "¡Dispara a los barriles!", narrative: "¡BOOM! La explosión acaba con los enemigos, pero la onda expansiva os alcanza.", effects: { poder: 20, vida: -15 } },
             { text: "No te arriesgues", narrative: "Es demasiado peligroso. Buscáis otra forma de atacar.", effects: { poder: 5 } }
         ]
+    },
+    {
+        name: "Robot Amistoso",
+        message: "¡Un pequeño robot os ofrece ayuda! ¿Aceptáis sus piezas o su ayuda en combate?",
+        img: "imagenes/evento_recursos.png",
+        type: "choice",
+        options: [
+            { text: "Aceptar sus piezas", narrative: "Desmontáis al robot y conseguís recursos muy valiosos.", effects: { recursos: 3 } },
+            { text: "Aceptar su ayuda", narrative: "El robot se une a vosotros temporalmente, ¡vuestro poder aumenta!", effects: { poder: 20 } }
+        ]
     }
 ];
