@@ -51,6 +51,7 @@
     <!-- Pantalla de Bienvenida (Splash Screen) -->
     <div id="splash-screen" class="absolute inset-0 flex items-center justify-center bg-slate-900 z-50">
         <img id="splash-logo" src="imagenes/logo.png" alt="Brawl Stars: Batalla Infinita">
+        <audio id="impact-sound" src="sonidos/splash.mp3"></audio>
     </div>
 
     <!-- Contenedor Principal del Juego (Oculto al inicio) -->
@@ -98,14 +99,14 @@
     </div>
 
     <!-- Elementos de Audio -->
-    <audio id="sound-splash" src="https://cdn.pixabay.com/audio/2022/03/15/audio_02f51f27f9.mp3" preload="auto"></audio>
-    <audio id="sound-click" src="https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8967195.mp3" preload="auto"></audio>
-    <audio id="sound-correct" src="https://cdn.pixabay.com/audio/2022/11/21/audio_a259806e5b.mp3" preload="auto"></audio>
-    <audio id="sound-wrong" src="https://cdn.pixabay.com/audio/2022/03/24/audio_39cbf2d83o.mp3" preload="auto"></audio>
-    <audio id="sound-super" src="https://cdn.pixabay.com/audio/2022/10/13/audio_731633a697.mp3" preload="auto"></audio>
-    <audio id="music-menu" src="https://cdn.pixabay.com/audio/2023/07/23/audio_1537b0e25b.mp3" loop preload="auto"></audio>
-    <audio id="music-game" src="https://cdn.pixabay.com/audio/2022/08/03/audio_51c482c971.mp3" loop preload="auto"></audio>
-    <audio id="music-defeat" src="https://cdn.pixabay.com/audio/2022/05/19/audio_24538d33e1.mp3" preload="auto"></audio>
+    <audio id="sound-splash" src="sonidos/splash.mp3" preload="auto"></audio>
+    <audio id="sound-click" src="sonidos/click.mp3" preload="auto"></audio>
+    <audio id="sound-correct" src="sonidos/correcto.mp3" preload="auto"></audio>
+    <audio id="sound-wrong" src="sonidos/incorrecto.mp3" preload="auto"></audio>
+    <audio id="sound-super" src="sonidos/super.mp3" preload="auto"></audio>
+    <audio id="music-menu" src="sonidos/musica_menu.mp3" loop preload="auto"></audio>
+    <audio id="music-game" src="sonidos/musica_juego.mp3" loop preload="auto"></audio>
+    <audio id="music-defeat" src="sonidos/musica_derrota.mp3" preload="auto"></audio>
 
     <!-- CARGA DE DATOS -->
     <script>
@@ -155,6 +156,7 @@
         let lastCharacterName = '';
         let lastEventName = '';
         let dilemmaDecks = {};
+        let audioUnlocked = false;
 
         const ui = {
             splashScreen: document.getElementById('splash-screen'),
@@ -187,7 +189,18 @@
             defeatMusic: document.getElementById('music-defeat'),
         };
         
+        function unlockAudio() {
+            if (audioUnlocked) return;
+            for (const key in sounds) {
+                sounds[key].play().catch(() => {});
+                sounds[key].pause();
+                sounds[key].currentTime = 0;
+            }
+            audioUnlocked = true;
+        }
+
         function playSound(sound) {
+            if (!audioUnlocked) return;
             sound.currentTime = 0;
             sound.play().catch(e => {});
         }
@@ -217,6 +230,7 @@
         }
 
         function initGame() {
+            unlockAudio();
             playSound(sounds.click);
             stopAllMusic();
             playSound(sounds.gameMusic);
@@ -337,15 +351,19 @@
                 stats[key] = Math.round(stats[key] + value);
             }
             
-            checkGameOver();
-            if(gameOver) return;
-
-            for (const key in effects) {
+            // Clamp values and then check for game over
+            for (const key in stats) {
                 if (key === 'recursos') {
                     stats[key] = Math.max(0, stats[key]);
                 } else {
                     stats[key] = Math.max(0, Math.min(100, stats[key]));
                 }
+            }
+
+            checkGameOver();
+            if(gameOver) return;
+
+            for (const key in effects) {
                 const value = effects[key];
                 const icon = {vida: '❤️', poder: '💥', recursos: '⚙️', superpoder: '🌟'}[key];
                 const name = {vida: 'Vida', poder: 'Poder', recursos: 'Recursos', superpoder: 'Superpoder'}[key];
