@@ -231,7 +231,6 @@
         }
 
         function initGame() {
-            unlockAudio();
             playSound(sounds.click);
             stopAllMusic();
             playSound(sounds.gameMusic);
@@ -352,15 +351,18 @@
                 stats[key] = Math.round(stats[key] + value);
             }
             
-            checkGameOver();
-            if(gameOver) return;
-
-            for (const key in effects) {
+            // Apply clamps and then check for game over
+            for (const key in stats) {
                 if (key === 'recursos') {
-                    stats[key] = Math.max(0, stats[key]);
+                    stats[key] = Math.max(0, Math.min(10, stats[key]));
                 } else {
                     stats[key] = Math.max(0, Math.min(100, stats[key]));
                 }
+            }
+            
+            updateUI(); // Update bars to show the final state
+
+            for (const key in effects) {
                 const value = effects[key];
                 const icon = {vida: '❤️', poder: '💥', recursos: '⚙️', superpoder: '🌟'}[key];
                 const name = {vida: 'Vida', poder: 'Poder', recursos: 'Recursos', superpoder: 'Superpoder'}[key];
@@ -378,20 +380,21 @@
         function handleContinueClick() {
             playSound(sounds.click);
             ui.resolutionOverlay.classList.add('hidden-overlay');
+            
+            if (checkGameOver()) return;
+
             if (!isSpecialTurn) {
                 currentAssault++;
             }
             updateUI();
-            checkGameOver();
-            if (!gameOver) {
-                const rand = Math.random();
-                if (rand < 0.2 && events.length > 0) { 
-                    triggerRandomEvent();
-                } else if (rand < 0.35 && challenges.length > 0) {
-                    triggerRandomChallenge();
-                } else {
-                    nextAssault();
-                }
+            
+            const rand = Math.random();
+            if (rand < 0.2 && events.length > 0) { 
+                triggerRandomEvent();
+            } else if (rand < 0.35 && challenges.length > 0) {
+                triggerRandomChallenge();
+            } else {
+                nextAssault();
             }
         }
 
@@ -472,7 +475,7 @@
         }
 
         function checkGameOver() {
-            if (gameOver) return;
+            if (gameOver) return false;
             let reason = null;
             if (stats.vida <= 0) reason = { title: '¡Sin Vida!', text: 'La vida de tu escuadrón ha llegado a cero.' };
             if (stats.poder >= 100) reason = { title: '¡Poder Descontrolado!', text: 'Tu poder es tan alto que has perdido el control.' };
@@ -480,7 +483,9 @@
 
             if (reason) {
                 showEndScreen(reason);
+                return true;
             }
+            return false;
         }
 
         function saveScore(name, score, collectibles) {
