@@ -147,9 +147,10 @@ function showMainMenu() {
     playSound(sounds.menuMusic);
     ui.gameUI.classList.add('hidden');
     const menuHTML = `
-        <div class="flex flex-col justify-between h-full w-full max-w-md text-center">
-            <div class="flex-grow flex flex-col justify-center">
-                <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-8 sm:mb-12" onerror="this.style.display='none';">
+        <div class="flex flex-col h-full w-full max-w-md text-center py-6">
+            
+            <div class="flex-grow overflow-y-auto px-4">
+                <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-6 sm:mb-10" onerror="this.style.display='none';">
                 <div class="space-y-3">
                     <button onclick="showNameInputScreen()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('newGame')}</button>
                     <button onclick="showInstructionsScreen()" class="menu-button w-full bg-purple-600 border-purple-800 hover:bg-purple-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('instructions')}</button>
@@ -158,11 +159,13 @@ function showMainMenu() {
                     <button id="install-button" onclick="handleInstallClick()" class="hidden menu-button w-full bg-teal-600 border-teal-800 hover:bg-teal-500 text-white font-bold py-3 px-8 rounded-full text-xl font-title">📥 Instalar Juego</button>
                 </div>
             </div>
-            <div class="pb-2">
+
+            <div class="flex-shrink-0 pt-6">
                 <img src="avatares/jon.png" alt="Creador del juego" class="w-20 h-20 rounded-full mx-auto" onerror="this.style.display='none'">
                 <p class="font-title mt-2 text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
             </div>
-        </div>`;
+        </div>
+    `;
     ui.gameOverlay.innerHTML = menuHTML;
 
     // Lógica para mostrar el botón de instalación si es posible
