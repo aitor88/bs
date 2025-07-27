@@ -1,29 +1,15 @@
-// Función auxiliar para obtener textos del objeto de traducciones
-const getText = (key, ...args) => {
-    // Asegurarse de que translations y la clave de idioma existen
-    if (!translations || !translations[currentLang]) {
-        console.error(`Idioma "${currentLang}" no encontrado en las traducciones.`);
-        return key; // Devuelve la clave como fallback
-    }
-    const translation = translations[currentLang][key];
-    if (!translation) {
-        console.error(`Clave de traducción "${key}" no encontrada para el idioma "${currentLang}".`);
-        return key; // Devuelve la clave como fallback
-    }
-    if (typeof translation === 'function') {
-        return translation(...args);
-    }
-    return translation;
-};
-
 function updateUI() {
-    // Actualizamos las cabeceras de las estadísticas con sus traducciones
-    document.querySelector('span.text-green-400').innerHTML = `❤️ ${getText('health')}`;
-    document.querySelector('span.text-orange-400').innerHTML = `💥 ${getText('power')}`;
-    document.querySelector('span.text-sky-400').innerHTML = `⚙️ ${getText('resources')}`;
-    document.querySelector('span.text-yellow-400:not(.text-yellow-300)').innerHTML = `🌟 ${getText('superpower')}`;
+    const statsContainer = document.getElementById('stats-container');
+    statsContainer.querySelector('span.text-green-400').innerHTML = `❤️ ${getText('health')}`;
+    statsContainer.querySelector('span.text-orange-400').innerHTML = `💥 ${getText('power')}`;
+    statsContainer.querySelector('span.text-sky-400').innerHTML = `⚙️ ${getText('resources')}`;
+    statsContainer.querySelector('span.text-yellow-400:not(.text-300)').innerHTML = `🌟 ${getText('superpower')}`;
+
+    const playerLabel = ui.playerNameDisplay.parentElement.querySelector('span:first-child');
+    if (playerLabel) playerLabel.textContent = `${getText('player')}: `;
+    const assaultLabel = ui.assaultCounter.parentElement.querySelector('span:first-child');
+    if (assaultLabel) assaultLabel.textContent = `${getText('assault')} `;
     
-    // Actualizamos el resto de la UI
     ui.assaultCounter.textContent = currentAssault;
     ui.playerNameDisplay.textContent = playerName;
     ui.healthBar.style.width = `${stats.vida}%`; ui.healthText.textContent = `${stats.vida}`;
@@ -46,7 +32,7 @@ function updateInventoryUI() {
             const itemEl = document.createElement('img');
             itemEl.className = 'inventory-item';
             itemEl.src = item.image;
-            itemEl.title = item.name[currentLang]; // Asumimos que el nombre del item también está traducido
+            itemEl.title = item.name[currentLang] || item.name['es'];
             itemEl.onerror = () => { itemEl.style.display = 'none'; };
             ui.inventoryContainer.appendChild(itemEl);
         });
@@ -62,11 +48,7 @@ function showResolution(title, narrative, effects) {
     }
     
     for (const key in stats) {
-        if (key === 'recursos') {
-            stats[key] = Math.max(0, Math.min(10, stats[key]));
-        } else {
-            stats[key] = Math.max(0, Math.min(100, stats[key]));
-        }
+        stats[key] = Math.max(0, (key === 'recursos' ? Math.min(10, stats[key]) : Math.min(100, stats[key])));
     }
     
     updateUI(); 
@@ -111,15 +93,18 @@ function showEndScreen(reason) {
     
     db.collection("ranking").orderBy("score", "desc").get().then(querySnapshot => {
         let rank = 0;
+        let found = false;
         querySnapshot.forEach((doc, index) => {
-            if (rank === 0 && doc.data().name === playerName && doc.data().score === currentAssault) {
+            const entry = doc.data();
+            if (!found && entry.name === playerName && entry.score === currentAssault) {
                 rank = index + 1;
+                found = true;
             }
         });
         const rankTextEl = document.getElementById('player-rank-text');
         if (rank > 0) {
             rankTextEl.innerHTML = getText('rankPosition', rank);
-        } else {
+        } else if (rankTextEl) {
             rankTextEl.textContent = getText('scoreSaved');
         }
     });
@@ -162,14 +147,17 @@ function showMainMenu() {
     ui.gameOverlay.innerHTML = `
         <div class="flex flex-col justify-between h-full w-full max-w-md text-center">
             <div class="flex-grow flex flex-col justify-center">
-                <img src="imagenes/logo.png" ...>
+                <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-8 sm:mb-12" onerror="this.style.display='none';">
                 <div class="space-y-3">
-                    <button onclick="showNameInputScreen()" class="menu-button ...">${getText('newGame')}</button>
-                    <button onclick="showInstructionsScreen()" class="menu-button ...">${getText('instructions')}</button>
-                    <button onclick="showRankingScreen()" class="menu-button ...">${getText('ranking')}</button>
+                    <button onclick="showNameInputScreen()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('newGame')}</button>
+                    <button onclick="showInstructionsScreen()" class="menu-button w-full bg-purple-600 border-purple-800 hover:bg-purple-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('instructions')}</button>
+                    <button onclick="showRankingScreen()" class="menu-button w-full bg-orange-500 border-orange-700 hover:bg-orange-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('ranking')}</button>
                 </div>
             </div>
-            ...
+            <div class="pb-2">
+                <img src="avatares/jon.png" alt="Creador del juego" class="w-20 h-20 rounded-full mx-auto" onerror="this.style.display='none'">
+                <p class="font-title mt-2 text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
+            </div>
         </div>`;
     ui.gameOverlay.classList.remove('hidden-overlay');
 }
@@ -178,10 +166,10 @@ function showNameInputScreen() {
     playSound(sounds.click);
     ui.gameOverlay.innerHTML = `
         <div>
-            <img src="imagenes/logo.png" ...>
-            <h1 class="font-title ...">${getText('chooseYourName')}</h1>
-            <input type="text" id="player-name-input" placeholder="${getText('writeYourName')}" ...>
-            <button onclick="initGame()" class="menu-button ...">${getText('toTheBattle')}</button>
+            <img src="imagenes/logo.png" alt="Logo del Juego" class="w-1/2 max-w-[180px] mx-auto mb-6">
+            <h1 class="font-title text-4xl sm:text-5xl mb-6 text-yellow-300">${getText('chooseYourName')}</h1>
+            <input type="text" id="player-name-input" placeholder="${getText('writeYourName')}" class="w-full mb-6 font-title">
+            <button onclick="initGame()" class="menu-button w-full bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('toTheBattle')}</button>
             <button onclick="showMainMenu()" class="mt-4 text-gray-400">${getText('back')}</button>
         </div>`;
 }
@@ -190,18 +178,20 @@ function showInstructionsScreen() {
     playSound(sounds.click);
     ui.gameOverlay.innerHTML = `
         <div class="flex flex-col justify-between h-full w-full">
-            ...
-            <div class="flex-grow space-y-3 ...">
-                <div><strong>${getText('objective')}</strong> ${getText('objectiveText')}</div>
-                <div><strong>${getText('decisions')}</strong> ${getText('decisionsText')}</div>
-                <div><strong>${getText('stats')}</strong> ${getText('statsText')}</div>
-                <div><strong>${getText('enemies')}</strong> ${getText('enemiesText')}</div>
-                <div><strong>${getText('surprises')}</strong> ${getText('surprisesText')}</div>
-                <div><strong>${getText('superpowerTitle')}</strong> ${getText('superpowerText')}</div>
+            <div class="text-center mb-4">
+                <img src="imagenes/logo.png" alt="Logo" class="w-1/2 max-w-[150px] mx-auto">
             </div>
-            <div class="text-center mt-4 ...">
-                ...
-                <button onclick="showMainMenu()" class="menu-button ...">${getText('understood')}</button>
+            <div class="flex-grow space-y-3 sm:space-y-4 text-left text-base sm:text-lg overflow-y-auto font-bold">
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎯</span><div><strong class="text-yellow-300">${getText('objective')}</strong> ${getText('objectiveText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🤔</span><div><strong class="text-yellow-300">${getText('decisions')}</strong> ${getText('decisionsText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">📊</span><div><strong class="text-yellow-300">${getText('stats')}</strong> ${getText('statsText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">⚔️</span><div><strong class="text-yellow-300">${getText('enemies')}</strong> ${getText('enemiesText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎁</span><div><strong class="text-yellow-300">${getText('surprises')}</strong> ${getText('surprisesText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🌟</span><div><strong class="text-yellow-300">${getText('superpowerTitle')}</strong> ${getText('superpowerText')}</div></div>
+            </div>
+            <div class="text-center mt-4 sm:mt-6">
+                <p class="font-title text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
+                <button onclick="showMainMenu()" class="menu-button w-full mt-4 bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('understood')}</button>
             </div>
         </div>`;
 }
@@ -210,16 +200,18 @@ function showRankingScreen() {
     playSound(sounds.click);
     ui.gameOverlay.innerHTML = `
         <div class="w-full flex flex-col h-full">
-            ...
-            <div class="w-full max-w-md ...">
-                <h2 class="font-title ...">${getText('rankingTitle')}</h2>
-                <table class="ranking-table ...">
+            <div class="text-center mb-4">
+                <img src="imagenes/logo.png" alt="Logo" class="w-1/2 max-w-[150px] mx-auto">
+            </div>
+            <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto flex-grow">
+                <h2 class="font-title text-2xl text-yellow-300 mb-2">${getText('rankingTitle')}</h2>
+                <table class="ranking-table text-lg font-bold">
                     <thead><tr><th>${getText('rankHeader')}</th><th class="text-left">${getText('nameHeader')}</th><th>${getText('collectiblesHeader')}</th><th>${getText('assaultsHeader')}</th></tr></thead>
                     <tbody id="ranking-list-table"></tbody>
                 </table>
             </div>
             <div class="flex justify-center">
-                <button onclick="showMainMenu()" class="menu-button ...">${getText('backToMenu')}</button>
+                <button onclick="showMainMenu()" class="menu-button w-full max-w-xs bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('backToMenu')}</button>
             </div>
         </div>`;
     displayRanking(document.getElementById('ranking-list-table'));
