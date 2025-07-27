@@ -1,1 +1,24 @@
+body { font-family: 'Nunito', sans-serif; background-color: #1a202c; }
+.font-title { font-family: 'Lilita One', cursive; }
+.stat-bar-inner { transition: width 0.5s ease-in-out; }
+.game-container { max-width: 500px; width: 100%; height: 100vh; max-height: 900px; display: flex; flex-direction: column; }
+.choice-button, .menu-button { transition: background-color 0.2s, transform 0.2s; border-bottom-width: 4px; display: flex; align-items: center; justify-content: center; padding: 8px; }
+.choice-button:hover, .menu-button:hover { transform: translateY(-2px); }
+.choice-button:active, .menu-button:active { transform: translateY(1px); }
+#super-button:disabled { filter: grayscale(80%); cursor: not-allowed; }
+#game-overlay, #resolution-overlay, #notification, #splash-screen, #start-button-screen { transition: opacity 0.5s; }
+.hidden-overlay { opacity: 0; pointer-events: none; }
+#player-name-input { background-color: #2d3748; border: 2px solid #4a5568; color: white; border-radius: 0.5rem; padding: 0.75rem; text-align: center; font-size: 16px; }
+.inventory-item { height: 100%; width: auto; max-height: 40px; }
 
+#splash-logo { width: 300px; position: relative; opacity: 0; }
+#splash-logo.animate { animation: dropIn 1.2s ease-out forwards; }
+@keyframes dropIn { 0% { opacity: 0; transform: translateY(-200px) scale(2.5) rotate(10deg); filter: blur(20px); } 60% { opacity: 1; transform: translateY(20px) scale(1.05) rotate(-3deg); filter: blur(0px); } 80% { transform: translateY(-5px) scale(1.02); } 100% { transform: translateY(0px) scale(1); } }
+#splash-logo.shake { animation: shake 0.2s ease-in-out 1; }
+@keyframes shake { 0% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-4px) rotate(1deg); } 50% { transform: translateY(4px) rotate(-1deg); } 75% { transform: translateY(-2px) rotate(0.5deg); } 100% { transform: translateY(0) rotate(0); } }
+
+.ranking-table { width: 100%; border-collapse: collapse; }
+.ranking-table th, .ranking-table td { padding: 8px; text-align: center; }
+.ranking-table th { color: #facc15; }
+.ranking-table tr:not(:last-child) { border-bottom: 1px solid #4a5568; }
+.ranking-table td:nth-child(2), .ranking-table th:nth-child(2) { text-align: left; }
