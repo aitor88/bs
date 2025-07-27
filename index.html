@@ -21,10 +21,20 @@
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
 
     <div id="start-button-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-50 p-4">
-        <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-12">
+        <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-8">
+        
+        <h2 class="font-title text-4xl text-yellow-300 mb-8">Elige Idioma</h2>
+
         <div class="w-full max-w-xs space-y-4">
-            <button id="lang-es-button" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-2xl font-title">Español</button>
-            <button id="lang-eu-button" class="menu-button w-full bg-green-600 border-green-800 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full text-2xl font-title">Euskera</button>
+            <button id="lang-es-button" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-2xl font-title">
+                <img src="imagenes/bandera_es.png" alt="Bandera de España" class="w-8 mr-3">
+                <span>Español</span>
+            </button>
+            
+            <button id="lang-eu-button" class="menu-button w-full bg-green-600 border-green-800 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full text-2xl font-title">
+                <img src="imagenes/bandera_eu.png" alt="Bandera de Euskadi" class="w-8 mr-3">
+                <span>Euskera</span>
+            </button>
         </div>
     </div>
 
@@ -33,6 +43,7 @@
     </div>
 
     <div id="game-container" class="hidden game-container bg-gray-800 rounded-3xl shadow-2xl p-3 sm:p-6 flex-col justify-between relative overflow-hidden">
+        
         <div id="game-ui" class="hidden h-full flex flex-col">
             <div id="stats-container" class="space-y-1.5">
                 <div class="flex justify-between items-center font-title text-base">
