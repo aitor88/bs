@@ -1,4 +1,7 @@
-// UTILIDADES
+// ===================================================================
+// === UTILIDADES ===
+// ===================================================================
+
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -14,7 +17,10 @@ function createDilemmaDecks() {
     });
 }
 
-// LÓGICA PRINCIPAL DEL JUEGO
+// ===================================================================
+// === LÓGICA PRINCIPAL DEL JUEGO ===
+// ===================================================================
+
 function initGame() {
     playSound(sounds.click);
     stopAllMusic();
@@ -133,9 +139,9 @@ function triggerRandomEvent() {
     let event;
     do {
         event = events[Math.floor(Math.random() * events.length)];
-    } while (event.name === lastEventName && events.length > 1);
-    lastEventName = event.name;
-
+    } while (event.name[currentLang] === lastEventName && events.length > 1);
+    
+    lastEventName = event.name[currentLang];
     isSpecialTurn = true;
     const eventName = event.name[currentLang] || event.name['es'];
     const eventTitle = getText('eventTitle', eventName);
@@ -189,21 +195,23 @@ function triggerRandomChallenge() {
     
     buttons.forEach((button, index) => {
         const option = shuffledOptions[index];
-        button.textContent = option.text[currentLang];
-        button.onclick = () => {
-            if (option.correct) {
-                playSound(sounds.correct);
-                const rewardName = challengeGroup.reward.name[currentLang];
-                if (!inventory.some(item => item.name[currentLang] === rewardName)) {
-                    inventory.push(challengeGroup.reward);
+        if (option) {
+            button.textContent = option.text[currentLang];
+            button.onclick = () => {
+                if (option.correct) {
+                    playSound(sounds.correct);
+                    const rewardName = challengeGroup.reward.name[currentLang] || challengeGroup.reward.name['es'];
+                    if (!inventory.some(item => (item.name[currentLang] || item.name['es']) === rewardName)) {
+                        inventory.push(challengeGroup.reward);
+                    }
+                    updateInventoryUI();
+                    showResolution(getText('correct'), challenge.success[currentLang], { superpoder: 15, recursos: 1 });
+                } else {
+                    playSound(sounds.wrong);
+                    showResolution(getText('incorrect'), challenge.failure[currentLang], { vida: -5 });
                 }
-                updateInventoryUI();
-                showResolution(getText('correct'), challenge.success[currentLang], { superpoder: 15, recursos: 1 });
-            } else {
-                playSound(sounds.wrong);
-                showResolution(getText('incorrect'), challenge.failure[currentLang], { vida: -5 });
-            }
-        };
+            };
+        }
     });
 }
 
@@ -221,7 +229,10 @@ function checkGameOver() {
     return false;
 }
 
-// INICIO DEL JUEGO Y EVENT LISTENERS
+// ===================================================================
+// === INICIO DEL JUEGO Y EVENT LISTENERS ===
+// ===================================================================
+
 function setLanguage(lang) {
     currentLang = lang;
     unlockAudio();
