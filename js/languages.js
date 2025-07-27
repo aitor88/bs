@@ -130,7 +130,7 @@ const translations = {
         // --- Juego ---
         super: "SUPER",
         superNarrative: "Botere bultzada batek bizitza, indarra eta baliabide gehigarri bat ematen dizkizu!",
-        superTitle: "¡SUPERBOTEREA!",
+        superTitle: "SUPERBOTEREA!",
         enemyAttack: "Etsaiek kontraeraso egiten dute.",
         eventTitle: (name) => `GERTAERA: ${name}!`,
         challengeTitle: "ASMAKIZUNA!",
@@ -141,4 +141,21 @@ const translations = {
         notEnoughResources: "Ez duzu nahikoa baliabide!",
         notEnoughSuper: "Ez duzu nahikoa superbotere!",
     }
+};
+
+// Función centralizada para obtener los textos. Se define UNA SOLA VEZ aquí.
+const getText = (key, ...args) => {
+    if (!translations || !translations[currentLang]) {
+        console.error(`Idioma "${currentLang}" no encontrado en las traducciones.`);
+        return key;
+    }
+    const translation = translations[currentLang][key];
+    if (!translation) {
+        console.error(`Clave de traducción "${key}" no encontrada para el idioma "${currentLang}".`);
+        return key;
+    }
+    if (typeof translation === 'function') {
+        return translation(...args);
+    }
+    return translation;
 };
