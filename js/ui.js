@@ -146,29 +146,34 @@ function showMainMenu() {
     stopAllMusic();
     playSound(sounds.menuMusic);
     ui.gameUI.classList.add('hidden');
+
+    // Decidimos qué logo usar
+    const logoPath = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
+    
+    // HTML del menú con tamaños y márgenes responsivos para evitar el scroll
     const menuHTML = `
-        <div class="flex flex-col h-full w-full max-w-md text-center py-6">
+        <div class="flex flex-col justify-between h-full w-full max-w-md text-center py-4">
             
-            <div class="flex-grow overflow-y-auto px-4">
-                <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-6 sm:mb-10" onerror="this.style.display='none';">
-                <div class="space-y-3">
-                    <button onclick="showNameInputScreen()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('newGame')}</button>
-                    <button onclick="showInstructionsScreen()" class="menu-button w-full bg-purple-600 border-purple-800 hover:bg-purple-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('instructions')}</button>
-                    <button onclick="showRankingScreen()" class="menu-button w-full bg-orange-500 border-orange-700 hover:bg-orange-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('ranking')}</button>
-                    
-                    <button id="install-button" onclick="handleInstallClick()" class="hidden menu-button w-full bg-teal-600 border-teal-800 hover:bg-teal-500 text-white font-bold py-3 px-8 rounded-full text-xl font-title">📥 Instalar Juego</button>
+            <div class="flex-grow flex flex-col justify-center px-4">
+                <img src="${logoPath}" alt="Logo del Juego" class="w-3/4 max-w-[240px] sm:max-w-[280px] mx-auto mb-6 sm:mb-8" onerror="this.style.display='none';">
+                
+                <div class="space-y-2 sm:space-y-3">
+                    <button onclick="showNameInputScreen()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('newGame')}</button>
+                    <button onclick="showInstructionsScreen()" class="menu-button w-full bg-purple-600 border-purple-800 hover:bg-purple-500 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('instructions')}</button>
+                    <button onclick="showRankingScreen()" class="menu-button w-full bg-orange-500 border-orange-700 hover:bg-orange-400 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('ranking')}</button>
+                    <button id="install-button" onclick="handleInstallClick()" class="hidden menu-button w-full bg-teal-600 border-teal-800 hover:bg-teal-500 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">📥 Instalar Juego</button>
                 </div>
             </div>
 
-            <div class="flex-shrink-0 pt-6">
-                <img src="avatares/jon.png" alt="Creador del juego" class="w-20 h-20 rounded-full mx-auto" onerror="this.style.display='none'">
-                <p class="font-title mt-2 text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
+            <div class="flex-shrink-0 pt-4">
+                <img src="avatares/jon.png" alt="Creador del juego" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto" onerror="this.style.display='none'">
+                <p class="font-title mt-2 text-base sm:text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
             </div>
         </div>
     `;
     ui.gameOverlay.innerHTML = menuHTML;
 
-    // Lógica para mostrar el botón de instalación si es posible
+    // Lógica para mostrar el botón de instalación
     const installButton = document.getElementById('install-button');
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (installButton && (deferredPrompt || isIOS)) {
@@ -177,6 +182,7 @@ function showMainMenu() {
 
     ui.gameOverlay.classList.remove('hidden-overlay');
 }
+
 
 function showNameInputScreen() {
     playSound(sounds.click);
