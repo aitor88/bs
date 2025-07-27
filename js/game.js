@@ -1,13 +1,4 @@
-// Función auxiliar para obtener textos del objeto de traducciones
-const getText = (key, ...args) => {
-    if (!translations || !translations[currentLang] || !translations[currentLang][key]) return key;
-    const translation = translations[currentLang][key];
-    return typeof translation === 'function' ? translation(...args) : translation;
-};
-
-// ===================================================================
-// === UTILIDADES ===
-// ===================================================================
+// UTILIDADES
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -23,9 +14,7 @@ function createDilemmaDecks() {
     });
 }
 
-// ===================================================================
-// === LÓGICA PRINCIPAL DEL JUEGO ===
-// ===================================================================
+// LÓGICA PRINCIPAL DEL JUEGO
 function initGame() {
     playSound(sounds.click);
     stopAllMusic();
@@ -148,7 +137,9 @@ function triggerRandomEvent() {
     lastEventName = event.name;
 
     isSpecialTurn = true;
-    const eventTitle = getText('eventTitle', event.name[currentLang]);
+    const eventName = event.name[currentLang] || event.name['es'];
+    const eventTitle = getText('eventTitle', eventName);
+
     if (event.type === 'immediate') {
         showResolution(eventTitle, event.narrative[currentLang], event.effects);
     } else if (event.type === 'choice') {
@@ -157,6 +148,8 @@ function triggerRandomEvent() {
 }
 
 function displayEventChoice(event, title) {
+    ui.charImg.classList.remove('rounded-full');
+    ui.charImg.classList.add('rounded-lg');
     ui.charImg.style.display = 'block';
     ui.charImg.src = event.img;
     ui.charName.textContent = title;
@@ -168,12 +161,54 @@ function displayEventChoice(event, title) {
 }
 
 function triggerRandomChallenge() {
-    // ... (lógica similar para leer de challenge.challenge[currentLang], etc.)
+    playSound(sounds.event);
+    const challengeGroup = challenges[Math.floor(Math.random() * challenges.length)];
+    isSpecialTurn = true;
+
+    let difficulty;
+    if (currentAssault <= 5) { difficulty = "easy"; }
+    else if (currentAssault <= 10) { difficulty = "medium"; }
+    else { difficulty = "hard"; }
+
+    let availableQuestions = challengeGroup.questions.filter(q => q.difficulty === difficulty);
+    if (availableQuestions.length === 0) { availableQuestions = challengeGroup.questions; }
+    if (availableQuestions.length === 0) { nextAssault(); return; }
+
+    const challenge = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+
+    ui.choicesSection.classList.add('hidden');
+    ui.challengeChoicesSection.classList.remove('hidden');
+    ui.charImg.classList.remove('rounded-full');
+    ui.charImg.classList.add('rounded-lg');
+    ui.charImg.src = `https://placehold.co/150x150/a855f7/ffffff?text=?`;
+    ui.charName.textContent = getText('challengeTitle');
+    ui.dilemmaDescription.innerHTML = challenge.challenge[currentLang];
+    
+    const buttons = Array.from(ui.challengeChoicesSection.children);
+    const shuffledOptions = [...challenge.options].sort(() => Math.random() - 0.5);
+    
+    buttons.forEach((button, index) => {
+        const option = shuffledOptions[index];
+        button.textContent = option.text[currentLang];
+        button.onclick = () => {
+            if (option.correct) {
+                playSound(sounds.correct);
+                const rewardName = challengeGroup.reward.name[currentLang];
+                if (!inventory.some(item => item.name[currentLang] === rewardName)) {
+                    inventory.push(challengeGroup.reward);
+                }
+                updateInventoryUI();
+                showResolution(getText('correct'), challenge.success[currentLang], { superpoder: 15, recursos: 1 });
+            } else {
+                playSound(sounds.wrong);
+                showResolution(getText('incorrect'), challenge.failure[currentLang], { vida: -5 });
+            }
+        };
+    });
 }
 
 function checkGameOver() {
     if (gameOver) return false;
-    // REFACTORIZADO para usar claves de idioma
     let reason = null;
     if (stats.vida <= 0) reason = { reasonKey: 'defeatedReasonNoHealth' };
     if (stats.poder >= 100) reason = { reasonKey: 'defeatedReasonPower' };
@@ -186,10 +221,7 @@ function checkGameOver() {
     return false;
 }
 
-// ===================================================================
-// === INICIO DEL JUEGO Y EVENT LISTENERS ===
-// ===================================================================
-
+// INICIO DEL JUEGO Y EVENT LISTENERS
 function setLanguage(lang) {
     currentLang = lang;
     unlockAudio();
@@ -213,11 +245,9 @@ function setLanguage(lang) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Listeners para los nuevos botones de idioma
     document.getElementById('lang-es-button').addEventListener('click', () => setLanguage('es'));
     document.getElementById('lang-eu-button').addEventListener('click', () => setLanguage('eu'));
     
-    // Listeners principales del juego
     ui.superButton.onclick = useSuper;
     ui.resolutionContinue.onclick = handleContinueClick;
 });
