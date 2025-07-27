@@ -69,6 +69,7 @@ const translations = {
         // --- Notificaciones ---
         notEnoughResources: "¡No tienes suficientes recursos!",
         notEnoughSuper: "¡No tienes superpoder suficiente!",
+        installGame: "📥 Instalar Juego",
     },
     eu: {
         // --- Menús y UI General ---
@@ -87,7 +88,7 @@ const translations = {
         // --- Stats ---
         player: "JOKALARIA",
         assault: "ERASOA",
-        health: "VIDA", // <--- CAMBIO REALIZADO
+        health: "VIDA",
         power: "INDARRA",
         resources: "BALIABIDEAK",
         superpower: "SUPERBOTEREA",
@@ -98,7 +99,7 @@ const translations = {
         decisions: "ERABAKIAK:",
         decisionsText: "Txanda bakoitzean, Brawler batek bi aukera emango dizkizu. Aukeratu zuhurki!",
         stats: "ESTATISTIKAK:",
-        statsText: "Zure aukerek zure Vida, Indarra, Baliabideak eta Superboterea aldatzen dituzte.", // <--- CAMBIO REALIZADO
+        statsText: "Zure aukerek zure Vida, Indarra, Baliabideak eta Superboterea aldatzen dituzte.",
         enemies: "ETSAIAK:",
         enemiesText: "Txanda bakoitzaren ondoren, etsaiek erasotzen dute. Defentsa-indarra funtsezkoa da!",
         surprises: "EZUSTEKOAK:",
@@ -108,7 +109,7 @@ const translations = {
 
         // --- Pantalla de Derrota ---
         defeated: "GARRAITUA!",
-        defeatedReasonNoHealth: "Zure eskuadroiaren vida zerora iritsi da.", // <--- CAMBIO REALIZADO
+        defeatedReasonNoHealth: "Zure eskuadroiaren vida zerora iritsi da.",
         defeatedReasonPower: "Zure indarra hain da handia, kontrola galdu duzula.",
         defeatedReasonGreed: "Baliabide gehiegi metatu dituzu eta jomuga erraza bihurtu zara.",
         youLasted: "Eutsi diozu",
@@ -129,7 +130,7 @@ const translations = {
 
         // --- Juego ---
         super: "SUPER",
-        superNarrative: "Botere bultzada batek vida, indarra eta baliabide gehigarri bat ematen dizkizu!", // <--- CAMBIO REALIZADO
+        superNarrative: "Botere bultzada batek vida, indarra eta baliabide gehigarri bat ematen dizkizu!",
         superTitle: "SUPERBOTEREA!",
         enemyAttack: "Etsaiek kontraeraso egiten dute.",
         eventTitle: (name) => `GERTAERA: ${name}!`,
@@ -140,6 +141,7 @@ const translations = {
         // --- Notificaciones ---
         notEnoughResources: "Ez duzu nahikoa baliabide!",
         notEnoughSuper: "Ez duzu nahikoa superbotere!",
+        installGame: "📥 Jokoa Instalatu",
     }
 };
 
