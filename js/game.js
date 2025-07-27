@@ -1,7 +1,6 @@
 // ===================================================================
 // === UTILIDADES ===
 // ===================================================================
-
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -20,7 +19,6 @@ function createDilemmaDecks() {
 // ===================================================================
 // === LÓGICA PRINCIPAL DEL JUEGO ===
 // ===================================================================
-
 function initGame() {
     playSound(sounds.click);
     stopAllMusic();
@@ -230,9 +228,39 @@ function checkGameOver() {
 }
 
 // ===================================================================
+// === LÓGICA DE INSTALACIÓN DE PWA ===
+// ===================================================================
+let deferredPrompt; 
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // La lógica para mostrar el botón se moverá a showMainMenu en ui.js
+  // para que se compruebe cada vez que el usuario vea el menú.
+});
+
+function handleInstallClick() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (deferredPrompt) { // Lógica para Android/Chrome
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(({ outcome }) => {
+      if (outcome === 'accepted') {
+        const installButton = document.getElementById('install-button');
+        if(installButton) installButton.classList.add('hidden');
+      }
+      deferredPrompt = null;
+    });
+  } else if (isIOS) { // Lógica para iOS
+    document.getElementById('ios-install-instructions').classList.remove('hidden');
+  } else { // Lógica para otros navegadores de escritorio
+    alert("Para instalar la app, busca la opción 'Instalar' en el menú de tu navegador.");
+  }
+}
+
+// ===================================================================
 // === INICIO DEL JUEGO Y EVENT LISTENERS ===
 // ===================================================================
-
 function setLanguage(lang) {
     currentLang = lang;
     unlockAudio();
@@ -256,9 +284,16 @@ function setLanguage(lang) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Listeners de la pantalla de inicio
     document.getElementById('lang-es-button').addEventListener('click', () => setLanguage('es'));
     document.getElementById('lang-eu-button').addEventListener('click', () => setLanguage('eu'));
     
+    // Listener para cerrar el pop-up de instalación en iOS
+    document.getElementById('close-ios-install').addEventListener('click', () => {
+        document.getElementById('ios-install-instructions').classList.add('hidden');
+    });
+
+    // Listeners principales del juego
     ui.superButton.onclick = useSuper;
     ui.resolutionContinue.onclick = handleContinueClick;
 });
