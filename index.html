@@ -56,8 +56,7 @@
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 PODER</span><span id="power-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="power-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat">
                     <div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold"></span></div>
-                    <div class="w-full bg-gray-700 rounded-full h-2"><div id="resources-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div>
-                </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2"><div id="resources-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div></div>
                 <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="super-bar" class="bg-yellow-400 h-2 rounded-full stat-bar-inner"></div></div></div>
             </div>
             <div class="flex-grow flex flex-col items-center justify-center my-2 sm:my-4 relative">
@@ -87,7 +86,6 @@
         <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title"></div>
     </div>
 
-
     <audio id="sound-splash" src="sonidos/splash.mp3" preload="auto"></audio>
     <audio id="sound-click" src="sonidos/click.mp3" preload="auto"></audio>
     <audio id="sound-correct" src="sonidos/correcto.mp3" preload="auto"></audio>
@@ -97,6 +95,16 @@
     <audio id="music-menu" src="sonidos/musica_menu.mp3" loop preload="auto"></audio>
     <audio id="music-game" src="sonidos/musica_juego.mp3" loop preload="auto"></audio>
     <audio id="music-defeat" src="sonidos/musica_derrota.mp3" preload="auto"></audio>
+
+    <div id="ios-install-instructions" class="hidden absolute inset-0 bg-slate-900/90 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-2xl p-6 text-center max-w-sm">
+            <h2 class="font-title text-2xl text-yellow-300 mb-4">Instalar Juego en tu iPhone</h2>
+            <p class="mb-4">Para instalar la aplicación, toca el icono de <strong>Compartir</strong> <img src="imagenes/ios_share_icon.png" alt="Icono Compartir de iOS" class="inline h-6 w-6 mx-1"> en la barra de menú de Safari.</p>
+            <p class="mb-6">Luego, busca y selecciona la opción <strong>"Añadir a pantalla de inicio"</strong>.</p>
+            <button id="close-ios-install" class="menu-button w-full bg-blue-600">Entendido</button>
+        </div>
+    </div>
+
 
     <script>
         window.gameCharacters = [];
@@ -115,7 +123,6 @@
     <script src="datos/retos_data.js"></script>
 
     <script src="js/languages.js"></script>
-
     <script src="js/config.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/ui.js"></script>
