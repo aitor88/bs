@@ -87,7 +87,7 @@ const translations = {
         // --- Stats ---
         player: "JOKALARIA",
         assault: "ERASOA",
-        health: "BIZITZA",
+        health: "VIDA", // <--- CAMBIO REALIZADO
         power: "INDARRA",
         resources: "BALIABIDEAK",
         superpower: "SUPERBOTEREA",
@@ -98,7 +98,7 @@ const translations = {
         decisions: "ERABAKIAK:",
         decisionsText: "Txanda bakoitzean, Brawler batek bi aukera emango dizkizu. Aukeratu zuhurki!",
         stats: "ESTATISTIKAK:",
-        statsText: "Zure aukerek zure Bizitza, Indarra, Baliabideak eta Superboterea aldatzen dituzte.",
+        statsText: "Zure aukerek zure Vida, Indarra, Baliabideak eta Superboterea aldatzen dituzte.", // <--- CAMBIO REALIZADO
         enemies: "ETSAIAK:",
         enemiesText: "Txanda bakoitzaren ondoren, etsaiek erasotzen dute. Defentsa-indarra funtsezkoa da!",
         surprises: "EZUSTEKOAK:",
@@ -108,7 +108,7 @@ const translations = {
 
         // --- Pantalla de Derrota ---
         defeated: "GARRAITUA!",
-        defeatedReasonNoHealth: "Zure eskuadroiaren bizitza zerora iritsi da.",
+        defeatedReasonNoHealth: "Zure eskuadroiaren vida zerora iritsi da.", // <--- CAMBIO REALIZADO
         defeatedReasonPower: "Zure indarra hain da handia, kontrola galdu duzula.",
         defeatedReasonGreed: "Baliabide gehiegi metatu dituzu eta jomuga erraza bihurtu zara.",
         youLasted: "Eutsi diozu",
@@ -129,7 +129,7 @@ const translations = {
 
         // --- Juego ---
         super: "SUPER",
-        superNarrative: "Botere bultzada batek bizitza, indarra eta baliabide gehigarri bat ematen dizkizu!",
+        superNarrative: "Botere bultzada batek vida, indarra eta baliabide gehigarri bat ematen dizkizu!", // <--- CAMBIO REALIZADO
         superTitle: "SUPERBOTEREA!",
         enemyAttack: "Etsaiek kontraeraso egiten dute.",
         eventTitle: (name) => `GERTAERA: ${name}!`,
@@ -143,7 +143,9 @@ const translations = {
     }
 };
 
-// Función centralizada para obtener los textos. Se define UNA SOLA VEZ aquí.
+// ================================================================
+// == Función central para obtener los textos de todo el proyecto ==
+// ================================================================
 const getText = (key, ...args) => {
     if (!translations || !translations[currentLang]) {
         console.error(`Idioma "${currentLang}" no encontrado en las traducciones.`);
