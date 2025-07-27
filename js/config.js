@@ -15,6 +15,7 @@ const db = firebase.firestore();
 // ===================================================================
 // === ESTADO Y DATOS DEL JUEGO ===
 // ===================================================================
+let currentLang = 'es'; // Variable para el idioma actual
 let stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
 let currentAssault = 1;
 let gameOver = false;
@@ -22,7 +23,6 @@ let isSpecialTurn = false;
 let playerName = '';
 let inventory = [];
 
-// Los datos se cargan desde los archivos `_data.js` en el scope global `window`
 const characters = window.gameCharacters;
 const events = window.gameEvents;
 const challenges = window.gameChallenges;
@@ -38,7 +38,7 @@ let audioUnlocked = false;
 // ===================================================================
 const ui = {
     startButtonScreen: document.getElementById('start-button-screen'),
-    startButton: document.getElementById('start-game-button'),
+    // No necesitamos los botones de idioma aquí porque se usan solo una vez al inicio
     splashScreen: document.getElementById('splash-screen'),
     splashLogo: document.getElementById('splash-logo'),
     gameContainer: document.getElementById('game-container'),
