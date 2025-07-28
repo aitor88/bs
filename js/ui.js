@@ -79,10 +79,15 @@ function showEndScreen(reason) {
     saveScore(playerName, currentAssault, inventory.length);
     ui.gameUI.classList.add('hidden');
     ui.gameOverlay.innerHTML = `
-        <div class="w-full flex flex-col items-center justify-center h-full">
+        <div class="w-full flex flex-col items-center justify-center h-full text-center">
             <img src="avatares/momoxorro.png" alt="Villano" class="w-28 h-28 sm:w-32 sm:h-32 mb-4 object-contain" onerror="this.style.display='none'">
             <h1 class="font-title text-4xl sm:text-5xl mb-2 text-yellow-300">${getText('defeated')}</h1>
-            <p class="text-lg mb-2 text-red-400 font-bold">${getText(reason.reasonKey)}</p>
+            
+            <div class="bg-gray-900/50 rounded-lg p-3 my-2 w-full max-w-xs">
+                <h2 class="text-lg font-bold text-gray-400 font-title">${getText('causeOfDeath')}</h2>
+                <p class="text-lg text-red-400 font-bold">${getText(reason.reasonKey)}</p>
+            </div>
+            
             <p class="text-base sm:text-lg mb-2">${getText('youLasted')} <span class="font-bold text-yellow-300">${currentAssault}</span> ${getText('assaults')}</p>
             <p id="player-rank-text" class="text-base sm:text-lg mb-6">${getText('calculatingRank')}</p>
             
@@ -147,10 +152,8 @@ function showMainMenu() {
     playSound(sounds.menuMusic);
     ui.gameUI.classList.add('hidden');
 
-    // Decidimos qué logo usar
     const logoPath = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
     
-    // HTML del menú con tamaños y márgenes responsivos para evitar el scroll
     const menuHTML = `
         <div class="flex flex-col justify-between h-full w-full max-w-md text-center py-4">
             
@@ -173,7 +176,6 @@ function showMainMenu() {
     `;
     ui.gameOverlay.innerHTML = menuHTML;
 
-    // Lógica para mostrar el botón de instalación
     const installButton = document.getElementById('install-button');
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (installButton && (deferredPrompt || isIOS)) {
@@ -237,4 +239,41 @@ function showRankingScreen() {
             </div>
         </div>`;
     displayRanking(document.getElementById('ranking-list-table'));
+}
+
+// ESTA ES LA FUNCIÓN CORREGIDA
+function displayEventChoice(event, title) {
+    ui.charImg.classList.remove('rounded-full');
+    ui.charImg.classList.add('rounded-lg');
+    ui.charImg.style.display = 'block';
+    ui.charImg.src = event.img;
+    ui.charName.textContent = title;
+    ui.dilemmaDescription.innerHTML = event.message[currentLang];
+    
+    // Función interna para manejar la elección, ahora con lógica de coste
+    const handleEventChoice = (option) => {
+        playSound(sounds.click);
+        
+        // Verificamos si la opción tiene coste y si tenemos recursos suficientes
+        if (option.cost && stats.recursos < option.cost) {
+            ui.notification.textContent = getText('notEnoughResources');
+            ui.notification.classList.remove('hidden-overlay');
+            setTimeout(() => ui.notification.classList.add('hidden-overlay'), 2000);
+            return; // No continuamos si no hay recursos
+        }
+
+        // Combinamos los efectos con el coste (si lo hay)
+        let combinedEffects = { ...option.effects };
+        if(option.cost) {
+            combinedEffects.recursos = (combinedEffects.recursos || 0) - option.cost;
+        }
+
+        showResolution(title, option.narrative[currentLang], combinedEffects);
+    };
+
+    // Asignamos la nueva lógica a los botones
+    ui.choice1.textContent = event.options[0].text[currentLang];
+    ui.choice2.textContent = event.options[1].text[currentLang];
+    ui.choice1.onclick = () => handleEventChoice(event.options[0]);
+    ui.choice2.onclick = () => handleEventChoice(event.options[1]);
 }
