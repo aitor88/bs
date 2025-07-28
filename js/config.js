@@ -15,13 +15,14 @@ const db = firebase.firestore();
 // ===================================================================
 // === ESTADO Y DATOS DEL JUEGO ===
 // ===================================================================
-let currentLang = 'es'; // Variable para el idioma actual
+let currentLang = 'es';
 let stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
 let currentAssault = 1;
 let gameOver = false;
 let isSpecialTurn = false;
 let playerName = '';
 let inventory = [];
+let activeEffects = {}; // Para guardar los poderes pasivos de los coleccionables
 
 const characters = window.gameCharacters;
 const events = window.gameEvents;
@@ -38,7 +39,6 @@ let audioUnlocked = false;
 // ===================================================================
 const ui = {
     startButtonScreen: document.getElementById('start-button-screen'),
-    // No necesitamos los botones de idioma aquí porque se usan solo una vez al inicio
     splashScreen: document.getElementById('splash-screen'),
     splashLogo: document.getElementById('splash-logo'),
     gameContainer: document.getElementById('game-container'),
