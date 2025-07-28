@@ -158,12 +158,32 @@ function displayEventChoice(event, title) {
     ui.charImg.src = event.img;
     ui.charName.textContent = title;
     ui.dilemmaDescription.innerHTML = event.message[currentLang];
+    
+    const handleEventChoice = (option) => {
+        playSound(sounds.click);
+        
+        if (option.cost && stats.recursos < option.cost) {
+            ui.notification.textContent = getText('notEnoughResources');
+            ui.notification.classList.remove('hidden-overlay');
+            setTimeout(() => ui.notification.classList.add('hidden-overlay'), 2000);
+            return;
+        }
+
+        let combinedEffects = { ...option.effects };
+        if(option.cost) {
+            combinedEffects.recursos = (combinedEffects.recursos || 0) - option.cost;
+        }
+
+        showResolution(title, option.narrative[currentLang], combinedEffects);
+    };
+
     ui.choice1.textContent = event.options[0].text[currentLang];
     ui.choice2.textContent = event.options[1].text[currentLang];
-    ui.choice1.onclick = () => { playSound(sounds.click); showResolution(title, event.options[0].narrative[currentLang], event.options[0].effects); };
-    ui.choice2.onclick = () => { playSound(sounds.click); showResolution(title, event.options[1].narrative[currentLang], event.options[1].effects); };
+    ui.choice1.onclick = () => handleEventChoice(event.options[0]);
+    ui.choice2.onclick = () => handleEventChoice(event.options[1]);
 }
 
+// ESTA ES LA FUNCIÓN CORREGIDA Y MÁS SEGURA
 function triggerRandomChallenge() {
     playSound(sounds.event);
     const challengeGroup = challenges[Math.floor(Math.random() * challenges.length)];
@@ -179,6 +199,15 @@ function triggerRandomChallenge() {
     if (availableQuestions.length === 0) { nextAssault(); return; }
 
     const challenge = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+
+    // LÓGICA DE SEGURIDAD AÑADIDA
+    // Nos aseguramos de que la pregunta seleccionada tenga una opción correcta definida.
+    const hasCorrectOption = challenge.options.some(option => option.correct);
+    if (!hasCorrectOption) {
+        console.error("Error en datos: la pregunta seleccionada no tiene respuesta correcta.", challenge);
+        nextAssault(); // Si no hay respuesta correcta, saltamos el reto para no bloquear al jugador.
+        return;
+    }
 
     ui.choicesSection.classList.add('hidden');
     ui.challengeChoicesSection.classList.remove('hidden');
@@ -213,6 +242,7 @@ function triggerRandomChallenge() {
     });
 }
 
+
 function checkGameOver() {
     if (gameOver) return false;
     let reason = null;
@@ -235,14 +265,12 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  // La lógica para mostrar el botón se moverá a showMainMenu en ui.js
-  // para que se compruebe cada vez que el usuario vea el menú.
 });
 
 function handleInstallClick() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-  if (deferredPrompt) { // Lógica para Android/Chrome
+  if (deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(({ outcome }) => {
       if (outcome === 'accepted') {
@@ -251,9 +279,9 @@ function handleInstallClick() {
       }
       deferredPrompt = null;
     });
-  } else if (isIOS) { // Lógica para iOS
+  } else if (isIOS) {
     document.getElementById('ios-install-instructions').classList.remove('hidden');
-  } else { // Lógica para otros navegadores de escritorio
+  } else {
     alert("Para instalar la app, busca la opción 'Instalar' en el menú de tu navegador.");
   }
 }
@@ -284,16 +312,13 @@ function setLanguage(lang) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Listeners de la pantalla de inicio
     document.getElementById('lang-es-button').addEventListener('click', () => setLanguage('es'));
     document.getElementById('lang-eu-button').addEventListener('click', () => setLanguage('eu'));
     
-    // Listener para cerrar el pop-up de instalación en iOS
     document.getElementById('close-ios-install').addEventListener('click', () => {
         document.getElementById('ios-install-instructions').classList.add('hidden');
     });
 
-    // Listeners principales del juego
     ui.superButton.onclick = useSuper;
     ui.resolutionContinue.onclick = handleContinueClick;
 });
