@@ -1,6 +1,14 @@
 window.gameChallenges = [
     {
-        reward: { name: { es: "Gema Preciosa", eu: "Harribitxi Baliotsua" }, image: "coleccionables/gema.png" },
+        reward: { 
+            name: { es: "Gema Preciosa", eu: "Harribitxi Baliotsua" }, 
+            image: "coleccionables/gema.png",
+            passiveEffect: { 
+                description: { es: "Reduce el daño de cada asalto en 1", eu: "Eraso bakoitzeko kaltea 1 murrizten du" },
+                type: "damage_reduction", 
+                value: 1 
+            }
+        },
         questions: [
             { 
                 difficulty: "easy",
@@ -26,7 +34,15 @@ window.gameChallenges = [
         ]
     },
     {
-        reward: { name: { es: "Botella de Barley", eu: "Barleyren Botila" }, image: "coleccionables/botella_barley.png" },
+        reward: { 
+            name: { es: "Botella de Barley", eu: "Barleyren Botila" }, 
+            image: "coleccionables/botella_barley.png",
+            passiveEffect: { 
+                description: { es: "Aumenta toda la curación un 20%", eu: "Sendaketa guztia %20 handitzen du" },
+                type: "healing_boost", 
+                value: 1.2 
+            }
+        },
         questions: [
             { 
                 difficulty: "easy",
@@ -52,7 +68,15 @@ window.gameChallenges = [
         ]
     },
     {
-        reward: { name: { es: "Shuriken de Leon", eu: "Leonen Shurikena" }, image: "coleccionables/shuriken_leon.png" },
+        reward: { 
+            name: { es: "Shuriken de Leon", eu: "Leonen Shurikena" }, 
+            image: "coleccionables/shuriken_leon.png",
+            passiveEffect: { 
+                description: { es: "10% de probabilidad de esquivar el daño del asalto", eu: "%10eko aukera erasoaren kaltea saihesteko" },
+                type: "dodge_chance", 
+                value: 0.1 
+            }
+        },
         questions: [
             { 
                 difficulty: "easy",
@@ -78,7 +102,15 @@ window.gameChallenges = [
         ]
     },
     {
-        reward: { name: { es: "Flor de Cactus", eu: "Kaktus Lorea" }, image: "coleccionables/flor_cactus.png" },
+        reward: { 
+            name: { es: "Flor de Cactus", eu: "Kaktus Lorea" }, 
+            image: "coleccionables/flor_cactus.png",
+            passiveEffect: { 
+                description: { es: "15% de probabilidad de generar 1 Recurso tras el asalto", eu: "%15eko aukera erasoaren ostean Baliabide 1 sortzeko" },
+                type: "resource_generation", 
+                value: 0.15
+            }
+        },
         questions: [
             {
                 difficulty: "easy",
@@ -104,7 +136,15 @@ window.gameChallenges = [
         ]
     },
     {
-        reward: { name: { es: "Bate de Bibi", eu: "Bibiren Batea" }, image: "coleccionables/bate_bibi.png" },
+        reward: { 
+            name: { es: "Bate de Bibi", eu: "Bibiren Batea" }, 
+            image: "coleccionables/bate_bibi.png",
+            passiveEffect: { 
+                description: { es: "Ganas 5 puntos extra de Superpoder siempre", eu: "Beti 5 Superbotere puntu gehiago irabazten dituzu" },
+                type: "super_charge_boost", 
+                value: 5 
+            }
+        },
         questions: [
             {
                 difficulty: "easy",
@@ -130,7 +170,15 @@ window.gameChallenges = [
         ]
     },
     {
-        reward: { name: { es: "Estrella Azul", eu: "Izar Urdina" }, image: "coleccionables/estrella_azul.png" },
+        reward: { 
+            name: { es: "Estrella Azul", eu: "Izar Urdina" }, 
+            image: "coleccionables/estrella_azul.png",
+            passiveEffect: { 
+                description: { es: "Tu Poder base nunca baja de 10", eu: "Zure oinarrizko Indarra ez da inoiz 10etik jaisten" },
+                type: "power_floor", 
+                value: 10 
+            }
+        },
         questions: [
             {
                 difficulty: "easy",
@@ -156,7 +204,15 @@ window.gameChallenges = [
         ]
     },
     {
-        reward: { name: { es: "Lámpara de Genio", eu: "Jenioren Lanpara" }, image: "coleccionables/lampara_genio.png" },
+        reward: { 
+            name: { es: "Lámpara de Genio", eu: "Jenioren Lanpara" }, 
+            image: "coleccionables/lampara_genio.png",
+            passiveEffect: { 
+                description: { es: "Si tu Vida llega a 0, revives con 25 de Vida (1 vez)", eu: "Zure Bizitza 0ra iristen bada, 25 Bizitzarekin berpizten zara (behin)" },
+                type: "extra_life", 
+                value: 25 
+            }
+        },
         questions: [
             {
                 difficulty: "easy",
