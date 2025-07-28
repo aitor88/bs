@@ -1,7 +1,4 @@
-// ===================================================================
-// === LÓGICA DE INICIO DE JUEGO ===
-// ===================================================================
-
+// js/game.js
 function selectBrawlerAndStart(brawlerId) {
     playSound(sounds.click);
     selectedBrawlerId = brawlerId;
@@ -9,7 +6,7 @@ function selectBrawlerAndStart(brawlerId) {
 }
 
 function initGame() {
-    currentPlayerBrawler = window.gameCharacters.find(char => char.id === selectedBrawlerId);
+    currentPlayerBrawler = window.characters.find(char => char.id === selectedBrawlerId);
     if (!currentPlayerBrawler) {
         console.error("No se ha seleccionado un Brawler válido.");
         showMainMenu();
@@ -23,63 +20,53 @@ function initGame() {
     
     playerName = document.getElementById('player-name-input').value.trim() || currentPlayerBrawler.name;
     
-    // Clonamos las estadísticas para poder modificarlas durante la partida
     stats = { 
         ...currentPlayerBrawler.playerStats,
         superpoder: 0
     };
 
-    currentAssault = 0; // Empezamos en asalto 0, el 1 será la primera batalla
+    currentAssault = 0;
     gameOver = false;
     
     ui.gameOverlay.classList.add('hidden-overlay');
     
-    // ¡Empezamos la primera batalla!
     startNextBattle();
 }
 
-
-// ===================================================================
-// === NUEVO BUCLE DE JUEGO: LÓGICA DE COMBATE ===
-// ===================================================================
-
-/**
- * Inicia la siguiente batalla contra un enemigo aleatorio.
- */
 function startNextBattle() {
     currentAssault++;
     
-    // Elegimos un enemigo aleatorio que no sea el propio jugador
-    let enemyOptions = window.gameCharacters.filter(char => char.id !== selectedBrawlerId);
-    currentEnemyBrawler = { ...enemyOptions[Math.floor(Math.random() * enemyOptions.length)] };
-    
-    // Clonamos sus stats para poder modificarlas
-    currentEnemyBrawler.stats = { ...currentEnemyBrawler.cpuStats };
+    let enemyOptions = window.characters.filter(char => char.cpuStats && char.id !== selectedBrawlerId);
+    if (enemyOptions.length === 0) {
+        enemyOptions = window.characters.filter(char => char.id !== selectedBrawlerId);
+    }
 
-    // Montamos la interfaz de batalla
+    const enemyData = { ...enemyOptions[Math.floor(Math.random() * enemyOptions.length)] };
+    
+    currentEnemyBrawler = {
+        ...enemyData,
+        stats: { ...enemyData.cpuStats }
+    };
+
     showBattleScreen(currentPlayerBrawler, currentEnemyBrawler);
     updateBattleNarrative(`¡Asalto ${currentAssault}! ¡Te enfrentas a ${currentEnemyBrawler.name}!`);
 }
 
-/**
- * Se ejecuta cuando el jugador elige un movimiento.
- */
 function handlePlayerMove(move) {
-    // 1. Comprobar si tenemos suficientes recursos
+    if (gameOver) return;
+
     if (stats.recursos < move.cost) {
         updateBattleNarrative("¡No tienes suficientes recursos para ese movimiento!");
         return;
     }
     stats.recursos -= move.cost;
 
-    // 2. Calcular daño y aplicar efectos
     let damageDealt = 0;
     if (move.damage > 0) {
         damageDealt = move.damage + Math.floor(stats.poder / 2);
         currentEnemyBrawler.stats.vida -= damageDealt;
     }
     
-    // Aplicar otros efectos (sobre sí mismo o el enemigo)
     if (move.effects) {
         if (move.effects.self) {
             for (const key in move.effects.self) {
@@ -87,67 +74,108 @@ function handlePlayerMove(move) {
             }
         }
     }
+    stats.vida = Math.min(currentPlayerBrawler.playerStats.vida, stats.vida);
+    stats.superpoder = Math.min(100, stats.superpoder);
 
     updateBattleUI(stats, currentEnemyBrawler.stats);
     updateBattleNarrative(`${playerName} usa ${move.name[currentLang]}. ¡Causa ${damageDealt} de daño!`);
 
-    // 3. Comprobar si el enemigo ha sido derrotado
     if (currentEnemyBrawler.stats.vida <= 0) {
         playSound(sounds.correct);
         updateBattleNarrative(`¡Has derrotado a ${currentEnemyBrawler.name}!`);
-        // Esperamos un momento y empezamos la siguiente batalla
         setTimeout(startNextBattle, 2000);
     } else {
-        // Si no, es el turno del enemigo
+        ui.actionsPanel.style.pointerEvents = 'none';
         setTimeout(handleEnemyTurn, 1500);
     }
 }
 
-/**
- * Lógica simple para el turno del enemigo.
- */
 function handleEnemyTurn() {
-    // IA muy simple: elige un movimiento al azar de su lista
+    if (gameOver) return;
+
     const enemyMove = currentEnemyBrawler.moves[Math.floor(Math.random() * currentEnemyBrawler.moves.length)];
     
-    // Calcular daño
     let damageDealt = 0;
     if (enemyMove.damage > 0) {
         damageDealt = enemyMove.damage + Math.floor(currentEnemyBrawler.stats.poder / 2) - Math.floor(stats.poder / 4);
-        damageDealt = Math.max(1, damageDealt); // Mínimo 1 de daño
+        damageDealt = Math.max(1, damageDealt);
         stats.vida -= damageDealt;
     }
 
-    // Aplicar efectos (ej. si el enemigo se cura)
     if (enemyMove.effects && enemyMove.effects.self) {
          for (const key in enemyMove.effects.self) {
             currentEnemyBrawler.stats[key] = (currentEnemyBrawler.stats[key] || 0) + enemyMove.effects.self[key];
         }
     }
+    currentEnemyBrawler.stats.vida = Math.min(currentEnemyBrawler.cpuStats.vida, currentEnemyBrawler.stats.vida);
 
     updateBattleUI(stats, currentEnemyBrawler.stats);
     updateBattleNarrative(`${currentEnemyBrawler.name} usa ${enemyMove.name[currentLang]}. ¡Te causa ${damageDealt} de daño!`);
 
-    // Comprobar si el jugador ha sido derrotado
     if (stats.vida <= 0) {
-        gameOver = true;
-        setTimeout(() => showEndScreen({ reasonKey: 'defeatedReasonNoHealth' }), 1500);
+        checkGameOver();
+    } else {
+        ui.actionsPanel.style.pointerEvents = 'auto';
     }
 }
 
+function checkGameOver() {
+    if (stats.vida <= 0) {
+        gameOver = true;
+        setTimeout(() => showEndScreen({ reasonKey: 'defeatedReasonNoHealth' }), 1500);
+        return true;
+    }
+    return false;
+}
 
-// ===================================================================
-// === FUNCIONES AUXILIARES Y DE INICIO ===
-// ===================================================================
 let deferredPrompt; 
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
-function handleInstallClick() { /* ... */ }
-function setLanguage(lang) { /* ... */ }
+function handleInstallClick() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(({ outcome }) => {
+      if (outcome === 'accepted') {
+        const installButton = document.getElementById('install-button');
+        if(installButton) installButton.classList.add('hidden');
+      }
+      deferredPrompt = null;
+    });
+  } else if (isIOS) {
+    document.getElementById('ios-install-instructions').classList.remove('hidden');
+  } else {
+    alert("Para instalar la app, busca la opción 'Instalar' en el menú de tu navegador.");
+  }
+}
+
+function setLanguage(lang) {
+    currentLang = lang;
+    unlockAudio();
+    ui.startButtonScreen.classList.add('hidden-overlay');
+    ui.splashScreen.classList.remove('hidden-overlay');
+    ui.splashLogo.classList.add('animate');
+    
+    ui.splashLogo.addEventListener('animationend', (event) => {
+        if (event.animationName === 'dropIn') {
+            ui.splashLogo.classList.add('shake');
+            playSound(sounds.splash);
+            
+            setTimeout(() => {
+                ui.splashScreen.style.opacity = 0;
+                ui.gameContainer.classList.remove('hidden');
+                showMainMenu();
+                setTimeout(() => ui.splashScreen.style.display = 'none', 500);
+            }, 500);
+        }
+    }, { once: true });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('lang-es-button').addEventListener('click', () => setLanguage('es'));
     document.getElementById('lang-eu-button').addEventListener('click', () => setLanguage('eu'));
+    
     document.getElementById('close-ios-install').addEventListener('click', () => {
         document.getElementById('ios-install-instructions').classList.add('hidden');
     });
