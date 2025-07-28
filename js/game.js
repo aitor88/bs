@@ -65,35 +65,11 @@ function nextAssault() {
     ui.charImg.src = char.img;
     ui.dilemmaDescription.innerHTML = dilemma.description[currentLang];
     
-    // Función auxiliar para actualizar un botón con pistas neutrales
-    const updateChoiceButton = (buttonElement, option) => {
-        const textElement = buttonElement.querySelector('.choice-text');
-        const effectsElement = buttonElement.querySelector('.choice-effects');
-        
-        textElement.textContent = '';
-        effectsElement.innerHTML = '';
-        
-        textElement.textContent = option.text[currentLang];
-        
-        if (option.effects) {
-            for (const key in option.effects) {
-                const value = option.effects[key];
-                if (value === 0) continue;
-
-                const effectSpan = document.createElement('span');
-                
-                effectSpan.innerHTML = statIcons[key] || '❔';
-                effectSpan.className = 'text-gray-400';
-
-                effectsElement.appendChild(effectSpan);
-            }
-        }
-        
-        buttonElement.onclick = () => { playSound(sounds.click); chooseOption(option, char.name); };
-    };
-
-    updateChoiceButton(ui.choice1, dilemma.options[0]);
-    updateChoiceButton(ui.choice2, dilemma.options[1]);
+    // Lógica de botones revertida a la original
+    ui.choice1.textContent = dilemma.options[0].text[currentLang];
+    ui.choice2.textContent = dilemma.options[1].text[currentLang];
+    ui.choice1.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[0], char.name); };
+    ui.choice2.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[1], char.name); };
     
     updateUI();
 }
@@ -315,7 +291,6 @@ function setLanguage(lang) {
     currentLang = lang;
     unlockAudio();
 
-    // Actualizamos el logo del splash screen ANTES de mostrarlo
     ui.splashLogo.src = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
 
     ui.startButtonScreen.classList.add('hidden-overlay');
