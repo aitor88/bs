@@ -9,23 +9,27 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// --- Variables de Estado del Juego ---
 let currentLang = 'es';
-let stats = {};
+let stats = {}; // Se rellenará con las stats del Brawler elegido
 let currentAssault = 1;
 let gameOver = false;
 let playerName = '';
 let selectedBrawlerId = null; 
-let currentPlayerBrawler = null;
-let currentEnemyBrawler = null;
+let currentPlayerBrawler = null; // Guardará el objeto completo del Brawler del jugador
+let currentEnemyBrawler = null; // Guardará el objeto completo del Brawler enemigo
 
 const characters = window.gameCharacters;
 let audioUnlocked = false;
 
+// --- Referencias a Elementos de la Interfaz ---
 const ui = {
     startButtonScreen: document.getElementById('start-button-screen'),
     splashScreen: document.getElementById('splash-screen'),
     splashLogo: document.getElementById('splash-logo'),
     gameContainer: document.getElementById('game-container'),
+    
+    // UI de Batalla
     battleScreen: document.getElementById('battle-screen'),
     enemyName: document.getElementById('enemy-name'),
     enemyHealthBar: document.getElementById('enemy-health-bar'),
@@ -39,10 +43,14 @@ const ui = {
     playerResourcesText: document.getElementById('player-resources-text'),
     playerSuperText: document.getElementById('player-super-text'),
     actionsPanel: document.getElementById('actions-panel'),
+    superAbilityButton: document.getElementById('super-ability-button'),
+
+    // Overlays y Notificaciones
     gameOverlay: document.getElementById('game-overlay'),
     notification: document.getElementById('notification'),
 };
 
+// --- Referencias a Elementos de Audio ---
 const sounds = {
     splash: document.getElementById('sound-splash'),
     click: document.getElementById('sound-click'),
