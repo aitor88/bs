@@ -22,7 +22,8 @@ let gameOver = false;
 let isSpecialTurn = false;
 let playerName = '';
 let inventory = [];
-let activeEffects = {}; // Para guardar los poderes pasivos de los coleccionables
+let activeEffects = {};
+let selectedBrawlerId = null; 
 
 const characters = window.gameCharacters;
 const events = window.gameEvents;
