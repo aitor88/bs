@@ -1,4 +1,6 @@
-// js/game.js
+// ===================================================================
+// === LÓGICA DE INICIO DE JUEGO ===
+// ===================================================================
 function selectBrawlerAndStart(brawlerId) {
     playSound(sounds.click);
     selectedBrawlerId = brawlerId;
@@ -6,13 +8,12 @@ function selectBrawlerAndStart(brawlerId) {
 }
 
 function initGame() {
-    const selectedBrawlerData = characters.find(char => char.id === selectedBrawlerId);
-    if (!selectedBrawlerData) {
+    currentPlayerBrawler = characters.find(char => char.id === selectedBrawlerId);
+    if (!currentPlayerBrawler) {
         console.error("No se ha seleccionado un Brawler válido.");
         showMainMenu();
         return;
     }
-    currentPlayerBrawler = selectedBrawlerData;
 
     playSound(sounds.click);
     stopAllMusic();
@@ -30,17 +31,21 @@ function initGame() {
     gameOver = false;
     
     ui.gameOverlay.classList.add('hidden-overlay');
-    
     startNextBattle();
 }
 
+
+// ===================================================================
+// === BUCLE DE JUEGO: LÓGICA DE COMBATE ===
+// ===================================================================
 function startNextBattle() {
     currentAssault++;
     
     let enemyOptions = characters.filter(char => char.cpuStats && char.id !== selectedBrawlerId);
     if (enemyOptions.length === 0) {
         console.error("No se encontraron enemigos válidos.");
-        showEndScreen({ reasonKey: 'No hay más rivales, ¡has ganado!' }); // Final alternativo
+        // Aquí podríamos tener una pantalla de victoria final
+        showEndScreen({ reasonKey: '¡Has derrotado a todos los rivales!' });
         return;
     }
 
@@ -53,6 +58,21 @@ function startNextBattle() {
 
     showBattleScreen(currentPlayerBrawler, currentEnemyBrawler);
     updateBattleNarrative(`¡Asalto ${currentAssault}! ¡Te enfrentas a ${currentEnemyBrawler.name}!`);
+}
+
+function applyEffects(effects) {
+    if (!effects) return;
+
+    if (effects.self) {
+        for (const key in effects.self) {
+            stats[key] = (stats[key] || 0) + effects.self[key];
+        }
+    }
+    if (effects.enemy) {
+        for (const key in effects.enemy) {
+            currentEnemyBrawler.stats[key] = (currentEnemyBrawler.stats[key] || 0) + effects.enemy[key];
+        }
+    }
 }
 
 function handlePlayerMove(move) {
@@ -70,15 +90,11 @@ function handlePlayerMove(move) {
         currentEnemyBrawler.stats.vida -= damageDealt;
     }
     
-    if (move.effects) {
-        if (move.effects.self) {
-            for (const key in move.effects.self) {
-                stats[key] = (stats[key] || 0) + move.effects.self[key];
-            }
-        }
-    }
+    applyEffects(move.effects);
+
     stats.vida = Math.min(currentPlayerBrawler.playerStats.vida, stats.vida);
     stats.superpoder = Math.min(100, stats.superpoder);
+    stats.poder = Math.max(0, stats.poder);
 
     updateBattleUI(stats, currentEnemyBrawler.stats);
     updateBattleNarrative(`${playerName} usa ${move.name[currentLang]}. ¡Causa ${damageDealt} de daño!`);
@@ -89,6 +105,38 @@ function handlePlayerMove(move) {
         setTimeout(startNextBattle, 2000);
     } else {
         ui.actionsPanel.style.pointerEvents = 'none';
+        ui.superAbilityButton.style.pointerEvents = 'none';
+        setTimeout(handleEnemyTurn, 1500);
+    }
+}
+
+function handlePlayerSuper() {
+    if (gameOver || stats.superpoder < 100) return;
+    
+    const superMove = currentPlayerBrawler.superAbility;
+    stats.superpoder -= superMove.cost;
+    playSound(sounds.super);
+
+    let damageDealt = 0;
+    if (superMove.damage > 0) {
+        damageDealt = superMove.damage + Math.floor(stats.poder / 2);
+        currentEnemyBrawler.stats.vida -= damageDealt;
+    }
+    
+    applyEffects(superMove.effects);
+
+    stats.vida = Math.min(currentPlayerBrawler.playerStats.vida, stats.vida);
+
+    updateBattleUI(stats, currentEnemyBrawler.stats);
+    updateBattleNarrative(`¡SÚPER! ${playerName} usa ${superMove.name[currentLang]}! ¡Causa ${damageDealt} de daño!`);
+
+    if (currentEnemyBrawler.stats.vida <= 0) {
+        playSound(sounds.correct);
+        updateBattleNarrative(`¡Has derrotado a ${currentEnemyBrawler.name}!`);
+        setTimeout(startNextBattle, 2000);
+    } else {
+        ui.actionsPanel.style.pointerEvents = 'none';
+        ui.superAbilityButton.style.pointerEvents = 'none';
         setTimeout(handleEnemyTurn, 1500);
     }
 }
@@ -100,8 +148,9 @@ function handleEnemyTurn() {
     
     let damageDealt = 0;
     if (enemyMove.damage > 0) {
-        damageDealt = enemyMove.damage + Math.floor(currentEnemyBrawler.stats.poder / 2) - Math.floor(stats.poder / 4);
-        damageDealt = Math.max(1, damageDealt);
+        let enemyAttackPower = enemyMove.damage + Math.floor(currentEnemyBrawler.stats.poder / 2);
+        let playerDefensePower = Math.floor(stats.poder / 4);
+        damageDealt = Math.max(1, enemyAttackPower - playerDefensePower);
         stats.vida -= damageDealt;
     }
 
@@ -111,6 +160,7 @@ function handleEnemyTurn() {
         }
     }
     currentEnemyBrawler.stats.vida = Math.min(currentEnemyBrawler.cpuStats.vida, currentEnemyBrawler.stats.vida);
+    currentEnemyBrawler.stats.poder = Math.max(0, currentEnemyBrawler.stats.poder);
 
     updateBattleUI(stats, currentEnemyBrawler.stats);
     updateBattleNarrative(`${currentEnemyBrawler.name} usa ${enemyMove.name[currentLang]}. ¡Te causa ${damageDealt} de daño!`);
@@ -119,6 +169,7 @@ function handleEnemyTurn() {
         checkGameOver();
     } else {
         ui.actionsPanel.style.pointerEvents = 'auto';
+        ui.superAbilityButton.style.pointerEvents = 'auto';
     }
 }
 
@@ -182,4 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('close-ios-install').addEventListener('click', () => {
         document.getElementById('ios-install-instructions').classList.add('hidden');
     });
+
+    ui.superAbilityButton.onclick = handlePlayerSuper;
 });
