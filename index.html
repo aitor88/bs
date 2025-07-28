@@ -9,125 +9,74 @@
     <meta property="og:description" content="¡Un juego de decisiones tácticas! ¿Cuántos asaltos podrás aguantar?">
     <meta property="og:image" content="https://raw.githubusercontent.com/aitor88/bs/main/imagenes/logo.png">
     <meta property="og:type" content="website">
-    
     <link rel="manifest" href="manifest.json">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
 
     <div id="start-button-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-50 p-4">
-        <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-8">
-        
-        <h2 class="font-title text-4xl text-yellow-300 mb-8">Elige Idioma</h2>
-
-        <div class="w-full max-w-xs space-y-4">
-            <button id="lang-es-button" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-2xl font-title">
-                <img src="imagenes/bandera_es.png" alt="Bandera de España" class="w-8 mr-3">
-                <span>Español</span>
-            </button>
-            
-            <button id="lang-eu-button" class="menu-button w-full bg-green-600 border-green-800 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full text-2xl font-title">
-                <img src="imagenes/bandera_eu.png" alt="Bandera de Euskadi" class="w-8 mr-3">
-                <span>Euskaraz</span>
-            </button>
         </div>
-    </div>
 
-    <div id="splash-screen" class="hidden-overlay absolute inset-0 flex items-center justify-center bg-slate-900 z-40">
-        <img id="splash-logo" src="imagenes/logo.png" alt="Brawl Stars: Batalla Infinita">
-    </div>
+    <div id="splash-screen" class="hidden-overlay absolute inset-0 ...">
+        </div>
 
-    <div id="game-container" class="hidden game-container bg-gray-800 rounded-3xl shadow-2xl p-3 sm:p-6 flex-col justify-between relative overflow-hidden">
+    <div id="game-container" class="hidden game-container ...">
         
         <div id="game-ui" class="hidden h-full flex flex-col">
-            <div id="stats-container" class="space-y-1.5">
-                <div class="flex justify-between items-center font-title text-base">
-                    <div><span>JUGADOR:&nbsp;</span><span id="player-name-display" class="text-green-400 uppercase"></span></div>
-                    <div><span>ASALTO </span><span id="assault-counter">1</span></div>
+           </div>
+
+        <div id="battle-screen" class="hidden h-full flex flex-col justify-between text-center p-2">
+            
+            <div id="enemy-zone" class="mb-4">
+                <div id="enemy-stats" class="text-lg font-bold">
+                    <span id="enemy-name" class="font-title text-2xl text-red-400"></span>
+                    <div class="w-full bg-gray-700 rounded-full h-4 mt-1 border-2 border-gray-600">
+                        <div id="enemy-health-bar" class="bg-red-500 h-full rounded-full text-xs flex items-center justify-center">
+                           <span id="enemy-health-text" class="font-bold text-white"></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-green-400">❤️ VIDA</span><span id="health-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="health-bar" class="bg-green-500 h-2 rounded-full stat-bar-inner"></div></div></div>
-                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-orange-400">💥 PODER</span><span id="power-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="power-bar" class="bg-orange-500 h-2 rounded-full stat-bar-inner"></div></div></div>
-                <div class="stat">
-                    <div class="flex justify-between items-center"><span class="text-sm font-bold text-sky-400">⚙️ RECURSOS</span><span id="resources-text" class="text-sm font-bold"></span></div>
-                    <div class="w-full bg-gray-700 rounded-full h-2"><div id="resources-bar" class="bg-sky-500 h-2 rounded-full stat-bar-inner"></div></div></div>
-                <div class="stat"><div class="flex justify-between items-center"><span class="text-sm font-bold text-yellow-400">🌟 SUPERPODER</span><span id="super-text" class="text-sm font-bold"></span></div><div class="w-full bg-gray-700 rounded-full h-2"><div id="super-bar" class="bg-yellow-400 h-2 rounded-full stat-bar-inner"></div></div></div>
+                <img id="enemy-img" src="" class="w-24 h-24 mx-auto mt-2" alt="Enemigo">
             </div>
-            <div class="flex-grow flex flex-col items-center justify-center my-2 sm:my-4 relative">
-                <div id="dilemma-card" class="bg-gray-700 rounded-2xl shadow-xl p-4 w-full max-w-sm text-center flex flex-col items-center justify-center flex-grow">
-                    <img id="char-img" src="" class="w-28 h-28 sm:w-36 sm:h-36 object-cover mb-2 border-4 border-gray-600" alt="Personaje">
-                    <h2 id="char-name" class="font-title text-2xl sm:text-3xl text-yellow-300 mb-1"></h2>
-                    <p id="dilemma-description" class="text-gray-200 text-lg sm:text-xl font-bold"></p>
+
+            <div id="battle-narrative" class="flex-grow bg-gray-900/50 rounded-lg p-2 text-lg font-bold flex items-center justify-center">
+                <span>¡Comienza la batalla!</span>
+            </div>
+
+            <div id="player-zone" class="mt-4">
+                <img id="player-img" src="" class="w-28 h-28 mx-auto mb-2" alt="Jugador">
+                <div id="player-stats" class="text-lg font-bold">
+                    <span id="player-name" class="font-title text-2xl text-green-400"></span>
+                    <div class="w-full bg-gray-700 rounded-full h-4 mt-1 border-2 border-gray-600">
+                        <div id="player-health-bar" class="bg-green-500 h-full rounded-full text-xs flex items-center justify-center">
+                           <span id="player-health-text" class="font-bold text-white"></span>
+                        </div>
+                    </div>
+                     <div class="flex justify-center gap-4 mt-2">
+                        <span><span class="font-title text-sky-400">Recursos:</span> <span id="player-resources-text">5</span></span>
+                        <span><span class="font-title text-yellow-400">Súper:</span> <span id="player-super-text">0%</span></span>
+                    </div>
                 </div>
             </div>
-            <div class="flex items-center gap-2 sm:gap-3 my-2">
-                <button id="super-button" class="choice-button w-1/3 bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-2 px-2 rounded-xl text-base sm:text-lg font-title">SUPER</button>
-                <div id="inventory-container" class="flex-grow bg-gray-900/50 h-14 rounded-lg flex items-center justify-start p-2 gap-2 overflow-x-auto"></div>
-            </div>
-            <div id="choices-section" class="grid grid-cols-2 gap-2 sm:gap-3">
-                <button id="choice-1" class="choice-button bg-red-600 border-red-800 hover:bg-red-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
-                <button id="choice-2" class="choice-button bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
-            </div>
-            <div id="challenge-choices-section" class="hidden grid grid-cols-2 gap-2 sm:gap-3 mt-2">
-                    <button id="challenge-choice-1" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
-                    <button id="challenge-choice-2" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
-                    <button id="challenge-choice-3" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
-                    <button id="challenge-choice-4" class="choice-button bg-gray-600 border-gray-800 hover:bg-gray-500 text-white font-bold rounded-xl text-sm sm:text-base"></button>
-            </div>
+
+            <div id="actions-panel" class="grid grid-cols-2 gap-2 mt-4">
+                </div>
         </div>
-        <div id="resolution-overlay" class="hidden-overlay absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-30"><h1 id="resolution-title" class="font-title text-3xl sm:text-4xl mb-3 text-yellow-300"></h1><p id="resolution-narrative" class="text-lg sm:text-xl mb-4 font-bold"></p><div id="resolution-effects" class="text-left space-y-1 mb-6 text-lg font-bold"></div><button id="resolution-continue" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full text-lg sm:text-xl font-title">Continuar</button></div>
-        <div id="game-overlay" class="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20 hidden-overlay"></div>
-        <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title"></div>
+
+
+        <div id="resolution-overlay" class="hidden-overlay absolute inset-0 ..."></div>
+        <div id="game-overlay" class="absolute inset-0 ..."></div>
+        <div id="notification" class="hidden-overlay absolute ..."></div>
     </div>
 
-    <div id="ios-install-instructions" class="hidden absolute inset-0 bg-slate-900/90 z-50 flex items-center justify-center p-4">
-        <div class="bg-gray-800 rounded-2xl p-6 text-center max-w-sm">
-            <h2 class="font-title text-2xl text-yellow-300 mb-4">Instalar Juego en tu iPhone</h2>
-            <p class="mb-4">Para instalar la aplicación, toca el icono de <strong>Compartir</strong> <img src="imagenes/ios_share_icon.png" alt="Icono Compartir de iOS" class="inline h-6 w-6 mx-1"> en la barra de menú de Safari.</p>
-            <p class="mb-6">Luego, busca y selecciona la opción <strong>"Añadir a pantalla de inicio"</strong>.</p>
-            <button id="close-ios-install" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl font-title">Entendido</button>
+    <div id="ios-install-instructions" class="hidden absolute inset-0 ...">
         </div>
-    </div>
 
-    <audio id="sound-splash" src="sonidos/splash.mp3" preload="auto"></audio>
-    <audio id="sound-click" src="sonidos/click.mp3" preload="auto"></audio>
-    <audio id="sound-correct" src="sonidos/correcto.mp3" preload="auto"></audio>
-    <audio id="sound-wrong" src="sonidos/incorrecto.mp3" preload="auto"></audio>
-    <audio id="sound-super" src="sonidos/super.mp3" preload="auto"></audio>
-    <audio id="sound-event" src="sonidos/evento.mp3" preload="auto"></audio>
-    <audio id="music-menu" src="sonidos/musica_menu.mp3" loop preload="auto"></audio>
-    <audio id="music-game" src="sonidos/musica_juego.mp3" loop preload="auto"></audio>
-    <audio id="music-defeat" src="sonidos/musica_derrota.mp3" preload="auto"></audio>
-
-    <script>
-        window.gameCharacters = [];
-        window.gameEvents = [];
-        window.gameChallenges = [];
-    </script>
-    <script src="datos/shelly_data.js"></script>
-    <script src="datos/poco_data.js"></script>
-    <script src="datos/el_primo_data.js"></script>
-    <script src="datos/leon_data.js"></script>
-    <script src="datos/cordelius_data.js"></script>
-    <script src="datos/frank_data.js"></script>
-    <script src="datos/mortis_data.js"></script>
-    <script src="datos/spike_data.js"></script>
-    <script src="datos/eventos_data.js"></script>
-    <script src="datos/retos_data.js"></script>
-
-    <script src="js/languages.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/audio.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/game.js"></script>
-
-</body>
+    </body>
 </html>
