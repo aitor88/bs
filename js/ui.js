@@ -35,12 +35,11 @@ function showMainMenu() {
 
 function showBrawlerSelectionScreen() {
     playSound(sounds.click);
-
     let characterCardsHTML = '';
     characters.forEach(char => {
         if (char.playerStats) {
             characterCardsHTML += `
-                <div onclick="selectBrawlerAndStart('${char.id}')" class="bg-gray-900 rounded-2xl p-4 text-center border-4 border-gray-700 hover:border-yellow-400 cursor-pointer transition">
+                <div onclick="selectBrawlerAndStart('${char.id}')" class="bg-gray-900 rounded-2xl p-4 text-center border-4 border-gray-700 hover:border-yellow-400 cursor-pointer transition w-40 flex-shrink-0">
                     <img src="${char.img}" alt="${char.name}" class="w-24 h-24 mx-auto mb-2">
                     <h3 class="font-title text-2xl text-yellow-300">${char.name}</h3>
                     <div class="text-left text-sm mt-2 font-bold space-y-1">
@@ -56,7 +55,7 @@ function showBrawlerSelectionScreen() {
     const selectionHTML = `
         <div class="flex flex-col h-full w-full max-w-md text-center py-6">
             <h1 class="font-title text-4xl sm:text-5xl text-yellow-300 mb-6 flex-shrink-0">Elige tu Brawler</h1>
-            <div class="flex-grow grid grid-cols-2 sm:grid-cols-3 gap-4 overflow-y-auto px-2">
+            <div class="flex-grow flex items-center gap-4 overflow-x-auto px-4 pb-4">
                 ${characterCardsHTML}
             </div>
             <div class="flex-shrink-0 pt-6">
@@ -64,19 +63,15 @@ function showBrawlerSelectionScreen() {
             </div>
         </div>
     `;
-
     ui.gameOverlay.innerHTML = selectionHTML;
 }
 
 function showNameInputScreen() {
     playSound(sounds.click);
-    
-    // ===== LÍNEA CORREGIDA Y DATOS PARA LA IMAGEN =====
     const selectedBrawlerData = characters.find(char => char.id === selectedBrawlerId);
     const brawlerName = selectedBrawlerData ? selectedBrawlerData.name : 'Brawler';
     const brawlerImg = selectedBrawlerData ? selectedBrawlerData.img : 'imagenes/logo.png';
 
-    // ===== HTML MODIFICADO PARA MOSTRAR LA IMAGEN DEL BRAWLER =====
     ui.gameOverlay.innerHTML = `
         <div class="flex flex-col items-center">
             <img src="${brawlerImg}" alt="${brawlerName}" class="w-32 h-32 mb-4">
@@ -86,7 +81,6 @@ function showNameInputScreen() {
             <button onclick="showBrawlerSelectionScreen()" class="mt-4 text-gray-400">${getText('back')}</button>
         </div>`;
 }
-
 
 function showInstructionsScreen() {
     playSound(sounds.click);
@@ -205,19 +199,15 @@ function displayRanking(rankingListElement) {
 
 function showBattleScreen(player, enemy) {
     ui.battleScreen.classList.remove('hidden');
-
     ui.enemyName.textContent = enemy.name;
     ui.enemyImg.src = enemy.img;
-    
     ui.playerName.textContent = playerName;
     ui.playerImg.src = player.img;
-
     ui.actionsPanel.innerHTML = '';
     player.moves.forEach(move => {
         const moveButton = document.createElement('button');
         moveButton.className = 'choice-button bg-gray-700 border-gray-900 hover:bg-gray-600 text-white font-bold rounded-xl p-2 text-left';
         moveButton.onclick = () => handlePlayerMove(move);
-
         moveButton.innerHTML = `
             <div class="flex justify-between items-center">
                 <span class="font-title text-lg">${move.name[currentLang]}</span>
@@ -227,7 +217,6 @@ function showBattleScreen(player, enemy) {
         `;
         ui.actionsPanel.appendChild(moveButton);
     });
-    
     updateBattleUI(stats, enemy.stats);
 }
 
@@ -235,11 +224,9 @@ function updateBattleUI(playerStats, enemyStats) {
     const playerHealthPercent = Math.max(0, (playerStats.vida / currentPlayerBrawler.playerStats.vida) * 100);
     ui.playerHealthBar.style.width = `${playerHealthPercent}%`;
     ui.playerHealthText.textContent = `${Math.max(0, playerStats.vida)} / ${currentPlayerBrawler.playerStats.vida}`;
-
     const enemyHealthPercent = Math.max(0, (enemyStats.vida / currentEnemyBrawler.cpuStats.vida) * 100);
     ui.enemyHealthBar.style.width = `${enemyHealthPercent}%`;
     ui.enemyHealthText.textContent = `${Math.max(0, enemyStats.vida)} / ${currentEnemyBrawler.cpuStats.vida}`;
-    
     ui.playerResourcesText.textContent = playerStats.recursos;
     ui.playerSuperText.textContent = `${playerStats.superpoder}%`;
 }
