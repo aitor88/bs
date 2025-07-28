@@ -10,7 +10,7 @@ window.gameCharacters.push({
     cpuStats: {
         vida: 160, // Vida muy alta, es un tanque
         poder: 14,
-    },
+    }, // <-- Coma revisada
 
     // Lista de movimientos que usará la CPU
     moves: [
@@ -28,7 +28,7 @@ window.gameCharacters.push({
             cost: 0,
             effects: { self: { vida: 15 } }
         }
-    ],
+    ], // <-- Coma revisada
     
     // Habilidad Súper del enemigo
     superAbility: {
