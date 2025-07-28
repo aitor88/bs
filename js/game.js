@@ -1,43 +1,18 @@
 // ===================================================================
-// === UTILIDADES ===
-// ===================================================================
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-function createDilemmaDecks() {
-    dilemmaDecks = {};
-    // Filtramos solo los personajes con la estructura de dilemas antigua para no romper el juego
-    const charactersWithDilemmas = characters.filter(c => c.dilemmas);
-    charactersWithDilemmas.forEach(char => {
-        dilemmaDecks[char.name] = shuffleArray([...char.dilemmas]);
-    });
-}
-
-// ===================================================================
-// === LÓGICA DE INICIO DE JUEGO (MODIFICADA) ===
+// === LÓGICA DE INICIO DE JUEGO ===
 // ===================================================================
 
-// Nueva función para gestionar la selección del Brawler y pasar a la pantalla de nombre
 function selectBrawlerAndStart(brawlerId) {
     playSound(sounds.click);
-    selectedBrawlerId = brawlerId; // Guardamos el ID del brawler elegido
-    
-    // Después de elegir Brawler, pedimos el nombre del jugador
+    selectedBrawlerId = brawlerId;
     showNameInputScreen(); 
 }
 
-// initGame ahora usa el Brawler seleccionado para establecer las estadísticas iniciales
 function initGame() {
-    // Buscamos los datos completos del Brawler que se eligió
-    const selectedBrawlerData = window.gameCharacters.find(char => char.id === selectedBrawlerId);
-    if (!selectedBrawlerData || !selectedBrawlerData.playerStats) {
-        console.error("No se ha seleccionado un Brawler válido con la nueva estructura.");
-        showMainMenu(); // Si hay un error, volvemos al menú
+    currentPlayerBrawler = window.gameCharacters.find(char => char.id === selectedBrawlerId);
+    if (!currentPlayerBrawler) {
+        console.error("No se ha seleccionado un Brawler válido.");
+        showMainMenu();
         return;
     }
 
@@ -46,319 +21,134 @@ function initGame() {
     sounds.gameMusic.loop = true;
     playSound(sounds.gameMusic);
     
-    playerName = document.getElementById('player-name-input').value.trim() || selectedBrawlerData.name;
+    playerName = document.getElementById('player-name-input').value.trim() || currentPlayerBrawler.name;
     
-    // Usamos las estadísticas iniciales del Brawler seleccionado
+    // Clonamos las estadísticas para poder modificarlas durante la partida
     stats = { 
-        ...selectedBrawlerData.playerStats, // Copia vida, poder, recursos
-        superpoder: 0 // El superpoder siempre empieza en 0
+        ...currentPlayerBrawler.playerStats,
+        superpoder: 0
     };
 
-    currentAssault = 1;
+    currentAssault = 0; // Empezamos en asalto 0, el 1 será la primera batalla
     gameOver = false;
-    inventory = [];
-    activeEffects = {};
-    lastCharacterName = '';
-    lastEventName = '';
-    
-    // Dejamos la lógica antigua de dilemas por ahora
-    createDilemmaDecks();
-    updateInventoryUI();
     
     ui.gameOverlay.classList.add('hidden-overlay');
-    ui.gameUI.classList.remove('hidden');
     
-    // La partida ya no empieza con un dilema de personaje aleatorio, sino que podría empezar directamente con una batalla.
-    // Por ahora, para mantenerlo funcional, llamaremos a nextAssault que usa la lógica antigua.
-    // Esto lo cambiaremos cuando implementemos el sistema de combate.
-    nextAssault();
+    // ¡Empezamos la primera batalla!
+    startNextBattle();
 }
 
 
 // ===================================================================
-// === LÓGICA DE JUEGO ANTIGUA (A REEMPLAZAR CON EL SISTEMA DE COMBATE) ===
+// === NUEVO BUCLE DE JUEGO: LÓGICA DE COMBATE ===
 // ===================================================================
 
-function nextAssault() {
-    if (gameOver) return;
-    ui.choicesSection.classList.remove('hidden');
-    ui.challengeChoicesSection.classList.add('hidden');
+/**
+ * Inicia la siguiente batalla contra un enemigo aleatorio.
+ */
+function startNextBattle() {
+    currentAssault++;
     
-    const charactersWithDilemmas = characters.filter(c => c.dilemmas && c.dilemmas.length > 0);
-    if (charactersWithDilemmas.length === 0) {
-        console.error("No hay personajes con dilemas para continuar el juego.");
-        return;
-    }
+    // Elegimos un enemigo aleatorio que no sea el propio jugador
+    let enemyOptions = window.gameCharacters.filter(char => char.id !== selectedBrawlerId);
+    currentEnemyBrawler = { ...enemyOptions[Math.floor(Math.random() * enemyOptions.length)] };
+    
+    // Clonamos sus stats para poder modificarlas
+    currentEnemyBrawler.stats = { ...currentEnemyBrawler.cpuStats };
 
-    let char;
-    do {
-        char = charactersWithDilemmas[Math.floor(Math.random() * charactersWithDilemmas.length)];
-    } while (char.name === lastCharacterName && charactersWithDilemmas.length > 1);
-    lastCharacterName = char.name;
-
-    if (!dilemmaDecks[char.name] || dilemmaDecks[char.name].length === 0) {
-        createDilemmaDecks();
-    }
-    const dilemma = dilemmaDecks[char.name].pop();
-    
-    ui.charImg.classList.add('rounded-full');
-    ui.charImg.classList.remove('rounded-lg');
-    ui.charImg.style.display = 'block';
-    ui.charName.textContent = char.name;
-    ui.charImg.src = char.img;
-    ui.dilemmaDescription.innerHTML = dilemma.description[currentLang];
-    
-    ui.choice1.textContent = dilemma.options[0].text[currentLang];
-    ui.choice2.textContent = dilemma.options[1].text[currentLang];
-    ui.choice1.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[0], char.name); };
-    ui.choice2.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[1], char.name); };
-    
-    updateUI();
+    // Montamos la interfaz de batalla
+    showBattleScreen(currentPlayerBrawler, currentEnemyBrawler);
+    updateBattleNarrative(`¡Asalto ${currentAssault}! ¡Te enfrentas a ${currentEnemyBrawler.name}!`);
 }
 
-function chooseOption(action, charName) {
-    if (gameOver) return;
-    
-    if (action.cost && stats.recursos < action.cost) {
-        ui.notification.textContent = getText('notEnoughResources');
-        ui.notification.classList.remove('hidden-overlay');
-        setTimeout(() => ui.notification.classList.add('hidden-overlay'), 2000);
+/**
+ * Se ejecuta cuando el jugador elige un movimiento.
+ */
+function handlePlayerMove(move) {
+    // 1. Comprobar si tenemos suficientes recursos
+    if (stats.recursos < move.cost) {
+        updateBattleNarrative("¡No tienes suficientes recursos para ese movimiento!");
         return;
     }
+    stats.recursos -= move.cost;
 
-    let combinedEffects = { ...action.effects };
-    if(action.cost) {
-        combinedEffects.recursos = (combinedEffects.recursos || 0) - action.cost;
+    // 2. Calcular daño y aplicar efectos
+    let damageDealt = 0;
+    if (move.damage > 0) {
+        damageDealt = move.damage + Math.floor(stats.poder / 2);
+        currentEnemyBrawler.stats.vida -= damageDealt;
+    }
+    
+    // Aplicar otros efectos (sobre sí mismo o el enemigo)
+    if (move.effects) {
+        if (move.effects.self) {
+            for (const key in move.effects.self) {
+                stats[key] = (stats[key] || 0) + move.effects.self[key];
+            }
+        }
     }
 
-    let narrative = action.narrative[currentLang];
-    const baseDamage = 2 + currentAssault; 
-    const finalDamage = Math.max(1, baseDamage - Math.floor(stats.poder / 10));
-    combinedEffects.vida = (combinedEffects.vida || 0) - finalDamage;
-    narrative += ` ${getText('enemyAttack')}`;
-    
-    isSpecialTurn = false; 
-    showResolution(charName, narrative, combinedEffects);
-}
+    updateBattleUI(stats, currentEnemyBrawler.stats);
+    updateBattleNarrative(`${playerName} usa ${move.name[currentLang]}. ¡Causa ${damageDealt} de daño!`);
 
-function useSuper() {
-    if (stats.superpoder < 100) {
-        ui.notification.textContent = getText('notEnoughSuper');
-        ui.notification.classList.remove('hidden-overlay');
-        setTimeout(() => ui.notification.classList.add('hidden-overlay'), 2000);
-        return;
-    }
-    playSound(sounds.super);
-    const superEffects = { superpoder: -100, vida: 25, poder: 25, recursos: 1 };
-    isSpecialTurn = true;
-    showResolution(getText('superTitle'), getText('superNarrative'), superEffects);
-}
-
-function handleContinueClick() {
-    playSound(sounds.click);
-    ui.resolutionOverlay.classList.add('hidden-overlay');
-    
-    if (checkGameOver()) return;
-
-    if (!isSpecialTurn) {
-        currentAssault++;
-    }
-    updateUI();
-    
-    const rand = Math.random();
-    if (rand < 0.2 && events.length > 0) { 
-        triggerRandomEvent();
-    } else if (rand < 0.35 && challenges.length > 0) {
-        triggerRandomChallenge();
+    // 3. Comprobar si el enemigo ha sido derrotado
+    if (currentEnemyBrawler.stats.vida <= 0) {
+        playSound(sounds.correct);
+        updateBattleNarrative(`¡Has derrotado a ${currentEnemyBrawler.name}!`);
+        // Esperamos un momento y empezamos la siguiente batalla
+        setTimeout(startNextBattle, 2000);
     } else {
-        nextAssault();
+        // Si no, es el turno del enemigo
+        setTimeout(handleEnemyTurn, 1500);
     }
 }
 
-function triggerRandomEvent() {
-    playSound(sounds.event);
-    let event;
-    do {
-        event = events[Math.floor(Math.random() * events.length)];
-    } while (event.name[currentLang] === lastEventName && events.length > 1);
+/**
+ * Lógica simple para el turno del enemigo.
+ */
+function handleEnemyTurn() {
+    // IA muy simple: elige un movimiento al azar de su lista
+    const enemyMove = currentEnemyBrawler.moves[Math.floor(Math.random() * currentEnemyBrawler.moves.length)];
     
-    lastEventName = event.name[currentLang];
-    isSpecialTurn = true;
-    const eventName = event.name[currentLang] || event.name['es'];
-    const eventTitle = getText('eventTitle', eventName);
-
-    if (event.type === 'immediate') {
-        showResolution(eventTitle, event.narrative[currentLang], event.effects);
-    } else if (event.type === 'choice') {
-        displayEventChoice(event, eventTitle);
+    // Calcular daño
+    let damageDealt = 0;
+    if (enemyMove.damage > 0) {
+        damageDealt = enemyMove.damage + Math.floor(currentEnemyBrawler.stats.poder / 2) - Math.floor(stats.poder / 4);
+        damageDealt = Math.max(1, damageDealt); // Mínimo 1 de daño
+        stats.vida -= damageDealt;
     }
-}
 
-function displayEventChoice(event, title) {
-    ui.charImg.classList.remove('rounded-full');
-    ui.charImg.classList.add('rounded-lg');
-    ui.charImg.style.display = 'block';
-    ui.charImg.src = event.img;
-    ui.charName.textContent = title;
-    ui.dilemmaDescription.innerHTML = event.message[currentLang];
-    
-    const handleEventChoice = (option) => {
-        playSound(sounds.click);
-        
-        if (option.cost && stats.recursos < option.cost) {
-            ui.notification.textContent = getText('notEnoughResources');
-            ui.notification.classList.remove('hidden-overlay');
-            setTimeout(() => ui.notification.classList.add('hidden-overlay'), 2000);
-            return;
+    // Aplicar efectos (ej. si el enemigo se cura)
+    if (enemyMove.effects && enemyMove.effects.self) {
+         for (const key in enemyMove.effects.self) {
+            currentEnemyBrawler.stats[key] = (currentEnemyBrawler.stats[key] || 0) + enemyMove.effects.self[key];
         }
-
-        let combinedEffects = { ...option.effects };
-        if(option.cost) {
-            combinedEffects.recursos = (combinedEffects.recursos || 0) - option.cost;
-        }
-
-        showResolution(title, option.narrative[currentLang], combinedEffects);
-    };
-
-    ui.choice1.textContent = event.options[0].text[currentLang];
-    ui.choice2.textContent = event.options[1].text[currentLang];
-    ui.choice1.onclick = () => handleEventChoice(event.options[0]);
-    ui.choice2.onclick = () => handleEventChoice(event.options[1]);
-}
-
-function triggerRandomChallenge() {
-    playSound(sounds.event);
-    const challengeGroup = challenges[Math.floor(Math.random() * challenges.length)];
-    isSpecialTurn = true;
-
-    let difficulty;
-    if (currentAssault <= 5) { difficulty = "easy"; }
-    else if (currentAssault <= 10) { difficulty = "medium"; }
-    else { difficulty = "hard"; }
-
-    let availableQuestions = challengeGroup.questions.filter(q => q.difficulty === difficulty);
-    if (availableQuestions.length === 0) { availableQuestions = challengeGroup.questions; }
-    if (availableQuestions.length === 0) { nextAssault(); return; }
-
-    const challenge = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
-
-    const hasCorrectOption = challenge.options.some(option => option.correct);
-    if (!hasCorrectOption) {
-        console.error("Error en datos: la pregunta seleccionada no tiene respuesta correcta.", challenge);
-        nextAssault();
-        return;
     }
 
-    ui.choicesSection.classList.add('hidden');
-    ui.challengeChoicesSection.classList.remove('hidden');
-    ui.charImg.classList.remove('rounded-full');
-    ui.charImg.classList.add('rounded-lg');
-    ui.charImg.src = `https://placehold.co/150x150/a855f7/ffffff?text=?`;
-    ui.charName.textContent = getText('challengeTitle');
-    ui.dilemmaDescription.innerHTML = challenge.challenge[currentLang];
-    
-    const buttons = Array.from(ui.challengeChoicesSection.children);
-    const shuffledOptions = [...challenge.options].sort(() => Math.random() - 0.5);
-    
-    buttons.forEach((button, index) => {
-        const option = shuffledOptions[index];
-        if (option) {
-            button.textContent = option.text[currentLang];
-            button.onclick = () => {
-                if (option.correct) {
-                    playSound(sounds.correct);
-                    const rewardName = challengeGroup.reward.name[currentLang] || challengeGroup.reward.name['es'];
-                    if (!inventory.some(item => (item.name[currentLang] || item.name['es']) === rewardName)) {
-                        inventory.push(challengeGroup.reward);
-                    }
-                    updateInventoryUI();
-                    showResolution(getText('correct'), challenge.success[currentLang], { superpoder: 15, recursos: 1 });
-                } else {
-                    playSound(sounds.wrong);
-                    showResolution(getText('incorrect'), challenge.failure[currentLang], { vida: -5 });
-                }
-            };
-        }
-    });
-}
+    updateBattleUI(stats, currentEnemyBrawler.stats);
+    updateBattleNarrative(`${currentEnemyBrawler.name} usa ${enemyMove.name[currentLang]}. ¡Te causa ${damageDealt} de daño!`);
 
-function checkGameOver() {
-    if (gameOver) return false;
-    
-    let reason = null;
-    if (stats.vida <= 0) reason = { reasonKey: 'defeatedReasonNoHealth' };
-    if (stats.poder >= 100) reason = { reasonKey: 'defeatedReasonPower' };
-    if (stats.recursos > 10) reason = { reasonKey: 'defeatedReasonGreed' };
-
-    if (reason) {
-        showEndScreen(reason);
-        return true;
+    // Comprobar si el jugador ha sido derrotado
+    if (stats.vida <= 0) {
+        gameOver = true;
+        setTimeout(() => showEndScreen({ reasonKey: 'defeatedReasonNoHealth' }), 1500);
     }
-    return false;
 }
+
 
 // ===================================================================
-// === LÓGICA DE INSTALACIÓN DE PWA ===
+// === FUNCIONES AUXILIARES Y DE INICIO ===
 // ===================================================================
 let deferredPrompt; 
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-});
-
-function handleInstallClick() {
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(({ outcome }) => {
-      if (outcome === 'accepted') {
-        const installButton = document.getElementById('install-button');
-        if(installButton) installButton.classList.add('hidden');
-      }
-      deferredPrompt = null;
-    });
-  } else if (isIOS) {
-    document.getElementById('ios-install-instructions').classList.remove('hidden');
-  } else {
-    alert("Para instalar la app, busca la opción 'Instalar' en el menú de tu navegador.");
-  }
-}
-
-// ===================================================================
-// === INICIO DEL JUEGO Y EVENT LISTENERS ===
-// ===================================================================
-function setLanguage(lang) {
-    currentLang = lang;
-    unlockAudio();
-    ui.startButtonScreen.classList.add('hidden-overlay');
-    ui.splashScreen.classList.remove('hidden-overlay');
-    ui.splashLogo.classList.add('animate');
-    
-    ui.splashLogo.addEventListener('animationend', (event) => {
-        if (event.animationName === 'dropIn') {
-            ui.splashLogo.classList.add('shake');
-            playSound(sounds.splash);
-            
-            setTimeout(() => {
-                ui.splashScreen.style.opacity = 0;
-                ui.gameContainer.classList.remove('hidden');
-                showMainMenu();
-                setTimeout(() => ui.splashScreen.style.display = 'none', 500);
-            }, 500);
-        }
-    }, { once: true });
-}
+function handleInstallClick() { /* ... */ }
+function setLanguage(lang) { /* ... */ }
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('lang-es-button').addEventListener('click', () => setLanguage('es'));
     document.getElementById('lang-eu-button').addEventListener('click', () => setLanguage('eu'));
-    
     document.getElementById('close-ios-install').addEventListener('click', () => {
         document.getElementById('ios-install-instructions').classList.add('hidden');
     });
-
-    ui.superButton.onclick = useSuper;
-    ui.resolutionContinue.onclick = handleContinueClick;
 });
