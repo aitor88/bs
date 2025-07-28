@@ -10,7 +10,7 @@ window.gameCharacters.push({
     cpuStats: {
         vida: 110,
         poder: 10,
-    },
+    }, // <-- Coma revisada
 
     // Lista de movimientos que usará la CPU
     moves: [
@@ -28,7 +28,7 @@ window.gameCharacters.push({
             cost: 0,
             effects: { self: { vida: 20 } }
         }
-    ],
+    ], // <-- Coma revisada
 
     // Habilidad Súper del enemigo
     superAbility: {
