@@ -40,6 +40,7 @@ const translations = {
         defeatedReasonNoHealth: "La vida de tu escuadrón ha llegado a cero.",
         defeatedReasonPower: "Tu poder es tan alto que has perdido el control.",
         defeatedReasonGreed: "Has acumulado demasiados recursos y te has vuelto un blanco fácil.",
+        causeOfDeath: "Causa:",
         youLasted: "Has aguantado",
         assaults: "asaltos.",
         calculatingRank: "Calculando tu posición en el ranking...",
@@ -88,7 +89,7 @@ const translations = {
         // --- Stats ---
         player: "JOKALARIA",
         assault: "ERASOA",
-        health: "VIDA",
+        health: "BIZITZA",
         power: "INDARRA",
         resources: "BALIABIDEAK",
         superpower: "SUPERBOTEREA",
@@ -99,7 +100,7 @@ const translations = {
         decisions: "ERABAKIAK:",
         decisionsText: "Txanda bakoitzean, Brawler batek bi aukera emango dizkizu. Aukeratu zuhurki!",
         stats: "ESTATISTIKAK:",
-        statsText: "Zure aukerek zure Vida, Indarra, Baliabideak eta Superboterea aldatzen dituzte.",
+        statsText: "Zure aukerek zure Bizitza, Indarra, Baliabideak eta Superboterea aldatzen dituzte.",
         enemies: "ETSAIAK:",
         enemiesText: "Txanda bakoitzaren ondoren, etsaiek erasotzen dute. Defentsa-indarra funtsezkoa da!",
         surprises: "EZUSTEKOAK:",
@@ -108,10 +109,11 @@ const translations = {
         superpowerText: "%100ean dagoenean, erabili abantaila handia lortzeko!",
 
         // --- Pantalla de Derrota ---
-        defeated: "GARRAITUA!",
-        defeatedReasonNoHealth: "Zure eskuadroiaren vida zerora iritsi da.",
+        defeated: "GARAITUA!",
+        defeatedReasonNoHealth: "Zure eskuadroiaren bizitza zerora iritsi da.",
         defeatedReasonPower: "Zure indarra hain da handia, kontrola galdu duzula.",
         defeatedReasonGreed: "Baliabide gehiegi metatu dituzu eta jomuga erraza bihurtu zara.",
+        causeOfDeath: "Kausa:",
         youLasted: "Eutsi diozu",
         assaults: "eraso.",
         calculatingRank: "Zure postua kalkulatzen sailkapenean...",
@@ -130,7 +132,7 @@ const translations = {
 
         // --- Juego ---
         super: "SUPER",
-        superNarrative: "Botere bultzada batek vida, indarra eta baliabide gehigarri bat ematen dizkizu!",
+        superNarrative: "Botere bultzada batek bizitza, indarra eta baliabide gehigarri bat ematen dizkizu!",
         superTitle: "SUPERBOTEREA!",
         enemyAttack: "Etsaiek kontraeraso egiten dute.",
         eventTitle: (name) => `GERTAERA: ${name}!`,
