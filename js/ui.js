@@ -71,19 +71,22 @@ function showBrawlerSelectionScreen() {
 function showNameInputScreen() {
     playSound(sounds.click);
     
-    // ===== LA LÍNEA CORREGIDA ESTÁ AQUÍ =====
+    // ===== LÍNEA CORREGIDA Y DATOS PARA LA IMAGEN =====
     const selectedBrawlerData = characters.find(char => char.id === selectedBrawlerId);
     const brawlerName = selectedBrawlerData ? selectedBrawlerData.name : 'Brawler';
+    const brawlerImg = selectedBrawlerData ? selectedBrawlerData.img : 'imagenes/logo.png';
 
+    // ===== HTML MODIFICADO PARA MOSTRAR LA IMAGEN DEL BRAWLER =====
     ui.gameOverlay.innerHTML = `
-        <div>
-            <img src="imagenes/logo.png" alt="Logo del Juego" class="w-1/2 max-w-[180px] mx-auto mb-6">
+        <div class="flex flex-col items-center">
+            <img src="${brawlerImg}" alt="${brawlerName}" class="w-32 h-32 mb-4">
             <h1 class="font-title text-4xl sm:text-5xl mb-6 text-yellow-300">${getText('chooseYourName')}</h1>
             <input type="text" id="player-name-input" placeholder="${brawlerName}" class="w-full mb-6 font-title">
             <button onclick="initGame()" class="menu-button w-full bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('toTheBattle')}</button>
             <button onclick="showBrawlerSelectionScreen()" class="mt-4 text-gray-400">${getText('back')}</button>
         </div>`;
 }
+
 
 function showInstructionsScreen() {
     playSound(sounds.click);
