@@ -34,7 +34,15 @@ function updateInventoryUI() {
             const itemEl = document.createElement('img');
             itemEl.className = 'inventory-item';
             itemEl.src = item.image;
-            itemEl.title = item.name[currentLang] || item.name['es'];
+            
+            // Añadimos la descripción del poder pasivo como un "tooltip"
+            let tooltipText = item.name[currentLang] || item.name['es'];
+            if (item.passiveEffect) {
+                const effectDesc = item.passiveEffect.description[currentLang] || item.passiveEffect.description['es'];
+                tooltipText += `\n(${effectDesc})`;
+            }
+            itemEl.title = tooltipText;
+
             itemEl.onerror = () => { itemEl.style.display = 'none'; };
             ui.inventoryContainer.appendChild(itemEl);
         });
@@ -43,14 +51,31 @@ function updateInventoryUI() {
 
 function showResolution(title, narrative, effects) {
     let effectDescriptions = [];
+
+    // --- APLICACIÓN DE PODERES PASIVOS (GANANCIAS) ---
+    // Poder de la Botella de Barley: Aumenta curación
+    if (activeEffects.healing_boost && effects.vida > 0) {
+        effects.vida = Math.round(effects.vida * activeEffects.healing_boost.value);
+    }
+    // Poder del Bate de Bibi: Aumenta ganancia de Súper
+    if (activeEffects.super_charge_boost && effects.superpoder > 0) {
+        effects.superpoder += activeEffects.super_charge_boost.value;
+    }
+
+    // Aplicar efectos a las estadísticas
     for (const key in effects) {
         if (effects[key] === 0) continue;
         const value = effects[key];
         stats[key] = Math.round(stats[key] + value);
     }
     
+    // Normalizar estadísticas y aplicar Power Floor
     for (const key in stats) {
         stats[key] = Math.max(0, (key === 'recursos' ? Math.min(10, stats[key]) : Math.min(100, stats[key])));
+    }
+    // Poder de la Estrella Azul: El poder no baja de 10
+    if (activeEffects.power_floor && stats.poder < activeEffects.power_floor.value) {
+        stats.poder = activeEffects.power_floor.value;
     }
     
     updateUI(); 
@@ -156,10 +181,8 @@ function showMainMenu() {
     
     const menuHTML = `
         <div class="flex flex-col justify-between h-full w-full max-w-md text-center py-4">
-            
             <div class="flex-grow flex flex-col justify-center px-4">
                 <img src="${logoPath}" alt="Logo del Juego" class="w-3/4 max-w-[240px] sm:max-w-[280px] mx-auto mb-6 sm:mb-8" onerror="this.style.display='none';">
-                
                 <div class="space-y-2 sm:space-y-3">
                     <button onclick="showNameInputScreen()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('newGame')}</button>
                     <button onclick="showInstructionsScreen()" class="menu-button w-full bg-purple-600 border-purple-800 hover:bg-purple-500 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('instructions')}</button>
@@ -167,7 +190,6 @@ function showMainMenu() {
                     <button id="install-button" onclick="handleInstallClick()" class="hidden menu-button w-full bg-teal-600 border-teal-800 hover:bg-teal-500 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('installGame')}</button>
                 </div>
             </div>
-
             <div class="flex-shrink-0 pt-4">
                 <img src="avatares/jon.png" alt="Creador del juego" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto" onerror="this.style.display='none'">
                 <p class="font-title mt-2 text-base sm:text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
@@ -184,7 +206,6 @@ function showMainMenu() {
 
     ui.gameOverlay.classList.remove('hidden-overlay');
 }
-
 
 function showNameInputScreen() {
     playSound(sounds.click);
