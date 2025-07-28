@@ -1,7 +1,7 @@
 function showMainMenu() {
     stopAllMusic();
     playSound(sounds.menuMusic);
-    ui.battleScreen.classList.add('hidden'); // Ocultamos la pantalla de batalla
+    ui.battleScreen.classList.add('hidden');
 
     const logoPath = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
     
@@ -35,8 +35,11 @@ function showMainMenu() {
 
 function showBrawlerSelectionScreen() {
     playSound(sounds.click);
+
     let characterCardsHTML = '';
+    // Iteramos sobre el array de personajes que se cargó al inicio
     window.characters.forEach(char => {
+        // Solo creamos una tarjeta si el personaje tiene 'playerStats'
         if (char.playerStats) {
             characterCardsHTML += `
                 <div onclick="selectBrawlerAndStart('${char.id}')" class="bg-gray-900 rounded-2xl p-4 text-center border-4 border-gray-700 hover:border-yellow-400 cursor-pointer transition">
@@ -63,11 +66,13 @@ function showBrawlerSelectionScreen() {
             </div>
         </div>
     `;
+
     ui.gameOverlay.innerHTML = selectionHTML;
 }
 
 function showNameInputScreen() {
     playSound(sounds.click);
+    
     const selectedBrawlerData = window.characters.find(char => char.id === selectedBrawlerId);
     const brawlerName = selectedBrawlerData ? selectedBrawlerData.name : 'Brawler';
 
