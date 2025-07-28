@@ -1,15 +1,21 @@
-// js/game.js
+// ===================================================================
+// === LÓGICA DE INICIO DE JUEGO ===
+// ===================================================================
+
 function selectBrawlerAndStart(brawlerId) {
     playSound(sounds.click);
-    selectedBrawlerId = brawlerId;
+    selectedBrawlerId = brawlerId; // Guardamos el ID del brawler elegido
     showNameInputScreen(); 
 }
 
+// initGame AHORA USA EL BRAWLER SELECCIONADO CORRECTAMENTE
 function initGame() {
-    currentPlayerBrawler = window.characters.find(char => char.id === selectedBrawlerId);
-    if (!currentPlayerBrawler) {
-        console.error("No se ha seleccionado un Brawler válido.");
-        showMainMenu();
+    // ===== LA LÍNEA CORREGIDA ESTÁ AQUÍ =====
+    const selectedBrawlerData = characters.find(char => char.id === selectedBrawlerId);
+    
+    if (!selectedBrawlerData || !selectedBrawlerData.playerStats) {
+        console.error("No se ha seleccionado un Brawler válido con la nueva estructura.");
+        showMainMenu(); // Si hay un error, volvemos al menú
         return;
     }
 
@@ -18,11 +24,12 @@ function initGame() {
     sounds.gameMusic.loop = true;
     playSound(sounds.gameMusic);
     
-    playerName = document.getElementById('player-name-input').value.trim() || currentPlayerBrawler.name;
+    playerName = document.getElementById('player-name-input').value.trim() || selectedBrawlerData.name;
     
+    // Usamos las estadísticas iniciales del Brawler seleccionado
     stats = { 
-        ...currentPlayerBrawler.playerStats,
-        superpoder: 0
+        ...selectedBrawlerData.playerStats, // Copia vida, poder, recursos
+        superpoder: 0 // El superpoder siempre empieza en 0
     };
 
     currentAssault = 0;
@@ -30,19 +37,27 @@ function initGame() {
     
     ui.gameOverlay.classList.add('hidden-overlay');
     
+    // ¡Empezamos la primera batalla!
     startNextBattle();
 }
+
+
+// ===================================================================
+// === BUCLE DE JUEGO: LÓGICA DE COMBATE ===
+// ===================================================================
 
 function startNextBattle() {
     currentAssault++;
     
     let enemyOptions = window.characters.filter(char => char.cpuStats && char.id !== selectedBrawlerId);
     if (enemyOptions.length === 0) {
+        // Fallback si solo quedan los brawlers sin definir como enemigos
         enemyOptions = window.characters.filter(char => char.id !== selectedBrawlerId);
     }
 
     const enemyData = { ...enemyOptions[Math.floor(Math.random() * enemyOptions.length)] };
     
+    // Clonamos sus stats para poder modificarlas
     currentEnemyBrawler = {
         ...enemyData,
         stats: { ...enemyData.cpuStats }
@@ -56,13 +71,14 @@ function handlePlayerMove(move) {
     if (gameOver) return;
 
     if (stats.recursos < move.cost) {
-        updateBattleNarrative("¡No tienes suficientes recursos para ese movimiento!");
+        updateBattleNarrative(getText('notEnoughResources'));
         return;
     }
     stats.recursos -= move.cost;
 
     let damageDealt = 0;
     if (move.damage > 0) {
+        // El daño es el del movimiento + un bonus por el Poder del jugador
         damageDealt = move.damage + Math.floor(stats.poder / 2);
         currentEnemyBrawler.stats.vida -= damageDealt;
     }
@@ -74,6 +90,7 @@ function handlePlayerMove(move) {
             }
         }
     }
+    // Normalizar stats del jugador después de los efectos
     stats.vida = Math.min(currentPlayerBrawler.playerStats.vida, stats.vida);
     stats.superpoder = Math.min(100, stats.superpoder);
 
@@ -85,7 +102,7 @@ function handlePlayerMove(move) {
         updateBattleNarrative(`¡Has derrotado a ${currentEnemyBrawler.name}!`);
         setTimeout(startNextBattle, 2000);
     } else {
-        ui.actionsPanel.style.pointerEvents = 'none';
+        ui.actionsPanel.style.pointerEvents = 'none'; // Desactivar botones durante el turno enemigo
         setTimeout(handleEnemyTurn, 1500);
     }
 }
@@ -97,8 +114,9 @@ function handleEnemyTurn() {
     
     let damageDealt = 0;
     if (enemyMove.damage > 0) {
+        // El daño del enemigo se ve reducido por el Poder (defensa) del jugador
         damageDealt = enemyMove.damage + Math.floor(currentEnemyBrawler.stats.poder / 2) - Math.floor(stats.poder / 4);
-        damageDealt = Math.max(1, damageDealt);
+        damageDealt = Math.max(1, damageDealt); // Mínimo 1 de daño
         stats.vida -= damageDealt;
     }
 
@@ -107,6 +125,7 @@ function handleEnemyTurn() {
             currentEnemyBrawler.stats[key] = (currentEnemyBrawler.stats[key] || 0) + enemyMove.effects.self[key];
         }
     }
+    // Normalizar vida del enemigo (por si se cura)
     currentEnemyBrawler.stats.vida = Math.min(currentEnemyBrawler.cpuStats.vida, currentEnemyBrawler.stats.vida);
 
     updateBattleUI(stats, currentEnemyBrawler.stats);
@@ -115,7 +134,7 @@ function handleEnemyTurn() {
     if (stats.vida <= 0) {
         checkGameOver();
     } else {
-        ui.actionsPanel.style.pointerEvents = 'auto';
+        ui.actionsPanel.style.pointerEvents = 'auto'; // Reactivar botones del jugador
     }
 }
 
@@ -128,6 +147,9 @@ function checkGameOver() {
     return false;
 }
 
+// ===================================================================
+// === FUNCIONES AUXILIARES Y DE INICIO ===
+// ===================================================================
 let deferredPrompt; 
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
