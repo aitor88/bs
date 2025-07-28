@@ -183,7 +183,6 @@ function displayEventChoice(event, title) {
     ui.choice2.onclick = () => handleEventChoice(event.options[1]);
 }
 
-// ESTA ES LA FUNCIÓN CORREGIDA Y MÁS SEGURA
 function triggerRandomChallenge() {
     playSound(sounds.event);
     const challengeGroup = challenges[Math.floor(Math.random() * challenges.length)];
@@ -200,12 +199,10 @@ function triggerRandomChallenge() {
 
     const challenge = availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
 
-    // LÓGICA DE SEGURIDAD AÑADIDA
-    // Nos aseguramos de que la pregunta seleccionada tenga una opción correcta definida.
     const hasCorrectOption = challenge.options.some(option => option.correct);
     if (!hasCorrectOption) {
         console.error("Error en datos: la pregunta seleccionada no tiene respuesta correcta.", challenge);
-        nextAssault(); // Si no hay respuesta correcta, saltamos el reto para no bloquear al jugador.
+        nextAssault();
         return;
     }
 
@@ -241,7 +238,6 @@ function triggerRandomChallenge() {
         }
     });
 }
-
 
 function checkGameOver() {
     if (gameOver) return false;
