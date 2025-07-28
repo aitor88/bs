@@ -1,6 +1,4 @@
-// ===================================================================
-// === INICIALIZACIÓN DE FIREBASE ===
-// ===================================================================
+// js/config.js
 const firebaseConfig = {
     apiKey: "AIzaSyDFhLfNxTGZqPa8BEDhDJ9GMqUXkBCYAn0",
     authDomain: "juego-brawl-stars-ranking.firebaseapp.com",
@@ -12,37 +10,24 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// ===================================================================
-// === ESTADO Y DATOS DEL JUEGO ===
-// ===================================================================
 let currentLang = 'es';
 let stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
 let currentAssault = 1;
 let gameOver = false;
 let playerName = '';
 let selectedBrawlerId = null; 
-
-// Nuevas variables para el estado del combate
 let currentPlayerBrawler = null;
 let currentEnemyBrawler = null;
 
 const characters = window.gameCharacters;
-
 let audioUnlocked = false;
 
-// ===================================================================
-// === REFERENCIAS A ELEMENTOS UI Y AUDIO ===
-// ===================================================================
 const ui = {
     startButtonScreen: document.getElementById('start-button-screen'),
     splashScreen: document.getElementById('splash-screen'),
     splashLogo: document.getElementById('splash-logo'),
     gameContainer: document.getElementById('game-container'),
-    
-    // UI Antigua (se oculta en batalla)
     gameUI: document.getElementById('game-ui'),
-    
-    // Nueva UI de Batalla
     battleScreen: document.getElementById('battle-screen'),
     enemyName: document.getElementById('enemy-name'),
     enemyHealthBar: document.getElementById('enemy-health-bar'),
@@ -56,8 +41,6 @@ const ui = {
     playerResourcesText: document.getElementById('player-resources-text'),
     playerSuperText: document.getElementById('player-super-text'),
     actionsPanel: document.getElementById('actions-panel'),
-
-    // Overlays y otros
     gameOverlay: document.getElementById('game-overlay'),
     notification: document.getElementById('notification'),
 };
