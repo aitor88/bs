@@ -4,22 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brawl Stars: Batalla Infinita</title>
-
     <meta property="og:title" content="Brawl Stars: Batalla Infinita">
-    <meta property="og:description" content="¡Un juego de decisiones tácticas! ¿Cuántos asaltos podrás aguantar?">
+    <meta property="og:description" content="Una Aventura Táctica por Turnos.">
     <meta property="og:image" content="https://raw.githubusercontent.com/aitor88/bs/main/imagenes/logo.png">
     <meta property="og:type" content="website">
-    
     <link rel="manifest" href="manifest.json">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
@@ -44,9 +39,7 @@
     </div>
 
     <div id="game-container" class="hidden game-container bg-gray-800 rounded-3xl shadow-2xl p-3 sm:p-6 flex-col justify-between relative overflow-hidden">
-        
         <div id="battle-screen" class="hidden h-full flex flex-col text-center p-2 overflow-y-auto">
-            
             <div id="enemy-zone" class="flex-shrink-0 mb-2">
                 <div id="enemy-stats" class="text-lg font-bold">
                     <span id="enemy-name" class="font-title text-2xl text-red-400"></span>
@@ -58,11 +51,7 @@
                 </div>
                 <img id="enemy-img" src="" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mt-2 transition-all duration-300" alt="Enemigo">
             </div>
-
-            <div id="battle-narrative" class="flex-grow bg-gray-900/50 rounded-lg p-2 my-2 text-base sm:text-lg font-bold flex items-center justify-center min-h-[60px]">
-                <span>¡Comienza la batalla!</span>
-            </div>
-
+            <div id="battle-narrative" class="flex-grow bg-gray-900/50 rounded-lg p-2 my-2 text-base sm:text-lg font-bold flex items-center justify-center min-h-[60px]"></div>
             <div id="player-zone" class="flex-shrink-0 mt-2">
                 <img id="player-img" src="" class="w-24 h-24 sm:w-28 sm:h-28 mx-auto mb-2 transition-all duration-300" alt="Jugador">
                 <div id="player-stats" class="text-lg font-bold">
@@ -73,16 +62,16 @@
                         </div>
                     </div>
                     <div class="flex justify-center gap-4 mt-2 text-sm sm:text-base">
-                        <span><span class="font-title text-sky-400">Recursos:</span> <span id="player-resources-text">5</span></span>
-                        <span><span class="font-title text-yellow-400">Súper:</span> <span id="player-super-text">0%</span></span>
+                        <span><span class="font-title text-sky-400">Recursos:</span> <span id="player-resources-text"></span></span>
+                        <span><span class="font-title text-yellow-400">Súper:</span> <span id="player-super-text"></span></span>
                     </div>
                 </div>
             </div>
-
-            <div id="actions-panel" class="grid grid-cols-2 gap-2 mt-4 flex-shrink-0">
-                </div>
+            <div id="actions-panel" class="grid grid-cols-2 gap-2 mt-4 flex-shrink-0"></div>
+            <div id="super-panel" class="mt-2 flex-shrink-0">
+                <button id="super-ability-button" class="hidden menu-button w-full bg-yellow-500 border-yellow-700 hover:bg-yellow-400 text-gray-900 font-bold py-3 px-6 rounded-full text-xl font-title"></button>
+            </div>
         </div>
-        
         <div id="game-overlay" class="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20 hidden-overlay"></div>
         <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title"></div>
     </div>
@@ -104,7 +93,7 @@
     <audio id="sound-event" src="sonidos/evento.mp3" preload="auto"></audio>
     <audio id="music-menu" src="sonidos/musica_menu.mp3" loop preload="auto"></audio>
     <audio id="music-game" src="sonidos/musica_juego.mp3" loop preload="auto"></audio>
-    <audio id="music-defeat" src="sonidos/musica_derrota.mp3" preload="auto"></audio>
+    <audio id="music-defeat" src="sonidos/musica_derrota.mp3" loop preload="auto"></audio>
 
     <script>
         window.gameCharacters = [];
