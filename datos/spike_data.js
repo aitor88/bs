@@ -10,7 +10,7 @@ window.gameCharacters.push({
     cpuStats: {
         vida: 80, // Vida frágil
         poder: 25, // Mucho daño
-    },
+    }, // <-- Coma revisada
 
     // Lista de movimientos que usará la CPU
     moves: [
@@ -28,7 +28,7 @@ window.gameCharacters.push({
             cost: 0,
             effects: {}
         }
-    ],
+    ], // <-- Coma revisada
 
     // Habilidad Súper del enemigo
     superAbility: {
