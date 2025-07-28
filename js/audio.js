@@ -1,3 +1,4 @@
+// js/audio.js
 function unlockAudio() {
     if (audioUnlocked) return;
     for (const key in sounds) {
