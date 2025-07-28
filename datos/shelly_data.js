@@ -6,8 +6,8 @@ window.gameCharacters.push({
     // Estadísticas cuando el JUGADOR usa a Shelly
     playerStats: {
         vida: 100,
-        poder: 20, // Shelly tiene un poder equilibrado
-        recursos: 6, // Empieza con 6 de "munición"
+        poder: 20,
+        recursos: 6,
     },
 
     // Estadísticas cuando SHELLY es el ENEMIGO
@@ -23,7 +23,7 @@ window.gameCharacters.push({
             description: { es: 'Ataque básico. Causa 15 de daño y carga el Súper.', eu: 'Oinarrizko erasoa. 15eko kaltea eragiten du eta Superra kargatzen du.' },
             cost: 0,
             damage: 15,
-            effects: { self: { superpoder: 15 } } // Efecto sobre uno mismo
+            effects: { self: { superpoder: 15 } }
         },
         {
             name: { es: 'Ráfaga Rápida', eu: 'Jaurtiketa Azkarra' },
@@ -34,10 +34,10 @@ window.gameCharacters.push({
         },
         {
             name: { es: 'Paso Atrás', eu: 'Atzerapauso' },
-            description: { es: 'Aumenta tu Poder defensivo para el próximo turno.', eu: 'Zure defentsa-Indarra handitzen du hurrengo txandarako.' },
+            description: { es: 'Aumenta tu Poder defensivo.', eu: 'Zure defentsa-Indarra handitzen du.' },
             cost: 1,
             damage: 0,
-            effects: { self: { poder: 5 } } // Aumenta el "Poder" (defensa)
+            effects: { self: { poder: 5 } }
         }
     ],
 
@@ -45,8 +45,8 @@ window.gameCharacters.push({
     superAbility: {
         name: { es: 'Súper Shell', eu: 'Super Shell' },
         description: { es: 'Un disparo devastador que causa 40 de daño y reduce el Poder del enemigo.', eu: '40ko kaltea eragiten duen eta etsaiaren Indarra murrizten duen jaurtiketa suntsitzailea.'},
-        cost: 100, // Cuesta el 100% de la barra de Súper
+        cost: 100,
         damage: 40,
-        effects: { enemy: { poder: -10 } } // Efecto sobre el enemigo
+        effects: { enemy: { poder: -10 } }
     }
 });
