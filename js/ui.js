@@ -1,200 +1,266 @@
 // ===================================================================
-// === LÓGICA DE INICIO DE JUEGO ===
+// === FUNCIONES DE UI (MENÚS Y PANTALLAS GENERALES) ===
 // ===================================================================
 
-function selectBrawlerAndStart(brawlerId) {
-    playSound(sounds.click);
-    selectedBrawlerId = brawlerId;
-    showNameInputScreen(); 
-}
-
-function initGame() {
-    currentPlayerBrawler = window.characters.find(char => char.id === selectedBrawlerId);
-    if (!currentPlayerBrawler) {
-        console.error("No se ha seleccionado un Brawler válido.");
-        showMainMenu();
-        return;
-    }
-
-    playSound(sounds.click);
+function showMainMenu() {
     stopAllMusic();
-    sounds.gameMusic.loop = true;
-    playSound(sounds.gameMusic);
-    
-    playerName = document.getElementById('player-name-input').value.trim() || currentPlayerBrawler.name;
-    
-    // Clonamos las estadísticas para poder modificarlas durante la partida
-    stats = { 
-        ...currentPlayerBrawler.playerStats,
-        superpoder: 0
-    };
+    playSound(sounds.menuMusic);
+    ui.gameUI.classList.add('hidden');
+    ui.battleScreen.classList.add('hidden'); // Nos aseguramos de ocultar también la pantalla de batalla
 
-    currentAssault = 0;
-    gameOver = false;
+    const logoPath = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
     
-    ui.gameOverlay.classList.add('hidden-overlay');
+    const menuHTML = `
+        <div class="flex flex-col justify-between h-full w-full max-w-md text-center py-4">
+            <div class="flex-grow flex flex-col justify-center px-4">
+                <img src="${logoPath}" alt="Logo del Juego" class="w-3/4 max-w-[240px] sm:max-w-[280px] mx-auto mb-6 sm:mb-8" onerror="this.style.display='none';">
+                <div class="space-y-2 sm:space-y-3">
+                    <button onclick="showBrawlerSelectionScreen()" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('newGame')}</button>
+                    <button onclick="showInstructionsScreen()" class="menu-button w-full bg-purple-600 border-purple-800 hover:bg-purple-500 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('instructions')}</button>
+                    <button onclick="showRankingScreen()" class="menu-button w-full bg-orange-500 border-orange-700 hover:bg-orange-400 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('ranking')}</button>
+                    <button id="install-button" onclick="handleInstallClick()" class="hidden menu-button w-full bg-teal-600 border-teal-800 hover:bg-teal-500 text-white font-bold py-2 sm:py-3 px-6 rounded-full text-lg sm:text-2xl font-title">${getText('installGame')}</button>
+                </div>
+            </div>
+            <div class="flex-shrink-0 pt-4">
+                <img src="avatares/jon.png" alt="Creador del juego" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto" onerror="this.style.display='none'">
+                <p class="font-title mt-2 text-base sm:text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
+            </div>
+        </div>
+    `;
+    ui.gameOverlay.innerHTML = menuHTML;
+
+    const installButton = document.getElementById('install-button');
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (installButton && (deferredPrompt || isIOS)) {
+        installButton.classList.remove('hidden');
+    }
+
+    ui.gameOverlay.classList.remove('hidden-overlay');
+}
+
+function showBrawlerSelectionScreen() {
+    playSound(sounds.click);
+
+    let characterCardsHTML = '';
+    window.characters.forEach(char => {
+        if (char.playerStats) {
+            characterCardsHTML += `
+                <div onclick="selectBrawlerAndStart('${char.id}')" class="bg-gray-900 rounded-2xl p-4 text-center border-4 border-gray-700 hover:border-yellow-400 cursor-pointer transition">
+                    <img src="${char.img}" alt="${char.name}" class="w-24 h-24 mx-auto mb-2">
+                    <h3 class="font-title text-2xl text-yellow-300">${char.name}</h3>
+                    <div class="text-left text-sm mt-2 font-bold space-y-1">
+                        <p>❤️ ${getText('health')}: ${char.playerStats.vida}</p>
+                        <p>💥 ${getText('power')}: ${char.playerStats.poder}</p>
+                        <p>⚙️ ${getText('resources')}: ${char.playerStats.recursos}</p>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    const selectionHTML = `
+        <div class="flex flex-col h-full w-full max-w-md text-center py-6">
+            <h1 class="font-title text-4xl sm:text-5xl text-yellow-300 mb-6 flex-shrink-0">Elige tu Brawler</h1>
+            <div class="flex-grow grid grid-cols-2 sm:grid-cols-3 gap-4 overflow-y-auto px-2">
+                ${characterCardsHTML}
+            </div>
+            <div class="flex-shrink-0 pt-6">
+                 <button onclick="showMainMenu()" class="text-gray-400 font-bold">${getText('back')}</button>
+            </div>
+        </div>
+    `;
+
+    ui.gameOverlay.innerHTML = selectionHTML;
+}
+
+function showNameInputScreen() {
+    playSound(sounds.click);
     
-    startNextBattle();
+    const selectedBrawlerData = window.characters.find(char => char.id === selectedBrawlerId);
+    const brawlerName = selectedBrawlerData ? selectedBrawlerData.name : 'Brawler';
+
+    ui.gameOverlay.innerHTML = `
+        <div>
+            <img src="imagenes/logo.png" alt="Logo del Juego" class="w-1/2 max-w-[180px] mx-auto mb-6">
+            <h1 class="font-title text-4xl sm:text-5xl mb-6 text-yellow-300">${getText('chooseYourName')}</h1>
+            <input type="text" id="player-name-input" placeholder="${brawlerName}" class="w-full mb-6 font-title">
+            <button onclick="initGame()" class="menu-button w-full bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('toTheBattle')}</button>
+            <button onclick="showBrawlerSelectionScreen()" class="mt-4 text-gray-400">${getText('back')}</button>
+        </div>`;
+}
+
+function showInstructionsScreen() {
+    playSound(sounds.click);
+    ui.gameOverlay.innerHTML = `
+        <div class="flex flex-col justify-between h-full w-full">
+            <div class="text-center mb-4">
+                <img src="imagenes/logo.png" alt="Logo" class="w-1/2 max-w-[150px] mx-auto">
+            </div>
+            <div class="flex-grow space-y-3 sm:space-y-4 text-left text-base sm:text-lg overflow-y-auto font-bold">
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎯</span><div><strong class="text-yellow-300">${getText('objective')}</strong> ${getText('objectiveText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🤔</span><div><strong class="text-yellow-300">${getText('decisions')}</strong> ${getText('decisionsText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">📊</span><div><strong class="text-yellow-300">${getText('stats')}</strong> ${getText('statsText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">⚔️</span><div><strong class="text-yellow-300">${getText('enemies')}</strong> ${getText('enemiesText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎁</span><div><strong class="text-yellow-300">${getText('surprises')}</strong> ${getText('surprisesText')}</div></div>
+                <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🌟</span><div><strong class="text-yellow-300">${getText('superpowerTitle')}</strong> ${getText('superpowerText')}</div></div>
+            </div>
+            <div class="text-center mt-4 sm:mt-6">
+                <p class="font-title text-lg"><span class="text-green-400">Jon</span><span class="text-gray-400"> Zabalok egina ©</span></p>
+                <button onclick="showMainMenu()" class="menu-button w-full mt-4 bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('understood')}</button>
+            </div>
+        </div>`;
+}
+
+function showRankingScreen() {
+    playSound(sounds.click);
+    ui.gameOverlay.innerHTML = `
+        <div class="w-full flex flex-col h-full">
+            <div class="text-center mb-4">
+                <img src="imagenes/logo.png" alt="Logo" class="w-1/2 max-w-[150px] mx-auto">
+            </div>
+            <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto flex-grow">
+                <h2 class="font-title text-2xl text-yellow-300 mb-2">${getText('rankingTitle')}</h2>
+                <table class="ranking-table text-lg font-bold">
+                    <thead><tr><th>${getText('rankHeader')}</th><th class="text-left">${getText('nameHeader')}</th><th>${getText('collectiblesHeader')}</th><th>${getText('assaultsHeader')}</th></tr></thead>
+                    <tbody id="ranking-list-table"></tbody>
+                </table>
+            </div>
+            <div class="flex justify-center">
+                <button onclick="showMainMenu()" class="menu-button w-full max-w-xs bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('backToMenu')}</button>
+            </div>
+        </div>`;
+    displayRanking(document.getElementById('ranking-list-table'));
 }
 
 
-// ===================================================================
-// === NUEVO BUCLE DE JUEGO: LÓGICA DE COMBATE ===
-// ===================================================================
-
-function startNextBattle() {
-    currentAssault++;
+function showEndScreen(reason) {
+    gameOver = true;
+    stopAllMusic();
+    playSound(sounds.defeatMusic);
+    saveScore(playerName, currentAssault);
+    ui.gameUI.classList.add('hidden');
+    ui.battleScreen.classList.add('hidden');
     
-    let enemyOptions = window.characters.filter(char => char.cpuStats && char.id !== selectedBrawlerId);
-    if (enemyOptions.length === 0) {
-        // Fallback si solo quedan los brawlers sin definir como enemigos
-        enemyOptions = window.characters.filter(char => char.id !== selectedBrawlerId);
-    }
-
-    const enemyData = { ...enemyOptions[Math.floor(Math.random() * enemyOptions.length)] };
+    ui.gameOverlay.innerHTML = `
+        <div class="w-full flex flex-col items-center justify-center h-full text-center">
+            <img src="avatares/momoxorro.png" alt="Villano" class="w-28 h-28 sm:w-32 sm:h-32 mb-4 object-contain" onerror="this.style.display='none'">
+            <h1 class="font-title text-4xl sm:text-5xl mb-2 text-yellow-300">${getText('defeated')}</h1>
+            <div class="bg-gray-900/50 rounded-lg p-3 my-2 w-full max-w-xs">
+                <h2 class="text-lg font-bold text-gray-400 font-title">${getText('causeOfDeath')}</h2>
+                <p class="text-lg text-red-400 font-bold">${getText(reason.reasonKey)}</p>
+            </div>
+            <p class="text-base sm:text-lg mb-2">${getText('youLasted')} <span class="font-bold text-yellow-300">${currentAssault}</span> ${getText('assaults')}</p>
+            <p id="player-rank-text" class="text-base sm:text-lg mb-6">${getText('calculatingRank')}</p>
+            <div class="w-full max-w-xs space-y-3 mt-auto">
+                <button onclick="showRankingScreen()" class="menu-button w-full bg-orange-500 border-orange-700 hover:bg-orange-400 text-white font-bold py-3 px-8 rounded-full text-xl font-title">${getText('ranking')}</button>
+                <button onclick="showMainMenu()" class="menu-button w-full bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl font-title">${getText('backToMenu')}</button>
+            </div>
+        </div>
+    `;
     
-    // Clonamos sus stats para poder modificarlas
-    currentEnemyBrawler = {
-        ...enemyData,
-        stats: { ...enemyData.cpuStats }
-    };
-
-    showBattleScreen(currentPlayerBrawler, currentEnemyBrawler);
-    updateBattleNarrative(`¡Asalto ${currentAssault}! ¡Te enfrentas a ${currentEnemyBrawler.name}!`);
-}
-
-function handlePlayerMove(move) {
-    if (gameOver) return;
-
-    if (stats.recursos < move.cost) {
-        updateBattleNarrative("¡No tienes suficientes recursos para ese movimiento!");
-        return;
-    }
-    stats.recursos -= move.cost;
-
-    let damageDealt = 0;
-    if (move.damage > 0) {
-        // El daño es el del movimiento + un bonus por el Poder del jugador
-        damageDealt = move.damage + Math.floor(stats.poder / 2);
-        currentEnemyBrawler.stats.vida -= damageDealt;
-    }
-    
-    if (move.effects) {
-        if (move.effects.self) {
-            for (const key in move.effects.self) {
-                stats[key] = (stats[key] || 0) + move.effects.self[key];
+    db.collection("ranking").orderBy("score", "desc").get().then(querySnapshot => {
+        let rank = 0;
+        let found = false;
+        querySnapshot.forEach((doc, index) => {
+            const entry = doc.data();
+            if (!found && entry.name === playerName && entry.score === currentAssault) {
+                rank = index + 1;
+                found = true;
             }
+        });
+        const rankTextEl = document.getElementById('player-rank-text');
+        if (rank > 0) {
+            rankTextEl.innerHTML = getText('rankPosition', rank);
+        } else if (rankTextEl) {
+            rankTextEl.textContent = getText('scoreSaved');
         }
-    }
-    // Normalizar stats del jugador después de los efectos
-    stats.vida = Math.min(currentPlayerBrawler.playerStats.vida, stats.vida);
-    stats.superpoder = Math.min(100, stats.superpoder);
-
-    updateBattleUI(stats, currentEnemyBrawler.stats);
-    updateBattleNarrative(`${playerName} usa ${move.name[currentLang]}. ¡Causa ${damageDealt} de daño!`);
-
-    if (currentEnemyBrawler.stats.vida <= 0) {
-        playSound(sounds.correct);
-        updateBattleNarrative(`¡Has derrotado a ${currentEnemyBrawler.name}!`);
-        setTimeout(startNextBattle, 2000);
-    } else {
-        ui.actionsPanel.style.pointerEvents = 'none'; // Desactivar botones durante el turno enemigo
-        setTimeout(handleEnemyTurn, 1500);
-    }
+    });
+    ui.gameOverlay.classList.remove('hidden-overlay');
 }
 
-function handleEnemyTurn() {
-    if (gameOver) return;
-
-    const enemyMove = currentEnemyBrawler.moves[Math.floor(Math.random() * currentEnemyBrawler.moves.length)];
-    
-    let damageDealt = 0;
-    if (enemyMove.damage > 0) {
-        // El daño del enemigo se ve reducido por el Poder (defensa) del jugador
-        damageDealt = enemyMove.damage + Math.floor(currentEnemyBrawler.stats.poder / 2) - Math.floor(stats.poder / 4);
-        damageDealt = Math.max(1, damageDealt); // Mínimo 1 de daño
-        stats.vida -= damageDealt;
-    }
-
-    if (enemyMove.effects && enemyMove.effects.self) {
-         for (const key in enemyMove.effects.self) {
-            currentEnemyBrawler.stats[key] = (currentEnemyBrawler.stats[key] || 0) + enemyMove.effects.self[key];
-        }
-    }
-    // Normalizar vida del enemigo (por si se cura)
-    currentEnemyBrawler.stats.vida = Math.min(currentEnemyBrawler.cpuStats.vida, currentEnemyBrawler.stats.vida);
-
-    updateBattleUI(stats, currentEnemyBrawler.stats);
-    updateBattleNarrative(`${currentEnemyBrawler.name} usa ${enemyMove.name[currentLang]}. ¡Te causa ${damageDealt} de daño!`);
-
-    if (stats.vida <= 0) {
-        checkGameOver();
-    } else {
-        ui.actionsPanel.style.pointerEvents = 'auto'; // Reactivar botones del jugador
-    }
+function saveScore(name, score) {
+    // Hemos simplificado la puntuación para que ya no guarde coleccionables
+    db.collection("ranking").add({ name: name, score: score, collectibles: 0 })
+        .catch(error => console.error("Error al guardar en Firebase: ", error));
 }
 
-function checkGameOver() {
-    if (stats.vida <= 0) {
-        gameOver = true;
-        setTimeout(() => showEndScreen({ reasonKey: 'defeatedReasonNoHealth' }), 1500);
-        return true;
-    }
-    return false;
+function displayRanking(rankingListElement) {
+    rankingListElement.innerHTML = `<tr><td colspan="4">${getText('loading')}</td></tr>`;
+    db.collection("ranking").orderBy("score", "desc").limit(5).get()
+        .then(querySnapshot => {
+            rankingListElement.innerHTML = '';
+            if (querySnapshot.empty) {
+                rankingListElement.innerHTML = `<tr><td colspan="4">${getText('beTheFirst')}</td></tr>`;
+                return;
+            }
+            let rank = 1;
+            querySnapshot.forEach(doc => {
+                const entry = doc.data();
+                const row = document.createElement('tr');
+                // Ajustado para que la tabla siga funcionando aunque ya no usemos coleccionables
+                row.innerHTML = `<td>${rank++}</td><td class="text-left">${entry.name.toUpperCase()}</td><td>${entry.collectibles || 0}</td><td>${entry.score}</td>`;
+                rankingListElement.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error("Error al cargar ranking: ", error);
+            rankingListElement.innerHTML = `<tr><td colspan="4">${getText('errorLoadingRank')}</td></tr>`;
+        });
 }
 
 // ===================================================================
-// === FUNCIONES AUXILIARES Y DE INICIO ===
+// === NUEVAS FUNCIONES DE UI PARA LA BATALLA ===
 // ===================================================================
-let deferredPrompt; 
-window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
-function handleInstallClick() {
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+function showBattleScreen(player, enemy) {
+    ui.gameUI.classList.add('hidden'); // Ocultamos la UI antigua de dilemas
+    ui.battleScreen.classList.remove('hidden'); // Mostramos la nueva
 
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(({ outcome }) => {
-      if (outcome === 'accepted') {
-        const installButton = document.getElementById('install-button');
-        if(installButton) installButton.classList.add('hidden');
-      }
-      deferredPrompt = null;
+    // --- Configurar Zona del Enemigo ---
+    ui.enemyName.textContent = enemy.name;
+    ui.enemyImg.src = enemy.img;
+    
+    // --- Configurar Zona del Jugador ---
+    ui.playerName.textContent = playerName;
+    ui.playerImg.src = player.img;
+
+    // --- Configurar Panel de Acciones (Movimientos) ---
+    ui.actionsPanel.innerHTML = ''; // Limpiamos acciones anteriores
+    player.moves.forEach(move => {
+        const moveButton = document.createElement('button');
+        moveButton.className = 'choice-button bg-gray-700 border-gray-900 hover:bg-gray-600 text-white font-bold rounded-xl p-2 text-left';
+        moveButton.onclick = () => handlePlayerMove(move);
+
+        moveButton.innerHTML = `
+            <div class="flex justify-between items-center">
+                <span class="font-title text-lg">${move.name[currentLang]}</span>
+                <span class="font-title text-sky-400">${move.cost > 0 ? `${move.cost} ⚙️` : ''}</span>
+            </div>
+            <p class="text-xs text-gray-300">${move.description[currentLang]}</p>
+        `;
+        ui.actionsPanel.appendChild(moveButton);
     });
-  } else if (isIOS) {
-    document.getElementById('ios-install-instructions').classList.remove('hidden');
-  } else {
-    alert("Para instalar la app, busca la opción 'Instalar' en el menú de tu navegador.");
-  }
+
+    // Actualizar las barras de vida y stats por primera vez
+    updateBattleUI(stats, enemy.stats);
 }
 
-function setLanguage(lang) {
-    currentLang = lang;
-    unlockAudio();
-    ui.startButtonScreen.classList.add('hidden-overlay');
-    ui.splashScreen.classList.remove('hidden-overlay');
-    ui.splashLogo.classList.add('animate');
+function updateBattleUI(playerStats, enemyStats) {
+    // --- Actualizar Vida del Jugador ---
+    const playerHealthPercent = Math.max(0, (playerStats.vida / currentPlayerBrawler.playerStats.vida) * 100);
+    ui.playerHealthBar.style.width = `${playerHealthPercent}%`;
+    ui.playerHealthText.textContent = `${Math.max(0, playerStats.vida)} / ${currentPlayerBrawler.playerStats.vida}`;
+
+    // --- Actualizar Vida del Enemigo ---
+    const enemyHealthPercent = Math.max(0, (enemyStats.vida / currentEnemyBrawler.cpuStats.vida) * 100);
+    ui.enemyHealthBar.style.width = `${enemyHealthPercent}%`;
+    ui.enemyHealthText.textContent = `${Math.max(0, enemyStats.vida)} / ${currentEnemyBrawler.cpuStats.vida}`;
     
-    ui.splashLogo.addEventListener('animationend', (event) => {
-        if (event.animationName === 'dropIn') {
-            ui.splashLogo.classList.add('shake');
-            playSound(sounds.splash);
-            
-            setTimeout(() => {
-                ui.splashScreen.style.opacity = 0;
-                ui.gameContainer.classList.remove('hidden');
-                showMainMenu();
-                setTimeout(() => ui.splashScreen.style.display = 'none', 500);
-            }, 500);
-        }
-    }, { once: true });
+    // --- Actualizar Recursos y Súper del Jugador ---
+    ui.playerResourcesText.textContent = playerStats.recursos;
+    ui.playerSuperText.textContent = `${playerStats.superpoder}%`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('lang-es-button').addEventListener('click', () => setLanguage('es'));
-    document.getElementById('lang-eu-button').addEventListener('click', () => setLanguage('eu'));
-    
-    document.getElementById('close-ios-install').addEventListener('click', () => {
-        document.getElementById('ios-install-instructions').classList.add('hidden');
-    });
-});
+function updateBattleNarrative(text) {
+    ui.battleNarrative.innerHTML = `<span>${text}</span>`;
+}
