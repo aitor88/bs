@@ -29,7 +29,6 @@ function showMainMenu() {
     if (installButton && (deferredPrompt || isIOS)) {
         installButton.classList.remove('hidden');
     }
-
     ui.gameOverlay.classList.remove('hidden-overlay');
 }
 
@@ -199,19 +198,15 @@ function displayRanking(rankingListElement) {
 
 function showBattleScreen(player, enemy) {
     ui.battleScreen.classList.remove('hidden');
-
     ui.enemyName.textContent = enemy.name;
     ui.enemyImg.src = enemy.img;
-    
     ui.playerName.textContent = playerName;
     ui.playerImg.src = player.img;
-
     ui.actionsPanel.innerHTML = '';
     player.moves.forEach(move => {
         const moveButton = document.createElement('button');
         moveButton.className = 'choice-button bg-gray-700 border-gray-900 hover:bg-gray-600 text-white font-bold rounded-xl p-2 sm:p-3 text-left';
         moveButton.onclick = () => handlePlayerMove(move);
-
         moveButton.innerHTML = `
             <div class="flex justify-between items-center">
                 <span class="font-title text-base sm:text-lg">${move.name[currentLang]}</span>
@@ -221,7 +216,6 @@ function showBattleScreen(player, enemy) {
         `;
         ui.actionsPanel.appendChild(moveButton);
     });
-    
     updateBattleUI(stats, enemy.stats);
 }
 
@@ -229,13 +223,18 @@ function updateBattleUI(playerStats, enemyStats) {
     const playerHealthPercent = Math.max(0, (playerStats.vida / currentPlayerBrawler.playerStats.vida) * 100);
     ui.playerHealthBar.style.width = `${playerHealthPercent}%`;
     ui.playerHealthText.textContent = `${Math.max(0, playerStats.vida)} / ${currentPlayerBrawler.playerStats.vida}`;
-
     const enemyHealthPercent = Math.max(0, (enemyStats.vida / currentEnemyBrawler.cpuStats.vida) * 100);
     ui.enemyHealthBar.style.width = `${enemyHealthPercent}%`;
     ui.enemyHealthText.textContent = `${Math.max(0, enemyStats.vida)} / ${currentEnemyBrawler.cpuStats.vida}`;
-    
     ui.playerResourcesText.textContent = playerStats.recursos;
     ui.playerSuperText.textContent = `${playerStats.superpoder}%`;
+
+    if (playerStats.superpoder >= 100) {
+        ui.superAbilityButton.classList.remove('hidden');
+        ui.superAbilityButton.textContent = `🌟 ${currentPlayerBrawler.superAbility.name[currentLang]} 🌟`;
+    } else {
+        ui.superAbilityButton.classList.add('hidden');
+    }
 }
 
 function updateBattleNarrative(text) {
