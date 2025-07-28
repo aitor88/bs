@@ -1,4 +1,3 @@
-// js/config.js
 const firebaseConfig = {
     apiKey: "AIzaSyDFhLfNxTGZqPa8BEDhDJ9GMqUXkBCYAn0",
     authDomain: "juego-brawl-stars-ranking.firebaseapp.com",
@@ -27,7 +26,8 @@ const ui = {
     splashScreen: document.getElementById('splash-screen'),
     splashLogo: document.getElementById('splash-logo'),
     gameContainer: document.getElementById('game-container'),
-    gameUI: document.getElementById('game-ui'),
+    
+    // battleScreen y sus componentes
     battleScreen: document.getElementById('battle-screen'),
     enemyName: document.getElementById('enemy-name'),
     enemyHealthBar: document.getElementById('enemy-health-bar'),
@@ -41,6 +41,8 @@ const ui = {
     playerResourcesText: document.getElementById('player-resources-text'),
     playerSuperText: document.getElementById('player-super-text'),
     actionsPanel: document.getElementById('actions-panel'),
+
+    // Overlays y notificaciones
     gameOverlay: document.getElementById('game-overlay'),
     notification: document.getElementById('notification'),
 };
