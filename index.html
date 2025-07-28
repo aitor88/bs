@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brawl Stars: Batalla Infinita</title>
-
     <meta property="og:title" content="Brawl Stars: Batalla Infinita">
     <meta property="og:description" content="¡Un juego de decisiones tácticas! ¿Cuántos asaltos podrás aguantar?">
     <meta property="og:image" content="https://raw.githubusercontent.com/aitor88/bs/main/imagenes/logo.png">
@@ -21,18 +20,26 @@
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-2 sm:p-4">
 
     <div id="start-button-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-50 p-4">
+        <img src="imagenes/logo.png" alt="Logo del Juego" class="w-3/4 max-w-[280px] mx-auto mb-8">
+        <h2 class="font-title text-4xl text-yellow-300 mb-8">Elige Idioma</h2>
+        <div class="w-full max-w-xs space-y-4">
+            <button id="lang-es-button" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-2xl font-title">
+                <img src="imagenes/bandera_es.png" alt="Bandera de España" class="w-8 mr-3">
+                <span>Español</span>
+            </button>
+            <button id="lang-eu-button" class="menu-button w-full bg-green-600 border-green-800 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full text-2xl font-title">
+                <img src="imagenes/bandera_eu.png" alt="Bandera de Euskadi" class="w-8 mr-3">
+                <span>Euskaraz</span>
+            </button>
         </div>
+    </div>
 
-    <div id="splash-screen" class="hidden-overlay absolute inset-0 ...">
-        </div>
+    <div id="splash-screen" class="hidden-overlay absolute inset-0 flex items-center justify-center bg-slate-900 z-40">
+        <img id="splash-logo" src="imagenes/logo.png" alt="Brawl Stars: Batalla Infinita">
+    </div>
 
-    <div id="game-container" class="hidden game-container ...">
-        
-        <div id="game-ui" class="hidden h-full flex flex-col">
-           </div>
-
+    <div id="game-container" class="hidden game-container bg-gray-800 rounded-3xl shadow-2xl p-3 sm:p-6 flex-col justify-between relative overflow-hidden">
         <div id="battle-screen" class="hidden h-full flex flex-col justify-between text-center p-2">
-            
             <div id="enemy-zone" class="mb-4">
                 <div id="enemy-stats" class="text-lg font-bold">
                     <span id="enemy-name" class="font-title text-2xl text-red-400"></span>
@@ -44,11 +51,9 @@
                 </div>
                 <img id="enemy-img" src="" class="w-24 h-24 mx-auto mt-2" alt="Enemigo">
             </div>
-
             <div id="battle-narrative" class="flex-grow bg-gray-900/50 rounded-lg p-2 text-lg font-bold flex items-center justify-center">
                 <span>¡Comienza la batalla!</span>
             </div>
-
             <div id="player-zone" class="mt-4">
                 <img id="player-img" src="" class="w-28 h-28 mx-auto mb-2" alt="Jugador">
                 <div id="player-stats" class="text-lg font-bold">
@@ -58,25 +63,58 @@
                            <span id="player-health-text" class="font-bold text-white"></span>
                         </div>
                     </div>
-                     <div class="flex justify-center gap-4 mt-2">
+                    <div class="flex justify-center gap-4 mt-2">
                         <span><span class="font-title text-sky-400">Recursos:</span> <span id="player-resources-text">5</span></span>
                         <span><span class="font-title text-yellow-400">Súper:</span> <span id="player-super-text">0%</span></span>
                     </div>
                 </div>
             </div>
-
-            <div id="actions-panel" class="grid grid-cols-2 gap-2 mt-4">
-                </div>
+            <div id="actions-panel" class="grid grid-cols-2 gap-2 mt-4"></div>
         </div>
-
-
-        <div id="resolution-overlay" class="hidden-overlay absolute inset-0 ..."></div>
-        <div id="game-overlay" class="absolute inset-0 ..."></div>
-        <div id="notification" class="hidden-overlay absolute ..."></div>
+        <div id="game-overlay" class="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-center p-6 rounded-3xl z-20 hidden-overlay"></div>
+        <div id="notification" class="hidden-overlay absolute bottom-24 left-1/2 -translate-x-1/2 bg-red-600 text-white font-bold py-2 px-5 rounded-lg shadow-lg pointer-events-none font-title"></div>
     </div>
 
-    <div id="ios-install-instructions" class="hidden absolute inset-0 ...">
+    <div id="ios-install-instructions" class="hidden absolute inset-0 bg-slate-900/90 z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-2xl p-6 text-center max-w-sm">
+            <h2 class="font-title text-2xl text-yellow-300 mb-4">Instalar Juego en tu iPhone</h2>
+            <p class="mb-4">Para instalar la aplicación, toca el icono de <strong>Compartir</strong> <img src="imagenes/ios_share_icon.png" alt="Icono Compartir de iOS" class="inline h-6 w-6 mx-1"> en la barra de menú de Safari.</p>
+            <p class="mb-6">Luego, busca y selecciona la opción <strong>"Añadir a pantalla de inicio"</strong>.</p>
+            <button id="close-ios-install" class="menu-button w-full bg-blue-600 border-blue-800 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-xl font-title">Entendido</button>
         </div>
+    </div>
 
-    </body>
+    <audio id="sound-splash" src="sonidos/splash.mp3" preload="auto"></audio>
+    <audio id="sound-click" src="sonidos/click.mp3" preload="auto"></audio>
+    <audio id="sound-correct" src="sonidos/correcto.mp3" preload="auto"></audio>
+    <audio id="sound-wrong" src="sonidos/incorrecto.mp3" preload="auto"></audio>
+    <audio id="sound-super" src="sonidos/super.mp3" preload="auto"></audio>
+    <audio id="sound-event" src="sonidos/evento.mp3" preload="auto"></audio>
+    <audio id="music-menu" src="sonidos/musica_menu.mp3" loop preload="auto"></audio>
+    <audio id="music-game" src="sonidos/musica_juego.mp3" loop preload="auto"></audio>
+    <audio id="music-defeat" src="sonidos/musica_derrota.mp3" preload="auto"></audio>
+
+    <script>
+        window.gameCharacters = [];
+        window.gameEvents = [];
+        window.gameChallenges = [];
+    </script>
+    <script src="datos/shelly_data.js"></script>
+    <script src="datos/poco_data.js"></script>
+    <script src="datos/el_primo_data.js"></script>
+    <script src="datos/leon_data.js"></script>
+    <script src="datos/cordelius_data.js"></script>
+    <script src="datos/frank_data.js"></script>
+    <script src="datos/mortis_data.js"></script>
+    <script src="datos/spike_data.js"></script>
+    <script src="datos/eventos_data.js"></script>
+    <script src="datos/retos_data.js"></script>
+
+    <script src="js/languages.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+
+</body>
 </html>
