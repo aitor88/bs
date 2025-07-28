@@ -65,13 +65,45 @@ function nextAssault() {
     ui.charImg.src = char.img;
     ui.dilemmaDescription.innerHTML = dilemma.description[currentLang];
     
-    ui.choice1.textContent = dilemma.options[0].text[currentLang];
-    ui.choice2.textContent = dilemma.options[1].text[currentLang];
-    ui.choice1.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[0], char.name); };
-    ui.choice2.onclick = () => { playSound(sounds.click); chooseOption(dilemma.options[1], char.name); };
+    // Función auxiliar para actualizar un botón con pistas neutrales
+    const updateChoiceButton = (buttonElement, option) => {
+        const textElement = buttonElement.querySelector('.choice-text');
+        const effectsElement = buttonElement.querySelector('.choice-effects');
+        
+        // Limpiamos contenido previo
+        textElement.textContent = '';
+        effectsElement.innerHTML = '';
+        
+        // Asignamos el nuevo texto
+        textElement.textContent = option.text[currentLang];
+        
+        // Generamos los indicadores de efectos de forma neutral
+        if (option.effects) {
+            for (const key in option.effects) {
+                const value = option.effects[key];
+                if (value === 0) continue; // No mostrar si el efecto es 0
+
+                const effectSpan = document.createElement('span');
+                
+                // Mostramos solo el icono, sin dirección ni color específico
+                effectSpan.innerHTML = statIcons[key] || '❔'; // Usa el objeto statIcons de ui.js
+                effectSpan.className = 'text-gray-400'; // Color neutro para la pista
+
+                effectsElement.appendChild(effectSpan);
+            }
+        }
+        
+        // Asignamos la acción del click
+        buttonElement.onclick = () => { playSound(sounds.click); chooseOption(option, char.name); };
+    };
+
+    // Actualizamos ambos botones usando la función auxiliar
+    updateChoiceButton(ui.choice1, dilemma.options[0]);
+    updateChoiceButton(ui.choice2, dilemma.options[1]);
     
     updateUI();
 }
+
 
 function chooseOption(action, charName) {
     if (gameOver) return;
