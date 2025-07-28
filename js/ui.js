@@ -37,10 +37,7 @@ function showBrawlerSelectionScreen() {
     playSound(sounds.click);
 
     let characterCardsHTML = '';
-    
-    // ===== LA LÍNEA CORREGIDA ESTÁ AQUÍ =====
     characters.forEach(char => {
-        // Solo creamos una tarjeta si el personaje tiene 'playerStats'
         if (char.playerStats) {
             characterCardsHTML += `
                 <div onclick="selectBrawlerAndStart('${char.id}')" class="bg-gray-900 rounded-2xl p-4 text-center border-4 border-gray-700 hover:border-yellow-400 cursor-pointer transition">
@@ -74,7 +71,8 @@ function showBrawlerSelectionScreen() {
 function showNameInputScreen() {
     playSound(sounds.click);
     
-    const selectedBrawlerData = window.characters.find(char => char.id === selectedBrawlerId);
+    // ===== LA LÍNEA CORREGIDA ESTÁ AQUÍ =====
+    const selectedBrawlerData = characters.find(char => char.id === selectedBrawlerId);
     const brawlerName = selectedBrawlerData ? selectedBrawlerData.name : 'Brawler';
 
     ui.gameOverlay.innerHTML = `
