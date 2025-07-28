@@ -37,7 +37,7 @@ window.gameCharacters.push({
             description: { es: 'Aumenta tu Poder para el próximo turno.', eu: 'Zure Indarra handitzen du hurrengo txandarako.' },
             cost: 1,
             damage: 0,
-            effects: { self: { poder: 5 } } // Aumenta permanentemente el poder en la batalla
+            effects: { self: { poder: 5 } }
         }
     ],
 
