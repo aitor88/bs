@@ -10,7 +10,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let currentLang = 'es';
-let stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
+let stats = {};
 let currentAssault = 1;
 let gameOver = false;
 let playerName = '';
@@ -26,8 +26,6 @@ const ui = {
     splashScreen: document.getElementById('splash-screen'),
     splashLogo: document.getElementById('splash-logo'),
     gameContainer: document.getElementById('game-container'),
-    
-    // battleScreen y sus componentes
     battleScreen: document.getElementById('battle-screen'),
     enemyName: document.getElementById('enemy-name'),
     enemyHealthBar: document.getElementById('enemy-health-bar'),
@@ -41,8 +39,6 @@ const ui = {
     playerResourcesText: document.getElementById('player-resources-text'),
     playerSuperText: document.getElementById('player-super-text'),
     actionsPanel: document.getElementById('actions-panel'),
-
-    // Overlays y notificaciones
     gameOverlay: document.getElementById('game-overlay'),
     notification: document.getElementById('notification'),
 };
