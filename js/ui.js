@@ -1,8 +1,7 @@
 function showMainMenu() {
     stopAllMusic();
     playSound(sounds.menuMusic);
-    ui.gameUI.classList.add('hidden');
-    ui.battleScreen.classList.add('hidden'); // Nos aseguramos de ocultar también la pantalla de batalla
+    ui.battleScreen.classList.add('hidden'); // Ocultamos la pantalla de batalla
 
     const logoPath = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
     
@@ -30,6 +29,7 @@ function showMainMenu() {
     if (installButton && (deferredPrompt || isIOS)) {
         installButton.classList.remove('hidden');
     }
+
     ui.gameOverlay.classList.remove('hidden-overlay');
 }
 
@@ -129,7 +129,6 @@ function showEndScreen(reason) {
     stopAllMusic();
     playSound(sounds.defeatMusic);
     saveScore(playerName, currentAssault);
-    ui.gameUI.classList.add('hidden');
     ui.battleScreen.classList.add('hidden');
     
     ui.gameOverlay.innerHTML = `
@@ -198,7 +197,6 @@ function displayRanking(rankingListElement) {
 }
 
 function showBattleScreen(player, enemy) {
-    ui.gameUI.classList.add('hidden');
     ui.battleScreen.classList.remove('hidden');
 
     ui.enemyName.textContent = enemy.name;
