@@ -1,82 +1,200 @@
-// Funciones de Menús (sin cambios)
-function showMainMenu() { /* ... */ }
-function showBrawlerSelectionScreen() { /* ... */ }
-function showNameInputScreen() { /* ... */ }
-function showInstructionsScreen() { /* ... */ }
-function showRankingScreen() { /* ... */ }
-function showEndScreen(reason) { /* ... */ }
-function saveScore(name, score) { /* ... */ }
-function displayRanking(rankingListElement) { /* ... */ }
-
-
 // ===================================================================
-// === NUEVAS FUNCIONES DE UI PARA LA BATALLA ===
+// === LÓGICA DE INICIO DE JUEGO ===
 // ===================================================================
 
-/**
- * Monta la pantalla de batalla con los datos iniciales del jugador y el enemigo.
- */
-function showBattleScreen(player, enemy) {
-    ui.gameUI.classList.add('hidden'); // Ocultamos la UI antigua
-    ui.battleScreen.classList.remove('hidden'); // Mostramos la nueva
+function selectBrawlerAndStart(brawlerId) {
+    playSound(sounds.click);
+    selectedBrawlerId = brawlerId;
+    showNameInputScreen(); 
+}
 
-    // --- Configurar Zona del Enemigo ---
-    ui.enemyName.textContent = enemy.name;
-    ui.enemyImg.src = enemy.img;
+function initGame() {
+    currentPlayerBrawler = window.characters.find(char => char.id === selectedBrawlerId);
+    if (!currentPlayerBrawler) {
+        console.error("No se ha seleccionado un Brawler válido.");
+        showMainMenu();
+        return;
+    }
+
+    playSound(sounds.click);
+    stopAllMusic();
+    sounds.gameMusic.loop = true;
+    playSound(sounds.gameMusic);
     
-    // --- Configurar Zona del Jugador ---
-    ui.playerName.textContent = playerName;
-    ui.playerImg.src = player.img;
+    playerName = document.getElementById('player-name-input').value.trim() || currentPlayerBrawler.name;
+    
+    // Clonamos las estadísticas para poder modificarlas durante la partida
+    stats = { 
+        ...currentPlayerBrawler.playerStats,
+        superpoder: 0
+    };
 
-    // --- Configurar Panel de Acciones (Movimientos) ---
-    ui.actionsPanel.innerHTML = ''; // Limpiamos acciones anteriores
-    player.moves.forEach(move => {
-        const moveButton = document.createElement('button');
-        moveButton.className = 'choice-button bg-gray-700 border-gray-900 hover:bg-gray-600 text-white font-bold rounded-xl p-2 text-left';
-        moveButton.onclick = () => handlePlayerMove(move);
+    currentAssault = 0;
+    gameOver = false;
+    
+    ui.gameOverlay.classList.add('hidden-overlay');
+    
+    startNextBattle();
+}
 
-        moveButton.innerHTML = `
-            <div class="flex justify-between items-center">
-                <span class="font-title text-lg">${move.name[currentLang]}</span>
-                <span class="font-title text-sky-400">${move.cost > 0 ? `${move.cost} ⚙️` : ''}</span>
-            </div>
-            <p class="text-xs text-gray-300">${move.description[currentLang]}</p>
-        `;
-        ui.actionsPanel.appendChild(moveButton);
+
+// ===================================================================
+// === NUEVO BUCLE DE JUEGO: LÓGICA DE COMBATE ===
+// ===================================================================
+
+function startNextBattle() {
+    currentAssault++;
+    
+    let enemyOptions = window.characters.filter(char => char.cpuStats && char.id !== selectedBrawlerId);
+    if (enemyOptions.length === 0) {
+        // Fallback si solo quedan los brawlers sin definir como enemigos
+        enemyOptions = window.characters.filter(char => char.id !== selectedBrawlerId);
+    }
+
+    const enemyData = { ...enemyOptions[Math.floor(Math.random() * enemyOptions.length)] };
+    
+    // Clonamos sus stats para poder modificarlas
+    currentEnemyBrawler = {
+        ...enemyData,
+        stats: { ...enemyData.cpuStats }
+    };
+
+    showBattleScreen(currentPlayerBrawler, currentEnemyBrawler);
+    updateBattleNarrative(`¡Asalto ${currentAssault}! ¡Te enfrentas a ${currentEnemyBrawler.name}!`);
+}
+
+function handlePlayerMove(move) {
+    if (gameOver) return;
+
+    if (stats.recursos < move.cost) {
+        updateBattleNarrative("¡No tienes suficientes recursos para ese movimiento!");
+        return;
+    }
+    stats.recursos -= move.cost;
+
+    let damageDealt = 0;
+    if (move.damage > 0) {
+        // El daño es el del movimiento + un bonus por el Poder del jugador
+        damageDealt = move.damage + Math.floor(stats.poder / 2);
+        currentEnemyBrawler.stats.vida -= damageDealt;
+    }
+    
+    if (move.effects) {
+        if (move.effects.self) {
+            for (const key in move.effects.self) {
+                stats[key] = (stats[key] || 0) + move.effects.self[key];
+            }
+        }
+    }
+    // Normalizar stats del jugador después de los efectos
+    stats.vida = Math.min(currentPlayerBrawler.playerStats.vida, stats.vida);
+    stats.superpoder = Math.min(100, stats.superpoder);
+
+    updateBattleUI(stats, currentEnemyBrawler.stats);
+    updateBattleNarrative(`${playerName} usa ${move.name[currentLang]}. ¡Causa ${damageDealt} de daño!`);
+
+    if (currentEnemyBrawler.stats.vida <= 0) {
+        playSound(sounds.correct);
+        updateBattleNarrative(`¡Has derrotado a ${currentEnemyBrawler.name}!`);
+        setTimeout(startNextBattle, 2000);
+    } else {
+        ui.actionsPanel.style.pointerEvents = 'none'; // Desactivar botones durante el turno enemigo
+        setTimeout(handleEnemyTurn, 1500);
+    }
+}
+
+function handleEnemyTurn() {
+    if (gameOver) return;
+
+    const enemyMove = currentEnemyBrawler.moves[Math.floor(Math.random() * currentEnemyBrawler.moves.length)];
+    
+    let damageDealt = 0;
+    if (enemyMove.damage > 0) {
+        // El daño del enemigo se ve reducido por el Poder (defensa) del jugador
+        damageDealt = enemyMove.damage + Math.floor(currentEnemyBrawler.stats.poder / 2) - Math.floor(stats.poder / 4);
+        damageDealt = Math.max(1, damageDealt); // Mínimo 1 de daño
+        stats.vida -= damageDealt;
+    }
+
+    if (enemyMove.effects && enemyMove.effects.self) {
+         for (const key in enemyMove.effects.self) {
+            currentEnemyBrawler.stats[key] = (currentEnemyBrawler.stats[key] || 0) + enemyMove.effects.self[key];
+        }
+    }
+    // Normalizar vida del enemigo (por si se cura)
+    currentEnemyBrawler.stats.vida = Math.min(currentEnemyBrawler.cpuStats.vida, currentEnemyBrawler.stats.vida);
+
+    updateBattleUI(stats, currentEnemyBrawler.stats);
+    updateBattleNarrative(`${currentEnemyBrawler.name} usa ${enemyMove.name[currentLang]}. ¡Te causa ${damageDealt} de daño!`);
+
+    if (stats.vida <= 0) {
+        checkGameOver();
+    } else {
+        ui.actionsPanel.style.pointerEvents = 'auto'; // Reactivar botones del jugador
+    }
+}
+
+function checkGameOver() {
+    if (stats.vida <= 0) {
+        gameOver = true;
+        setTimeout(() => showEndScreen({ reasonKey: 'defeatedReasonNoHealth' }), 1500);
+        return true;
+    }
+    return false;
+}
+
+// ===================================================================
+// === FUNCIONES AUXILIARES Y DE INICIO ===
+// ===================================================================
+let deferredPrompt; 
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+
+function handleInstallClick() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(({ outcome }) => {
+      if (outcome === 'accepted') {
+        const installButton = document.getElementById('install-button');
+        if(installButton) installButton.classList.add('hidden');
+      }
+      deferredPrompt = null;
     });
-
-    // Actualizar las barras de vida y stats por primera vez
-    updateBattleUI(stats, enemy.stats);
+  } else if (isIOS) {
+    document.getElementById('ios-install-instructions').classList.remove('hidden');
+  } else {
+    alert("Para instalar la app, busca la opción 'Instalar' en el menú de tu navegador.");
+  }
 }
 
-/**
- * Actualiza todos los elementos visuales de la batalla (barras de vida, recursos, etc.).
- */
-function updateBattleUI(playerStats, enemyStats) {
-    // --- Actualizar Vida del Jugador ---
-    const playerHealthPercent = (playerStats.vida / currentPlayerBrawler.playerStats.vida) * 100;
-    ui.playerHealthBar.style.width = `${playerHealthPercent}%`;
-    ui.playerHealthText.textContent = `${playerStats.vida} / ${currentPlayerBrawler.playerStats.vida}`;
-
-    // --- Actualizar Vida del Enemigo ---
-    const enemyHealthPercent = (enemyStats.vida / currentEnemyBrawler.cpuStats.vida) * 100;
-    ui.enemyHealthBar.style.width = `${enemyHealthPercent}%`;
-    ui.enemyHealthText.textContent = `${enemyStats.vida} / ${currentEnemyBrawler.cpuStats.vida}`;
+function setLanguage(lang) {
+    currentLang = lang;
+    unlockAudio();
+    ui.startButtonScreen.classList.add('hidden-overlay');
+    ui.splashScreen.classList.remove('hidden-overlay');
+    ui.splashLogo.classList.add('animate');
     
-    // --- Actualizar Recursos y Súper del Jugador ---
-    ui.playerResourcesText.textContent = playerStats.recursos;
-    ui.playerSuperText.textContent = `${playerStats.superpoder}%`;
-
-    // Lógica para mostrar el botón de Súper (lo haremos más adelante)
-    // const superButton = document.getElementById('super-ability-button');
-    // if (playerStats.superpoder >= 100) {
-    //     if (superButton) superButton.classList.remove('hidden');
-    // } else {
-    //     if (superButton) superButton.classList.add('hidden');
-    // }
+    ui.splashLogo.addEventListener('animationend', (event) => {
+        if (event.animationName === 'dropIn') {
+            ui.splashLogo.classList.add('shake');
+            playSound(sounds.splash);
+            
+            setTimeout(() => {
+                ui.splashScreen.style.opacity = 0;
+                ui.gameContainer.classList.remove('hidden');
+                showMainMenu();
+                setTimeout(() => ui.splashScreen.style.display = 'none', 500);
+            }, 500);
+        }
+    }, { once: true });
 }
 
-// Actualiza el texto de la narrativa de batalla
-function updateBattleNarrative(text) {
-    ui.battleNarrative.innerHTML = `<span>${text}</span>`;
-}
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('lang-es-button').addEventListener('click', () => setLanguage('es'));
+    document.getElementById('lang-eu-button').addEventListener('click', () => setLanguage('eu'));
+    
+    document.getElementById('close-ios-install').addEventListener('click', () => {
+        document.getElementById('ios-install-instructions').classList.add('hidden');
+    });
+});
