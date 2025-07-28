@@ -14,7 +14,7 @@ window.gameCharacters.push({
     cpuStats: {
         vida: 150,
         poder: 15,
-    },
+    }, // <-- Coma revisada
     
     // Lista de movimientos disponibles en combate
     moves: [
@@ -39,7 +39,7 @@ window.gameCharacters.push({
             damage: 0,
             effects: { self: { poder: 5 } }
         }
-    ],
+    ], // <-- Coma revisada
 
     // Habilidad Súper
     superAbility: {
