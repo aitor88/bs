@@ -42,7 +42,6 @@ function updateInventoryUI() {
             itemEl.className = 'inventory-item';
             itemEl.src = item.image;
             
-            // Añadimos la descripción del poder pasivo como un "tooltip"
             let tooltipText = item.name[currentLang] || item.name['es'];
             if (item.passiveEffect) {
                 const effectDesc = item.passiveEffect.description[currentLang] || item.passiveEffect.description['es'];
@@ -59,28 +58,22 @@ function updateInventoryUI() {
 function showResolution(title, narrative, effects) {
     let effectDescriptions = [];
 
-    // --- APLICACIÓN DE PODERES PASIVOS (GANANCIAS) ---
-    // Poder de la Botella de Barley: Aumenta curación
     if (activeEffects.healing_boost && effects.vida > 0) {
         effects.vida = Math.round(effects.vida * activeEffects.healing_boost.value);
     }
-    // Poder del Bate de Bibi: Aumenta ganancia de Súper
     if (activeEffects.super_charge_boost && effects.superpoder > 0) {
         effects.superpoder += activeEffects.super_charge_boost.value;
     }
 
-    // Aplicar efectos a las estadísticas
     for (const key in effects) {
         if (effects[key] === 0) continue;
         const value = effects[key];
         stats[key] = Math.round(stats[key] + value);
     }
     
-    // Normalizar estadísticas y aplicar Power Floor
     for (const key in stats) {
         stats[key] = Math.max(0, (key === 'recursos' ? Math.min(10, stats[key]) : Math.min(100, stats[key])));
     }
-    // Poder de la Estrella Azul: El poder no baja de 10
     if (activeEffects.power_floor && stats.poder < activeEffects.power_floor.value) {
         stats.poder = activeEffects.power_floor.value;
     }
@@ -216,9 +209,10 @@ function showMainMenu() {
 
 function showNameInputScreen() {
     playSound(sounds.click);
+    const logoPath = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
     ui.gameOverlay.innerHTML = `
         <div>
-            <img src="imagenes/logo.png" alt="Logo del Juego" class="w-1/2 max-w-[180px] mx-auto mb-6">
+            <img src="${logoPath}" alt="Logo del Juego" class="w-1/2 max-w-[180px] mx-auto mb-6">
             <h1 class="font-title text-4xl sm:text-5xl mb-6 text-yellow-300">${getText('chooseYourName')}</h1>
             <input type="text" id="player-name-input" placeholder="${getText('writeYourName')}" class="w-full mb-6 font-title">
             <button onclick="initGame()" class="menu-button w-full bg-green-500 border-green-700 hover:bg-green-400 text-white font-bold py-3 px-8 rounded-full text-xl sm:text-2xl font-title">${getText('toTheBattle')}</button>
@@ -228,10 +222,11 @@ function showNameInputScreen() {
 
 function showInstructionsScreen() {
     playSound(sounds.click);
+    const logoPath = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
     ui.gameOverlay.innerHTML = `
         <div class="flex flex-col justify-between h-full w-full">
             <div class="text-center mb-4">
-                <img src="imagenes/logo.png" alt="Logo" class="w-1/2 max-w-[150px] mx-auto">
+                <img src="${logoPath}" alt="Logo" class="w-1/2 max-w-[150px] mx-auto">
             </div>
             <div class="flex-grow space-y-3 sm:space-y-4 text-left text-base sm:text-lg overflow-y-auto font-bold">
                 <div class="flex items-start gap-3 sm:gap-4"><span class="text-2xl sm:text-3xl pt-1">🎯</span><div><strong class="text-yellow-300">${getText('objective')}</strong> ${getText('objectiveText')}</div></div>
@@ -250,10 +245,11 @@ function showInstructionsScreen() {
 
 function showRankingScreen() {
     playSound(sounds.click);
+    const logoPath = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
     ui.gameOverlay.innerHTML = `
         <div class="w-full flex flex-col h-full">
             <div class="text-center mb-4">
-                <img src="imagenes/logo.png" alt="Logo" class="w-1/2 max-w-[150px] mx-auto">
+                <img src="${logoPath}" alt="Logo" class="w-1/2 max-w-[150px] mx-auto">
             </div>
             <div class="w-full max-w-md bg-gray-700 rounded-lg p-4 mb-6 mx-auto flex-grow">
                 <h2 class="font-title text-2xl text-yellow-300 mb-2">${getText('rankingTitle')}</h2>
