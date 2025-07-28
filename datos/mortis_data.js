@@ -10,7 +10,7 @@ window.gameCharacters.push({
     cpuStats: {
         vida: 100, // Vida moderada
         poder: 19, // Buen poder de asesino
-    },
+    }, // <-- Coma revisada
 
     // Lista de movimientos que usará la CPU
     moves: [
@@ -28,7 +28,7 @@ window.gameCharacters.push({
             cost: 0,
             effects: { self: { vida: 10 } }
         }
-    ],
+    ], // <-- Coma revisada
 
     // Habilidad Súper del enemigo
     superAbility: {
