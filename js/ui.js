@@ -37,8 +37,9 @@ function showBrawlerSelectionScreen() {
     playSound(sounds.click);
 
     let characterCardsHTML = '';
-    // Iteramos sobre el array de personajes que se cargó al inicio
-    window.characters.forEach(char => {
+    
+    // ===== LA LÍNEA CORREGIDA ESTÁ AQUÍ =====
+    characters.forEach(char => {
         // Solo creamos una tarjeta si el personaje tiene 'playerStats'
         if (char.playerStats) {
             characterCardsHTML += `
