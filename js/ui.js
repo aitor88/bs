@@ -1,3 +1,10 @@
+const statIcons = {
+    vida: '❤️',
+    poder: '💥',
+    recursos: '⚙️',
+    superpoder: '🌟'
+};
+
 function updateUI() {
     // Actualizamos las etiquetas de las estadísticas con sus traducciones
     const statsContainer = document.getElementById('stats-container');
