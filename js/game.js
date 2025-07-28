@@ -70,34 +70,28 @@ function nextAssault() {
         const textElement = buttonElement.querySelector('.choice-text');
         const effectsElement = buttonElement.querySelector('.choice-effects');
         
-        // Limpiamos contenido previo
         textElement.textContent = '';
         effectsElement.innerHTML = '';
         
-        // Asignamos el nuevo texto
         textElement.textContent = option.text[currentLang];
         
-        // Generamos los indicadores de efectos de forma neutral
         if (option.effects) {
             for (const key in option.effects) {
                 const value = option.effects[key];
-                if (value === 0) continue; // No mostrar si el efecto es 0
+                if (value === 0) continue;
 
                 const effectSpan = document.createElement('span');
                 
-                // Mostramos solo el icono, sin dirección ni color específico
-                effectSpan.innerHTML = statIcons[key] || '❔'; // Usa el objeto statIcons de ui.js
-                effectSpan.className = 'text-gray-400'; // Color neutro para la pista
+                effectSpan.innerHTML = statIcons[key] || '❔';
+                effectSpan.className = 'text-gray-400';
 
                 effectsElement.appendChild(effectSpan);
             }
         }
         
-        // Asignamos la acción del click
         buttonElement.onclick = () => { playSound(sounds.click); chooseOption(option, char.name); };
     };
 
-    // Actualizamos ambos botones usando la función auxiliar
     updateChoiceButton(ui.choice1, dilemma.options[0]);
     updateChoiceButton(ui.choice2, dilemma.options[1]);
     
@@ -320,6 +314,10 @@ function handleInstallClick() {
 function setLanguage(lang) {
     currentLang = lang;
     unlockAudio();
+
+    // Actualizamos el logo del splash screen ANTES de mostrarlo
+    ui.splashLogo.src = currentLang === 'eu' ? 'imagenes/logo_eu.png' : 'imagenes/logo_es.png';
+
     ui.startButtonScreen.classList.add('hidden-overlay');
     ui.splashScreen.classList.remove('hidden-overlay');
     ui.splashLogo.classList.add('animate');
