@@ -1,6 +1,6 @@
+// js/languages.js
 const translations = {
     es: {
-        // --- Menús y UI General ---
         newGame: "Nueva Partida",
         instructions: "Instrucciones",
         ranking: "Ranking",
@@ -11,43 +11,30 @@ const translations = {
         toTheBattle: "¡A la Batalla!",
         chooseYourName: "Elige tu Nombre",
         writeYourName: "Escribe tu nombre",
-        emptyInventory: "Inventario vacío",
-        
-        // --- Stats ---
         player: "JUGADOR",
         assault: "ASALTO",
         health: "VIDA",
         power: "PODER",
         resources: "RECURSOS",
         superpower: "SUPERPODER",
-
-        // --- Pantalla de Instrucciones ---
         objective: "OBJETIVO:",
-        objectiveText: "¡Aguanta el máximo de asaltos que puedas!",
+        objectiveText: "¡Derrota a tantos Brawlers enemigos como puedas!",
         decisions: "DECISIONES:",
-        decisionsText: "En cada turno, un Brawler te dará dos opciones. ¡Elige con cuidado!",
+        decisionsText: "En cada turno, elige uno de tus movimientos para atacar o defenderte.",
         stats: "ESTADÍSTICAS:",
-        statsText: "Tus elecciones afectan a tu Vida, Poder, Recursos y Superpoder.",
+        statsText: "Tu Vida, Poder y Recursos dependen del Brawler que elijas.",
         enemies: "ENEMIGOS:",
-        enemiesText: "Después de cada turno, los enemigos atacan. ¡El poder defensivo es clave!",
-        surprises: "SORPRESAS:",
-        surprisesText: "A veces, aparecerán eventos y acertijos con grandes recompensas.",
+        enemiesText: "Cada asalto te enfrentarás a un nuevo Brawler aleatorio.",
         superpowerTitle: "SUPERPODER:",
-        superpowerText: "Al 100%, ¡úsalo para obtener una gran ventaja!",
-
-        // --- Pantalla de Derrota ---
+        superpowerText: "Se carga con tus acciones. ¡Al 100% podrás usar un ataque devastador!",
         defeated: "¡DERROTADO!",
-        defeatedReasonNoHealth: "La vida de tu escuadrón ha llegado a cero.",
-        defeatedReasonPower: "Tu poder es tan alto que has perdido el control.",
-        defeatedReasonGreed: "Has acumulado demasiados recursos y te has vuelto un blanco fácil.",
+        defeatedReasonNoHealth: "Tu Brawler se ha quedado sin vida en combate.",
         causeOfDeath: "Causa:",
         youLasted: "Has aguantado",
         assaults: "asaltos.",
         calculatingRank: "Calculando tu posición en el ranking...",
         rankPosition: (rank) => `¡Has quedado en la <span class="font-bold text-yellow-300">${rank}ª</span> posición!`,
         scoreSaved: "Tu puntuación ha sido guardada.",
-
-        // --- Ranking ---
         rankingTitle: "🏆 Ranking 🏆",
         rankHeader: "#",
         nameHeader: "Nombre",
@@ -56,24 +43,11 @@ const translations = {
         loading: "Cargando...",
         beTheFirst: "¡Sé el primero en jugar!",
         errorLoadingRank: "Error al cargar ranking.",
-
-        // --- Juego ---
         super: "SUPER",
-        superNarrative: "¡Un impulso de poder te da vida, poder y un recurso extra!",
-        superTitle: "¡SUPERPODER!",
-        enemyAttack: "Los enemigos contraatacan.",
-        eventTitle: (name) => `¡EVENTO: ${name}!`,
-        challengeTitle: "¡ACERTIJO!",
-        correct: "¡CORRECTO!",
-        incorrect: "¡INCORRECTO!",
-        
-        // --- Notificaciones ---
         notEnoughResources: "¡No tienes suficientes recursos!",
-        notEnoughSuper: "¡No tienes superpoder suficiente!",
         installGame: "📥 Instalar Juego",
     },
     eu: {
-        // --- Menús y UI General ---
         newGame: "Joko Berria",
         instructions: "Argibideak",
         ranking: "Sailkapena",
@@ -84,84 +58,47 @@ const translations = {
         toTheBattle: "Borrokarako Prest!",
         chooseYourName: "Aukeratu Zure Izena",
         writeYourName: "Idatzi zure izena",
-        emptyInventory: "Inbentarioa hutsik",
-
-        // --- Stats ---
         player: "JOKALARIA",
-        assault: "ERASOA",
+        assault: "ASALTOA",
         health: "BIZITZA",
         power: "INDARRA",
         resources: "BALIABIDEAK",
         superpower: "SUPERBOTEREA",
-
-        // --- Pantalla de Instrucciones ---
         objective: "HELBURUA:",
-        objectiveText: "Eutsi ahal dituzun eraso gehien!",
+        objectiveText: "Garaitu ahal dituzun Brawler etsai guztiak!",
         decisions: "ERABAKIAK:",
-        decisionsText: "Txanda bakoitzean, Brawler batek bi aukera emango dizkizu. Aukeratu zuhurki!",
+        decisionsText: "Txanda bakoitzean, aukeratu zure mugimenduetako bat erasotzeko edo defendatzeko.",
         stats: "ESTATISTIKAK:",
-        statsText: "Zure aukerek zure Bizitza, Indarra, Baliabideak eta Superboterea aldatzen dituzte.",
+        statsText: "Zure Bizitza, Indarra eta Baliabideak aukeratzen duzun Brawlerraren araberakoak dira.",
         enemies: "ETSAIAK:",
-        enemiesText: "Txanda bakoitzaren ondoren, etsaiek erasotzen dute. Defentsa-indarra funtsezkoa da!",
-        surprises: "EZUSTEKOAK:",
-        surprisesText: "Batzuetan, sari handiak dituzten gertaerak eta asmakizunak agertuko dira.",
+        enemiesText: "Asalto bakoitzean ausazko Brawler etsai berri baten aurka borrokatuko duzu.",
         superpowerTitle: "SUPERBOTEREA:",
-        superpowerText: "%100ean dagoenean, erabili abantaila handia lortzeko!",
-
-        // --- Pantalla de Derrota ---
+        superpowerText: "Zure ekintzekin kargatzen da. %100ean eraso suntsitzaile bat erabili ahal izango duzu!",
         defeated: "GARAITUA!",
-        defeatedReasonNoHealth: "Zure eskuadroiaren bizitza zerora iritsi da.",
-        defeatedReasonPower: "Zure indarra hain da handia, kontrola galdu duzula.",
-        defeatedReasonGreed: "Baliabide gehiegi metatu dituzu eta jomuga erraza bihurtu zara.",
+        defeatedReasonNoHealth: "Zure Brawlerra bizitzarik gabe geratu da borrokan.",
         causeOfDeath: "Kausa:",
         youLasted: "Eutsi diozu",
-        assaults: "eraso.",
+        assaults: "asalto.",
         calculatingRank: "Zure postua kalkulatzen sailkapenean...",
         rankPosition: (rank) => `<span class="font-bold text-yellow-300">${rank}.</span> postuan geratu zara!`,
         scoreSaved: "Zure puntuazioa gorde da.",
-
-        // --- Ranking ---
         rankingTitle: "🏆 Sailkapena 🏆",
         rankHeader: "#",
         nameHeader: "Izena",
         collectiblesHeader: "💎",
-        assaultsHeader: "Erasoak",
+        assaultsHeader: "Asaltoak",
         loading: "Kargatzen...",
         beTheFirst: "Izan zaitez lehena jokatzen!",
         errorLoadingRank: "Errorea sailkapena kargatzean.",
-
-        // --- Juego ---
         super: "SUPER",
-        superNarrative: "Botere bultzada batek bizitza, indarra eta baliabide gehigarri bat ematen dizkizu!",
-        superTitle: "SUPERBOTEREA!",
-        enemyAttack: "Etsaiek kontraeraso egiten dute.",
-        eventTitle: (name) => `GERTAERA: ${name}!`,
-        challengeTitle: "ASMAKIZUNA!",
-        correct: "ZUZENA!",
-        incorrect: "OKERRA!",
-        
-        // --- Notificaciones ---
         notEnoughResources: "Ez duzu nahikoa baliabide!",
-        notEnoughSuper: "Ez duzu nahikoa superbotere!",
         installGame: "📥 Jokoa Instalatu",
     }
 };
 
-// ================================================================
-// == Función central para obtener los textos de todo el proyecto ==
-// ================================================================
 const getText = (key, ...args) => {
-    if (!translations || !translations[currentLang]) {
-        console.error(`Idioma "${currentLang}" no encontrado en las traducciones.`);
-        return key;
-    }
+    if (!translations || !translations[currentLang]) return key;
     const translation = translations[currentLang][key];
-    if (!translation) {
-        console.error(`Clave de traducción "${key}" no encontrada para el idioma "${currentLang}".`);
-        return key;
-    }
-    if (typeof translation === 'function') {
-        return translation(...args);
-    }
-    return translation;
+    if (!translation) return key;
+    return typeof translation === 'function' ? translation(...args) : translation;
 };
