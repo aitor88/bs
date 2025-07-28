@@ -1,7 +1,3 @@
-// ===================================================================
-// === FUNCIONES DE UI (MENÚS Y PANTALLAS GENERALES) ===
-// ===================================================================
-
 function showMainMenu() {
     stopAllMusic();
     playSound(sounds.menuMusic);
@@ -34,13 +30,11 @@ function showMainMenu() {
     if (installButton && (deferredPrompt || isIOS)) {
         installButton.classList.remove('hidden');
     }
-
     ui.gameOverlay.classList.remove('hidden-overlay');
 }
 
 function showBrawlerSelectionScreen() {
     playSound(sounds.click);
-
     let characterCardsHTML = '';
     window.characters.forEach(char => {
         if (char.playerStats) {
@@ -69,13 +63,11 @@ function showBrawlerSelectionScreen() {
             </div>
         </div>
     `;
-
     ui.gameOverlay.innerHTML = selectionHTML;
 }
 
 function showNameInputScreen() {
     playSound(sounds.click);
-    
     const selectedBrawlerData = window.characters.find(char => char.id === selectedBrawlerId);
     const brawlerName = selectedBrawlerData ? selectedBrawlerData.name : 'Brawler';
 
@@ -132,7 +124,6 @@ function showRankingScreen() {
     displayRanking(document.getElementById('ranking-list-table'));
 }
 
-
 function showEndScreen(reason) {
     gameOver = true;
     stopAllMusic();
@@ -179,7 +170,6 @@ function showEndScreen(reason) {
 }
 
 function saveScore(name, score) {
-    // Hemos simplificado la puntuación para que ya no guarde coleccionables
     db.collection("ranking").add({ name: name, score: score, collectibles: 0 })
         .catch(error => console.error("Error al guardar en Firebase: ", error));
 }
@@ -197,7 +187,6 @@ function displayRanking(rankingListElement) {
             querySnapshot.forEach(doc => {
                 const entry = doc.data();
                 const row = document.createElement('tr');
-                // Ajustado para que la tabla siga funcionando aunque ya no usemos coleccionables
                 row.innerHTML = `<td>${rank++}</td><td class="text-left">${entry.name.toUpperCase()}</td><td>${entry.collectibles || 0}</td><td>${entry.score}</td>`;
                 rankingListElement.appendChild(row);
             });
@@ -208,24 +197,17 @@ function displayRanking(rankingListElement) {
         });
 }
 
-// ===================================================================
-// === NUEVAS FUNCIONES DE UI PARA LA BATALLA ===
-// ===================================================================
-
 function showBattleScreen(player, enemy) {
-    ui.gameUI.classList.add('hidden'); // Ocultamos la UI antigua de dilemas
-    ui.battleScreen.classList.remove('hidden'); // Mostramos la nueva
+    ui.gameUI.classList.add('hidden');
+    ui.battleScreen.classList.remove('hidden');
 
-    // --- Configurar Zona del Enemigo ---
     ui.enemyName.textContent = enemy.name;
     ui.enemyImg.src = enemy.img;
     
-    // --- Configurar Zona del Jugador ---
     ui.playerName.textContent = playerName;
     ui.playerImg.src = player.img;
 
-    // --- Configurar Panel de Acciones (Movimientos) ---
-    ui.actionsPanel.innerHTML = ''; // Limpiamos acciones anteriores
+    ui.actionsPanel.innerHTML = '';
     player.moves.forEach(move => {
         const moveButton = document.createElement('button');
         moveButton.className = 'choice-button bg-gray-700 border-gray-900 hover:bg-gray-600 text-white font-bold rounded-xl p-2 text-left';
@@ -240,23 +222,19 @@ function showBattleScreen(player, enemy) {
         `;
         ui.actionsPanel.appendChild(moveButton);
     });
-
-    // Actualizar las barras de vida y stats por primera vez
+    
     updateBattleUI(stats, enemy.stats);
 }
 
 function updateBattleUI(playerStats, enemyStats) {
-    // --- Actualizar Vida del Jugador ---
     const playerHealthPercent = Math.max(0, (playerStats.vida / currentPlayerBrawler.playerStats.vida) * 100);
     ui.playerHealthBar.style.width = `${playerHealthPercent}%`;
     ui.playerHealthText.textContent = `${Math.max(0, playerStats.vida)} / ${currentPlayerBrawler.playerStats.vida}`;
 
-    // --- Actualizar Vida del Enemigo ---
     const enemyHealthPercent = Math.max(0, (enemyStats.vida / currentEnemyBrawler.cpuStats.vida) * 100);
     ui.enemyHealthBar.style.width = `${enemyHealthPercent}%`;
     ui.enemyHealthText.textContent = `${Math.max(0, enemyStats.vida)} / ${currentEnemyBrawler.cpuStats.vida}`;
     
-    // --- Actualizar Recursos y Súper del Jugador ---
     ui.playerResourcesText.textContent = playerStats.recursos;
     ui.playerSuperText.textContent = `${playerStats.superpoder}%`;
 }
