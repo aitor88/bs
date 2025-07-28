@@ -19,20 +19,15 @@ let currentLang = 'es';
 let stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
 let currentAssault = 1;
 let gameOver = false;
-let isSpecialTurn = false;
 let playerName = '';
-let inventory = [];
-let activeEffects = {};
 let selectedBrawlerId = null; 
 
-const characters = window.gameCharacters;
-const events = window.gameEvents;
-const challenges = window.gameChallenges;
+// Nuevas variables para el estado del combate
+let currentPlayerBrawler = null;
+let currentEnemyBrawler = null;
 
-// --- LÓGICA ANTI-REPETICIÓN ---
-let lastCharacterName = '';
-let lastEventName = '';
-let dilemmaDecks = {};
+const characters = window.gameCharacters;
+
 let audioUnlocked = false;
 
 // ===================================================================
@@ -43,27 +38,28 @@ const ui = {
     splashScreen: document.getElementById('splash-screen'),
     splashLogo: document.getElementById('splash-logo'),
     gameContainer: document.getElementById('game-container'),
+    
+    // UI Antigua (se oculta en batalla)
     gameUI: document.getElementById('game-ui'),
-    assaultCounter: document.getElementById('assault-counter'),
-    playerNameDisplay: document.getElementById('player-name-display'),
-    healthBar: document.getElementById('health-bar'), healthText: document.getElementById('health-text'),
-    powerBar: document.getElementById('power-bar'), powerText: document.getElementById('power-text'),
-    resourcesBar: document.getElementById('resources-bar'), resourcesText: document.getElementById('resources-text'),
-    superBar: document.getElementById('super-bar'), superText: document.getElementById('super-text'),
-    charImg: document.getElementById('char-img'), charName: document.getElementById('char-name'),
-    dilemmaDescription: document.getElementById('dilemma-description'),
-    choicesSection: document.getElementById('choices-section'),
-    choice1: document.getElementById('choice-1'), choice2: document.getElementById('choice-2'),
-    challengeChoicesSection: document.getElementById('challenge-choices-section'),
-    superButton: document.getElementById('super-button'),
-    notification: document.getElementById('notification'),
-    inventoryContainer: document.getElementById('inventory-container'),
+    
+    // Nueva UI de Batalla
+    battleScreen: document.getElementById('battle-screen'),
+    enemyName: document.getElementById('enemy-name'),
+    enemyHealthBar: document.getElementById('enemy-health-bar'),
+    enemyHealthText: document.getElementById('enemy-health-text'),
+    enemyImg: document.getElementById('enemy-img'),
+    battleNarrative: document.getElementById('battle-narrative'),
+    playerName: document.getElementById('player-name'),
+    playerHealthBar: document.getElementById('player-health-bar'),
+    playerHealthText: document.getElementById('player-health-text'),
+    playerImg: document.getElementById('player-img'),
+    playerResourcesText: document.getElementById('player-resources-text'),
+    playerSuperText: document.getElementById('player-super-text'),
+    actionsPanel: document.getElementById('actions-panel'),
+
+    // Overlays y otros
     gameOverlay: document.getElementById('game-overlay'),
-    resolutionOverlay: document.getElementById('resolution-overlay'),
-    resolutionTitle: document.getElementById('resolution-title'),
-    resolutionNarrative: document.getElementById('resolution-narrative'),
-    resolutionEffects: document.getElementById('resolution-effects'),
-    resolutionContinue: document.getElementById('resolution-continue'),
+    notification: document.getElementById('notification'),
 };
 
 const sounds = {
