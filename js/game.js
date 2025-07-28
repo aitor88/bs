@@ -11,46 +11,89 @@ function shuffleArray(array) {
 
 function createDilemmaDecks() {
     dilemmaDecks = {};
-    characters.forEach(char => {
+    // Filtramos solo los personajes con la estructura de dilemas antigua para no romper el juego
+    const charactersWithDilemmas = characters.filter(c => c.dilemmas);
+    charactersWithDilemmas.forEach(char => {
         dilemmaDecks[char.name] = shuffleArray([...char.dilemmas]);
     });
 }
 
 // ===================================================================
-// === LÓGICA PRINCIPAL DEL JUEGO ===
+// === LÓGICA DE INICIO DE JUEGO (MODIFICADA) ===
 // ===================================================================
+
+// Nueva función para gestionar la selección del Brawler y pasar a la pantalla de nombre
+function selectBrawlerAndStart(brawlerId) {
+    playSound(sounds.click);
+    selectedBrawlerId = brawlerId; // Guardamos el ID del brawler elegido
+    
+    // Después de elegir Brawler, pedimos el nombre del jugador
+    showNameInputScreen(); 
+}
+
+// initGame ahora usa el Brawler seleccionado para establecer las estadísticas iniciales
 function initGame() {
+    // Buscamos los datos completos del Brawler que se eligió
+    const selectedBrawlerData = window.gameCharacters.find(char => char.id === selectedBrawlerId);
+    if (!selectedBrawlerData || !selectedBrawlerData.playerStats) {
+        console.error("No se ha seleccionado un Brawler válido con la nueva estructura.");
+        showMainMenu(); // Si hay un error, volvemos al menú
+        return;
+    }
+
     playSound(sounds.click);
     stopAllMusic();
     sounds.gameMusic.loop = true;
     playSound(sounds.gameMusic);
     
-    playerName = document.getElementById('player-name-input').value.trim() || 'Brawler';
-    stats = { vida: 100, poder: 20, recursos: 5, superpoder: 0 };
+    playerName = document.getElementById('player-name-input').value.trim() || selectedBrawlerData.name;
+    
+    // Usamos las estadísticas iniciales del Brawler seleccionado
+    stats = { 
+        ...selectedBrawlerData.playerStats, // Copia vida, poder, recursos
+        superpoder: 0 // El superpoder siempre empieza en 0
+    };
+
     currentAssault = 1;
     gameOver = false;
     inventory = [];
+    activeEffects = {};
     lastCharacterName = '';
     lastEventName = '';
     
+    // Dejamos la lógica antigua de dilemas por ahora
     createDilemmaDecks();
     updateInventoryUI();
     
     ui.gameOverlay.classList.add('hidden-overlay');
     ui.gameUI.classList.remove('hidden');
     
+    // La partida ya no empieza con un dilema de personaje aleatorio, sino que podría empezar directamente con una batalla.
+    // Por ahora, para mantenerlo funcional, llamaremos a nextAssault que usa la lógica antigua.
+    // Esto lo cambiaremos cuando implementemos el sistema de combate.
     nextAssault();
 }
+
+
+// ===================================================================
+// === LÓGICA DE JUEGO ANTIGUA (A REEMPLAZAR CON EL SISTEMA DE COMBATE) ===
+// ===================================================================
 
 function nextAssault() {
     if (gameOver) return;
     ui.choicesSection.classList.remove('hidden');
     ui.challengeChoicesSection.classList.add('hidden');
     
+    const charactersWithDilemmas = characters.filter(c => c.dilemmas && c.dilemmas.length > 0);
+    if (charactersWithDilemmas.length === 0) {
+        console.error("No hay personajes con dilemas para continuar el juego.");
+        return;
+    }
+
     let char;
     do {
-        char = characters[Math.floor(Math.random() * characters.length)];
-    } while (char.name === lastCharacterName && characters.length > 1);
+        char = charactersWithDilemmas[Math.floor(Math.random() * charactersWithDilemmas.length)];
+    } while (char.name === lastCharacterName && charactersWithDilemmas.length > 1);
     lastCharacterName = char.name;
 
     if (!dilemmaDecks[char.name] || dilemmaDecks[char.name].length === 0) {
@@ -241,6 +284,7 @@ function triggerRandomChallenge() {
 
 function checkGameOver() {
     if (gameOver) return false;
+    
     let reason = null;
     if (stats.vida <= 0) reason = { reasonKey: 'defeatedReasonNoHealth' };
     if (stats.poder >= 100) reason = { reasonKey: 'defeatedReasonPower' };
